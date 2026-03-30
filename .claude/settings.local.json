@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node add_images.js)"
+    ]
+  }
+}

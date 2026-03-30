@@ -1,0 +1,4369 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Szlaki Lubelszczyzny — Odkryj piękno województwa lubelskiego</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<style>
+/* === RESET & VARIABLES === */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --primary: #1B5E3B;
+  --primary-light: #40916C;
+  --primary-lighter: #95D5B2;
+  --primary-bg: rgba(27,94,59,0.06);
+  --secondary: #0F3325;
+  --accent: #E8913A;
+  --accent-warm: #D84315;
+  --easy: #4CAF50;
+  --medium: #FF9800;
+  --hard: #E53935;
+  --trail-red: #E63946;
+  --trail-blue: #4895EF;
+  --trail-green: #2DC653;
+  --trail-yellow: #FFB703;
+  --trail-black: #333333;
+  --region-roztocze: #6D4C41;
+  --region-polesie: #1565C0;
+  --region-kazimierski: #2E7D32;
+  --region-centralny: #AD1457;
+  --bg: #F5F5F0;
+  --bg-card: #FFFFFF;
+  --bg-hover: #FAFAF7;
+  --text: #1A1A1A;
+  --text-secondary: #4A4A4A;
+  --text-muted: #7A7A7A;
+  --border: #E8E8E3;
+  --border-light: #F0F0EB;
+  --shadow-xs: 0 1px 2px rgba(0,0,0,0.04);
+  --shadow: 0 2px 8px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.06);
+  --shadow-xl: 0 20px 60px rgba(0,0,0,0.15);
+  --radius: 16px;
+  --radius-sm: 10px;
+  --radius-xs: 6px;
+  --radius-pill: 100px;
+  --header-h: 56px;
+  --sidebar-w: 420px;
+  --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  --font-display: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-body: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+html { font-size: 16px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  overflow: hidden;
+  height: 100vh;
+}
+body.dark {
+  --bg: #0D0D0D;
+  --bg-card: #1A1A1A;
+  --bg-hover: #222;
+  --text: #ECECEC;
+  --text-secondary: #B0B0B0;
+  --text-muted: #888;
+  --border: #2A2A2A;
+  --border-light: #222;
+  --shadow: 0 2px 8px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.4);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,0.5);
+  --primary-bg: rgba(64,145,108,0.1);
+}
+a { color: var(--primary); text-decoration: none; }
+button { cursor: pointer; border: none; background: none; font-family: inherit; font-size: inherit; }
+ul { list-style: none; }
+img { display: block; }
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 5px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* === HEADER === */
+.header {
+  height: var(--header-h);
+  background: var(--bg-card);
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 12px;
+  z-index: 1000;
+  position: relative;
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+}
+.header-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
+}
+.header-logo i { font-size: 20px; color: var(--primary); }
+.header-logo h1 { font-size: 16px; font-weight: 700; letter-spacing: -0.02em; }
+.header-logo .tagline { font-size: 10px; color: var(--text-muted); display: block; margin-top: -2px; letter-spacing: 0.01em; }
+.header-search {
+  flex: 1;
+  max-width: 360px;
+  position: relative;
+}
+.header-search input {
+  width: 100%;
+  padding: 8px 14px 8px 36px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 13px;
+  outline: none;
+  transition: var(--transition);
+}
+.header-search input::placeholder { color: var(--text-muted); }
+.header-search input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-bg); }
+.header-search i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 13px; }
+.header-filters { display: flex; gap: 4px; flex-wrap: nowrap; }
+.filter-pill {
+  padding: 5px 12px;
+  border-radius: var(--radius-xs);
+  font-size: 12px;
+  font-weight: 500;
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  transition: var(--transition);
+  white-space: nowrap;
+}
+.filter-pill:hover { background: var(--bg); border-color: var(--text-muted); }
+.filter-pill.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+.header-actions { display: flex; gap: 4px; margin-left: auto; }
+.header-btn {
+  width: 34px; height: 34px;
+  border-radius: var(--radius-xs);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-muted);
+  background: transparent;
+  transition: var(--transition);
+  font-size: 14px;
+}
+.header-btn:hover { background: var(--bg); color: var(--text); }
+
+/* === MAIN LAYOUT === */
+.app-container {
+  display: flex;
+  height: calc(100vh - var(--header-h));
+}
+.sidebar {
+  width: var(--sidebar-w);
+  background: var(--bg-card);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex-shrink: 0;
+  transition: var(--transition);
+}
+.map-container {
+  flex: 1;
+  position: relative;
+  background: var(--bg);
+}
+#map { width: 100%; height: 100%; z-index: 1; }
+
+/* === REGION TABS === */
+.region-tabs {
+  display: flex;
+  padding: 10px 16px;
+  gap: 4px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-card);
+  flex-shrink: 0;
+}
+.region-tab {
+  padding: 6px 14px;
+  border-radius: var(--radius-xs);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  transition: var(--transition);
+  white-space: nowrap;
+}
+.region-tab:hover { background: var(--bg); color: var(--text); }
+.region-tab.active { background: var(--primary); color: white; font-weight: 600; }
+
+/* === MUNICIPALITY LIST === */
+.muni-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+}
+.muni-card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  margin-bottom: 10px;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: var(--transition);
+  overflow: hidden;
+}
+.muni-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+.muni-card.active { border-color: var(--primary); box-shadow: var(--shadow-md); }
+.muni-card-img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  background: var(--bg);
+  display: block;
+}
+.muni-card-body { padding: 12px 14px; }
+.muni-card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.muni-card-name { font-size: 15px; font-weight: 700; letter-spacing: -0.01em; line-height: 1.3; }
+.muni-card-region {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 500;
+}
+.muni-card-badge {
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: var(--radius-xs);
+  background: var(--accent);
+  color: white;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.muni-card-stats {
+  display: flex;
+  gap: 12px;
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.muni-card-stats span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.muni-card-stats i { font-size: 11px; color: var(--primary-light); }
+.muni-card-fav {
+  color: var(--border);
+  font-size: 16px;
+  transition: var(--transition);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  flex-shrink: 0;
+}
+.muni-card-fav:hover { color: var(--accent); }
+.muni-card-fav.liked { color: var(--accent-warm); }
+
+/* === MUNICIPALITY DETAIL PANEL === */
+.muni-detail {
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  flex: 1;
+}
+.muni-detail.visible { display: flex; }
+.muni-detail-hero {
+  position: relative;
+  height: 200px;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.muni-detail-hero-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+.muni-detail-hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60%;
+  background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+  pointer-events: none;
+}
+.muni-detail-hero-bg {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  right: 60px;
+  color: white;
+  font-size: 24px;
+  font-weight: 700;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+  z-index: 2;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+.muni-detail-hero .back-btn {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-xs);
+  background: rgba(0,0,0,0.3);
+  backdrop-filter: blur(8px);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  transition: var(--transition);
+  z-index: 3;
+}
+.muni-detail-hero .back-btn:hover { background: rgba(0,0,0,0.5); }
+.muni-detail-info {
+  padding: 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-card);
+  flex-shrink: 0;
+}
+.muni-detail-info .region-badge {
+  display: inline-block;
+  font-size: 10px;
+  padding: 3px 10px;
+  border-radius: var(--radius-xs);
+  color: white;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.muni-detail-info p { font-size: 13px; color: var(--text-secondary); margin-top: 8px; line-height: 1.6; }
+.muni-detail-quick-stats {
+  display: flex;
+  gap: 6px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+.quick-stat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--primary);
+  background: var(--primary-bg);
+  padding: 6px 12px;
+  border-radius: var(--radius-xs);
+}
+.quick-stat i { font-size: 14px; }
+
+/* === DETAIL TABS === */
+.detail-tabs {
+  display: flex;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  flex-shrink: 0;
+  gap: 0;
+}
+.detail-tab {
+  flex: 1;
+  padding: 10px 2px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-muted);
+  transition: var(--transition);
+  position: relative;
+  letter-spacing: 0.01em;
+}
+.detail-tab i { display: block; font-size: 15px; margin-bottom: 3px; }
+.detail-tab:hover { color: var(--primary); background: var(--primary-bg); }
+.detail-tab.active { color: var(--primary); font-weight: 700; }
+.detail-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 16%;
+  right: 16%;
+  height: 2px;
+  background: var(--primary);
+  border-radius: 2px 2px 0 0;
+}
+.detail-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px;
+}
+.tab-panel { display: none; animation: fadeUp 0.25s ease; }
+.tab-panel.active { display: block; }
+@keyframes fadeUp { from { opacity:0; transform: translateY(6px); } to { opacity:1; transform: translateY(0); } }
+
+/* === TRAIL CARDS === */
+.trail-card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  margin-bottom: 10px;
+  overflow: hidden;
+  transition: var(--transition);
+}
+.trail-card:hover { box-shadow: var(--shadow); border-color: var(--primary-lighter); }
+.trail-card-header {
+  padding: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.trail-color-badge {
+  width: 4px;
+  min-height: 44px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+.trail-card-main { flex: 1; min-width: 0; }
+.trail-card-name { font-size: 14px; font-weight: 600; letter-spacing: -0.01em; line-height: 1.3; }
+.trail-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 8px;
+}
+.pill {
+  padding: 3px 8px;
+  border-radius: var(--radius-xs);
+  font-size: 11px;
+  font-weight: 500;
+  background: var(--bg);
+  color: var(--text-secondary);
+  border: none;
+}
+.pill i { margin-right: 3px; font-size: 10px; opacity: 0.6; }
+.pill.surface-asphalt { background: #EEF4FF; color: #3B5998; }
+.pill.surface-gravel { background: #FFF4E5; color: #B86E00; }
+.pill.surface-mixed { background: #F3E8FF; color: #7C3AED; }
+.pill.surface-offroad { background: #EDEBE9; color: #5D4037; }
+.difficulty-bar {
+  display: flex;
+  gap: 2px;
+  margin-top: 8px;
+  max-width: 80px;
+}
+.difficulty-segment {
+  height: 3px;
+  flex: 1;
+  border-radius: 2px;
+  background: var(--border);
+}
+.difficulty-segment.filled { background: var(--easy); }
+.difficulty-bar.medium .difficulty-segment.filled { background: var(--medium); }
+.difficulty-bar.hard .difficulty-segment.filled { background: var(--hard); }
+.trail-expand-icon {
+  color: var(--text-muted);
+  font-size: 11px;
+  transition: var(--transition);
+  margin-top: 6px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.trail-card:hover .trail-expand-icon { background: var(--bg); }
+.trail-card.expanded .trail-expand-icon { transform: rotate(180deg); background: var(--primary-bg); color: var(--primary); }
+.trail-card-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.trail-card.expanded .trail-card-body { max-height: 600px; }
+.trail-card-body-inner {
+  padding: 0 14px 14px 30px;
+}
+.trail-card-body-inner p { font-size: 13px; color: var(--text-secondary); margin-bottom: 10px; line-height: 1.6; }
+.trail-highlights {
+  margin-bottom: 12px;
+}
+.trail-highlights li {
+  font-size: 13px;
+  padding: 4px 0;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+}
+.trail-highlights li i { color: var(--primary); margin-right: 8px; width: 14px; text-align: center; font-size: 10px; }
+.trail-actions {
+  display: flex;
+  gap: 8px;
+}
+.btn {
+  padding: 8px 16px;
+  border-radius: var(--radius-xs);
+  font-size: 12px;
+  font-weight: 600;
+  transition: var(--transition);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  letter-spacing: 0.01em;
+}
+.btn-primary { background: var(--primary); color: white; }
+.btn-primary:hover { background: var(--secondary); box-shadow: var(--shadow); }
+.btn-outline { border: 1px solid var(--border); color: var(--text-secondary); background: var(--bg-card); }
+.btn-outline:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-bg); }
+
+/* === ATTRACTION GRID === */
+.attraction-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+.attraction-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: var(--transition);
+  display: flex;
+  flex-direction: row;
+}
+.attraction-card:hover { box-shadow: var(--shadow-md); border-color: var(--primary-lighter); }
+.attraction-card-img {
+  width: 90px;
+  min-height: 100%;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: var(--bg);
+}
+.attraction-card-content { padding: 12px; flex: 1; min-width: 0; }
+.attraction-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-xs);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: white;
+  margin-bottom: 6px;
+}
+.attraction-card h4 { font-size: 13px; font-weight: 700; margin-bottom: 4px; letter-spacing: -0.01em; }
+.attraction-card p { font-size: 11px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 8px; }
+.attraction-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+.attraction-tip {
+  font-size: 11px;
+  font-style: italic;
+  color: var(--accent);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+}
+.attraction-tip i { margin-top: 2px; font-size: 10px; }
+.attraction-card .btn { font-size: 11px; padding: 5px 10px; }
+
+/* === ACCESS CARDS === */
+.access-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  margin-bottom: 8px;
+  display: flex;
+  gap: 14px;
+  transition: var(--transition);
+}
+.access-card:hover { border-color: var(--primary-lighter); }
+.access-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-xs);
+  background: var(--primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.access-card h4 { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+.access-card p { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+
+/* === INFO SECTION === */
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.info-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+  transition: var(--transition);
+}
+.info-item:hover { border-color: var(--primary-lighter); }
+.info-item h4 {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.info-item h4 i { font-size: 12px; color: var(--primary-light); }
+.info-item p { font-size: 12px; line-height: 1.5; color: var(--text-secondary); }
+.info-item.full-width { grid-column: 1 / -1; }
+
+/* === MAP LEGEND === */
+.map-legend {
+  position: absolute;
+  bottom: 20px;
+  right: 12px;
+  background: var(--bg-card);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  box-shadow: var(--shadow-lg);
+  z-index: 800;
+  font-size: 11px;
+  max-width: 180px;
+  border: 1px solid var(--border);
+}
+.map-legend h4 {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 0;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+.legend-color {
+  width: 14px;
+  height: 3px;
+  border-radius: 2px;
+}
+.legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 2px solid;
+}
+.legend-section { margin-bottom: 6px; }
+.legend-section:last-child { margin-bottom: 0; }
+
+/* === EMPTY STATE === */
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--text-muted);
+}
+.empty-state i { font-size: 40px; margin-bottom: 16px; color: var(--border); }
+.empty-state h3 { font-size: 15px; margin-bottom: 6px; color: var(--text); font-weight: 700; }
+.empty-state p { font-size: 13px; margin-bottom: 16px; color: var(--text-secondary); }
+
+/* === TOAST === */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--text);
+  color: var(--bg-card);
+  padding: 10px 24px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 500;
+  z-index: 10000;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--shadow-xl);
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* === SEARCH RESULTS === */
+.search-results {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--bg-card);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-lg);
+  max-height: 320px;
+  overflow-y: auto;
+  z-index: 1001;
+  display: none;
+  border: 1px solid var(--border);
+}
+.search-results.visible { display: block; }
+.search-result-item {
+  padding: 10px 14px;
+  cursor: pointer;
+  font-size: 13px;
+  border-bottom: 1px solid var(--border-light);
+  transition: var(--transition);
+  color: var(--text);
+}
+.search-result-item:last-child { border-bottom: none; }
+.search-result-item:hover { background: var(--primary-bg); }
+.search-result-item small { color: var(--text-muted); display: block; font-size: 11px; margin-top: 2px; }
+.search-highlight { background: #FFF3C4; color: var(--text); padding: 0 2px; border-radius: 2px; }
+
+/* === CATEGORY COLORS === */
+.cat-zabytek { background: #8D6E63; }
+.cat-przyroda { background: #43A047; }
+.cat-muzeum { background: #5C6BC0; }
+.cat-widok { background: #00897B; }
+.cat-kosciol { background: #AB47BC; }
+.cat-inne { background: #78909C; }
+
+/* === IMAGE FALLBACK === */
+.img-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.8);
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 1024px) {
+  .sidebar { width: 360px; }
+}
+@media (max-width: 900px) {
+  .header { padding: 0 12px; gap: 6px; }
+  .header-logo .tagline { display: none; }
+  .header-logo h1 { font-size: 14px; }
+  .header-filters { display: none; }
+  .sidebar { width: 320px; }
+  .muni-card-img { height: 100px; }
+}
+@media (max-width: 768px) {
+  .header { height: 48px; }
+  .header-search { max-width: 180px; }
+  :root { --header-h: 48px; }
+  .app-container { flex-direction: column; }
+  .sidebar {
+    width: 100%;
+    height: 55vh;
+    order: 2;
+    border-right: none;
+    border-top: 1px solid var(--border);
+  }
+  .map-container { height: 45vh; order: 1; flex: none; }
+  .info-grid { grid-template-columns: 1fr; }
+  .muni-detail-hero { height: 160px; }
+  .muni-card-img { height: 90px; }
+  .map-legend { display: none; }
+}
+@media (max-width: 480px) {
+  .header-search { max-width: 140px; }
+  .muni-detail-quick-stats { flex-wrap: wrap; }
+  .attraction-card { flex-direction: column; }
+  .attraction-card-img { width: 100%; height: 120px; }
+}
+
+/* === PRINT === */
+@media print {
+  .header, .map-container, .region-tabs, .detail-tabs { display: none; }
+  .sidebar { width: 100%; height: auto; overflow: visible; border: none; }
+  .muni-detail { overflow: visible; }
+  .trail-card-body { max-height: none !important; }
+  .tab-panel { display: block !important; page-break-inside: avoid; }
+}
+
+/* === ONBOARDING === */
+.onboarding {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--text);
+  color: var(--bg);
+  padding: 16px 24px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-xl);
+  z-index: 9999;
+  font-size: 13px;
+  max-width: 380px;
+  text-align: center;
+  animation: fadeIn 0.5s ease;
+  line-height: 1.5;
+}
+.onboarding strong { display: block; margin-bottom: 4px; font-size: 14px; }
+.onboarding .close-onboarding {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  color: var(--text-muted);
+  font-size: 16px;
+  cursor: pointer;
+}
+.onboarding .close-onboarding:hover { color: var(--bg); }
+@keyframes fadeIn { from { opacity: 0; transform: translateX(-50%) translateY(20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+
+/* === LEAFLET POPUP OVERRIDE === */
+.leaflet-popup-content-wrapper {
+  border-radius: var(--radius) !important;
+  box-shadow: var(--shadow-lg) !important;
+  padding: 0 !important;
+  overflow: hidden;
+}
+.leaflet-popup-content { margin: 12px !important; }
+.leaflet-popup-tip { box-shadow: none !important; }
+.leaflet-container { font-family: var(--font-body) !important; }
+.leaflet-control-zoom a {
+  border-radius: var(--radius-xs) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text) !important;
+  background: var(--bg-card) !important;
+  width: 32px !important;
+  height: 32px !important;
+  line-height: 30px !important;
+  font-size: 16px !important;
+}
+.leaflet-control-zoom { border: none !important; box-shadow: var(--shadow) !important; border-radius: var(--radius-xs) !important; overflow: hidden; }
+
+/* === SECTION TITLE === */
+.section-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border-light);
+}
+</style>
+</head>
+<body>
+
+<!-- === HEADER === -->
+<header class="header">
+  <div class="header-logo">
+    <i class="fas fa-route"></i>
+    <div>
+      <h1>Szlaki Lubelszczyzny</h1>
+      <span class="tagline">Odkryj piękno województwa lubelskiego pieszo i rowerem</span>
+    </div>
+  </div>
+  <div class="header-search">
+    <i class="fas fa-search"></i>
+    <input type="text" id="searchInput" placeholder="Szukaj gminy, szlaku, atrakcji..." autocomplete="off">
+    <div class="search-results" id="searchResults"></div>
+  </div>
+  <div class="header-filters" id="headerFilters">
+    <button class="filter-pill active" data-filter="all">🏔️ Wszystkie</button>
+    <button class="filter-pill" data-filter="hiking">🚶 Piesze</button>
+    <button class="filter-pill" data-filter="cycling">🚴 Rowerowe</button>
+    <button class="filter-pill" data-filter="featured">⭐ Polecane</button>
+  </div>
+  <div class="header-actions">
+    <button class="header-btn" id="darkToggle" title="Tryb ciemny"><i class="fas fa-moon"></i></button>
+    <button class="header-btn" id="shareBtn" title="Udostępnij"><i class="fas fa-share-alt"></i></button>
+  </div>
+</header>
+
+<!-- === MAIN === -->
+<div class="app-container">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <!-- Region tabs -->
+    <div class="region-tabs" id="regionTabs">
+      <button class="region-tab active" data-region="all">Wszystkie</button>
+      <button class="region-tab" data-region="Roztocze">Roztocze</button>
+      <button class="region-tab" data-region="Polesie">Polesie</button>
+      <button class="region-tab" data-region="Kazimierski">Kazimierski</button>
+      <button class="region-tab" data-region="Centralny">Centralny</button>
+    </div>
+
+    <!-- Municipality list -->
+    <div class="muni-list" id="muniList"></div>
+
+    <!-- Municipality detail -->
+    <div class="muni-detail" id="muniDetail">
+      <div class="muni-detail-hero" id="detailHero">
+        <button class="back-btn" id="backBtn"><i class="fas fa-arrow-left"></i></button>
+        <div class="muni-detail-hero-bg" id="detailHeroBg"></div>
+      </div>
+      <div class="muni-detail-info" id="detailInfo"></div>
+      <div class="detail-tabs" id="detailTabs">
+        <button class="detail-tab active" data-tab="hiking"><i class="fas fa-hiking"></i>Piesze</button>
+        <button class="detail-tab" data-tab="cycling"><i class="fas fa-bicycle"></i>Rower</button>
+        <button class="detail-tab" data-tab="attractions"><i class="fas fa-landmark"></i>Atrakcje</button>
+        <button class="detail-tab" data-tab="access"><i class="fas fa-car"></i>Dojazd</button>
+        <button class="detail-tab" data-tab="info"><i class="fas fa-info-circle"></i>Info</button>
+      </div>
+      <div class="detail-content" id="detailContent">
+        <div class="tab-panel active" id="panel-hiking"></div>
+        <div class="tab-panel" id="panel-cycling"></div>
+        <div class="tab-panel" id="panel-attractions"></div>
+        <div class="tab-panel" id="panel-access"></div>
+        <div class="tab-panel" id="panel-info"></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAP -->
+  <div class="map-container">
+    <div id="map"></div>
+    <div class="map-legend" id="mapLegend">
+      <div class="legend-section">
+        <h4>Regiony</h4>
+        <div class="legend-item"><div class="legend-dot" style="border-color:#6D4C41;background:rgba(109,76,65,0.2)"></div> Roztocze</div>
+        <div class="legend-item"><div class="legend-dot" style="border-color:#1565C0;background:rgba(21,101,192,0.2)"></div> Polesie</div>
+        <div class="legend-item"><div class="legend-dot" style="border-color:#2E7D32;background:rgba(46,125,50,0.2)"></div> Kazimierski</div>
+        <div class="legend-item"><div class="legend-dot" style="border-color:#AD1457;background:rgba(173,20,87,0.2)"></div> Centralny</div>
+      </div>
+      <div class="legend-section">
+        <h4>Szlaki</h4>
+        <div class="legend-item"><div class="legend-color" style="background:#E63946"></div> Pieszy</div>
+        <div class="legend-item"><div class="legend-color" style="background:#52B788;height:5px"></div> Rowerowy</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- ONBOARDING -->
+<div class="onboarding" id="onboarding" style="display:none">
+  <span class="close-onboarding" id="closeOnboarding">&times;</span>
+  <strong>Witaj na Szlakach Lubelszczyzny!</strong><br>
+  Wybierz gminę z listy po lewej lub kliknij marker na mapie, aby zobaczyć szlaki piesze, rowerowe i atrakcje turystyczne.
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+/* === DATA === */
+const DATA = [
+  /* ============================== */
+  /* REGION ROZTOCZE                */
+  /* ============================== */
+  {
+    id: "zamosc",
+    name: "Zamość",
+    region: "Roztocze",
+    lat: 50.7231,
+    lng: 23.2521,
+    description: "Perła renesansu, miasto idealne wpisane na Listę UNESCO. Twierdza Zamoyskich zachwyca harmonią urbanistyczną.",
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Zamosc_rynek_ratusz_2009.jpg/1280px-Zamosc_rynek_ratusz_2009.jpg",
+    badge: "⭐ UNESCO",
+    hiking: [
+      {
+        name: "Szlak Fortyfikacji Zamojskich",
+        color: "red",
+        distance: "8 km",
+        time: "2-3 h",
+        difficulty: "easy",
+        elevation: "+50m",
+        type: "loop",
+        description: "Pętla wokół historycznych fortyfikacji miasta Zamość, obejmująca bastiony, bramy i mury obronne.",
+        highlights: ["Bastion VII", "Brama Lubelska", "Rotunda Zamojska", "Nadszańce"],
+        waypoints: [[50.7231,23.2521],[50.7260,23.2580],[50.7280,23.2530],[50.7250,23.2470],[50.7231,23.2521]]
+      },
+      {
+        name: "Szlak Padołów Zamojskich",
+        color: "blue",
+        distance: "14 km",
+        time: "4 h",
+        difficulty: "medium",
+        elevation: "+120m",
+        type: "linear",
+        description: "Trasa przez malownicze padoły wokół Zamościa z widokami na Roztocze Zachodnie.",
+        highlights: ["Skierbieszowski Park Krajobrazowy", "Dolina Łabuńki", "Wzgórza Grabowieckie"],
+        waypoints: [[50.7231,23.2521],[50.7150,23.2700],[50.7050,23.2900],[50.6950,23.3100]]
+      },
+      {
+        name: "Ścieżka Przyrodnicza Zamość-Mokre",
+        color: "green",
+        distance: "6 km",
+        time: "1,5-2 h",
+        difficulty: "easy",
+        elevation: "+30m",
+        type: "outAndBack",
+        description: "Łatwa trasa wzdłuż doliny rzecznej do rezerwatu Mokre z bogatą roślinnością bagienną.",
+        highlights: ["Staw Zamojski", "Rezerwat Mokre", "Ostoje ptaków"],
+        waypoints: [[50.7231,23.2521],[50.7190,23.2400],[50.7150,23.2300]]
+      },
+      {
+        name: "Szlak Dawnych Fortec",
+        color: "yellow",
+        distance: "10 km",
+        time: "3 h",
+        difficulty: "medium",
+        elevation: "+90m",
+        type: "loop",
+        description: "Trasa wokół zewnętrznego pierścienia fortyfikacji twierdzy zamojskiej z XVII-XIX w.",
+        highlights: ["Fort Rotunda", "Luneta Senatorska", "Bastion Arcybiskupi", "Reduta Piłsudskiego"],
+        waypoints: [[50.7231,23.2521],[50.7300,23.2600],[50.7320,23.2500],[50.7290,23.2400],[50.7231,23.2521]]
+      },
+      {
+        name: "Szlak Ordynacji Zamojskiej",
+        color: "blue",
+        distance: "20 km",
+        time: "6-7 h",
+        difficulty: "hard",
+        elevation: "+180m",
+        type: "linear",
+        description: "Długi szlak śladami ordynacji Zamoyskich z Zamościa do Klemensowa przez tereny dawnych majątków.",
+        highlights: ["Zamość Stare Miasto", "Wólka Panieńska", "Dwór w Klemensowie", "Lasy ordynackie"],
+        waypoints: [[50.7231,23.2521],[50.7100,23.2300],[50.6900,23.2100],[50.6700,23.1800]]
+      },
+      {
+        name: "Ścieżka Zamojskich Parków",
+        color: "green",
+        distance: "4 km",
+        time: "1 h",
+        difficulty: "easy",
+        elevation: "+15m",
+        type: "loop",
+        description: "Krótki spacer po parkach i ogrodach miejskich Zamościa, idealny z dziećmi.",
+        highlights: ["Park Miejski im. Róży Zamoyskiej", "Ogród Zoologiczny", "Fontanny miejskie"],
+        waypoints: [[50.7231,23.2521],[50.7250,23.2550],[50.7270,23.2530],[50.7240,23.2510],[50.7231,23.2521]]
+      }
+    ],
+    cycling: [
+      {
+        name: "Pętla Rowerowa Zamość — Krasnobród",
+        distance: "52 km",
+        time: "3-4 h",
+        difficulty: "medium",
+        elevation: "+380m",
+        surface: "asphalt",
+        type: "loop",
+        description: "Popularna trasa asfaltowa przez Roztocze Zachodnie do Krasnobrodu i z powrotem.",
+        highlights: ["Krasnobród", "Dolina Wieprza", "Roztoczański krajobraz"],
+        waypoints: [[50.7231,23.2521],[50.7000,23.2000],[50.6600,23.1700],[50.7231,23.2521]]
+      },
+      {
+        name: "Trasa Rowerowa Twierdzy Zamość",
+        distance: "18 km",
+        time: "1-1,5 h",
+        difficulty: "easy",
+        elevation: "+60m",
+        surface: "asphalt",
+        type: "loop",
+        description: "Rowerowe zwiedzanie fortyfikacji i parków miejskich Zamościa.",
+        highlights: ["Park Miejski", "Rotunda", "Nowa Osada"],
+        waypoints: [[50.7231,23.2521],[50.7280,23.2600],[50.7300,23.2500],[50.7231,23.2521]]
+      },
+      {
+        name: "Zamość — Zwierzyniec szlakiem Green Velo",
+        distance: "35 km",
+        time: "2-2,5 h",
+        difficulty: "easy",
+        elevation: "+180m",
+        surface: "asphalt",
+        type: "linear",
+        description: "Odcinek trasy Green Velo łączący Zamość ze Zwierzyńcem przez malownicze tereny Roztocza.",
+        highlights: ["Trasa Green Velo", "Krasnobród", "Roztoczański PN"],
+        waypoints: [[50.7231,23.2521],[50.6900,23.2200],[50.6600,23.1800],[50.6130,22.9740]]
+      },
+      {
+        name: "Zamość — Tomaszów Lubelski szlakiem",
+        distance: "48 km",
+        time: "3-3,5 h",
+        difficulty: "medium",
+        elevation: "+310m",
+        surface: "mixed",
+        type: "linear",
+        description: "Trasa przez Padół Zamojski i Roztocze Środkowe do Tomaszowa Lubelskiego z urozmaiconymi widokami.",
+        highlights: ["Padół Zamojski", "Kosobudy", "Susiec", "Tomaszów Lubelski"],
+        waypoints: [[50.7231,23.2521],[50.7000,23.3000],[50.6500,23.3800],[50.5800,23.4200]]
+      },
+      {
+        name: "Rowerowa Pętla Skierbieszowska",
+        distance: "40 km",
+        time: "2,5-3 h",
+        difficulty: "medium",
+        elevation: "+350m",
+        surface: "mixed",
+        type: "loop",
+        description: "Pętla przez Skierbieszowski Park Krajobrazowy z pagórkowatym terenem lessowym.",
+        highlights: ["Skierbieszów", "Wąwozy lessowe", "Suchowola", "Tereszpol"],
+        waypoints: [[50.7231,23.2521],[50.7400,23.3200],[50.7600,23.3500],[50.7500,23.2800],[50.7231,23.2521]]
+      },
+      {
+        name: "Rowerem po Starym Mieście",
+        distance: "8 km",
+        time: "30-45 min",
+        difficulty: "easy",
+        elevation: "+20m",
+        surface: "asphalt",
+        type: "loop",
+        description: "Krótka trasa rowerowa po zabytkowym centrum Zamościa idealna dla rodzin.",
+        highlights: ["Rynek Wielki", "Brama Szczebrzeska", "Park Miejski", "Bastion VII"],
+        waypoints: [[50.7231,23.2521],[50.7260,23.2560],[50.7280,23.2520],[50.7250,23.2480],[50.7231,23.2521]]
+      }
+    ],
+    attractions: [
+      { name: "Rynek Wielki", category: "zabytek", lat: 50.7231, lng: 23.2521, description: "Jeden z najpiękniejszych renesansowych rynków w Europie, 100x100m z ratuszem.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Wieczorem podświetlenie nadaje magiczny klimat" },
+      { name: "Ratusz Zamojski", category: "zabytek", lat: 50.7228, lng: 23.2525, description: "Manierystyczny ratusz z XVI w. z 52-metrową wieżą i słynnymi schodami.", openHours: "10:00-18:00", price: "10 zł", tip: "Wejdź na wieżę — panorama starego miasta" },
+      { name: "Rotunda Zamojska", category: "muzeum", lat: 50.7185, lng: 23.2590, description: "Dawny arsenał, podczas II wojny — obóz zagłady. Dziś miejsce pamięci narodowej.", openHours: "9:00-17:00", price: "Bezpłatny", tip: "Miejsce refleksji — zaplanuj spokojną wizytę" },
+      { name: "Katedra Zmartwychwstania Pańskiego", category: "kosciol", lat: 50.7222, lng: 23.2495, description: "Kolegiata zamojska z XVI w., krypta rodu Zamoyskich i cenne malowidła.", openHours: "7:00-18:00", price: "Bezpłatny", tip: "W krypcie spoczywa Jan Zamoyski" },
+      { name: "Muzeum Zamojskie", category: "muzeum", lat: 50.7235, lng: 23.2510, description: "Bogate zbiory etnograficzne, archeologiczne i militaria z regionu zamojskiego.", openHours: "10:00-17:00 (wt-nd)", price: "12 zł", tip: "Ciekawa ekspozycja o twierdzy" }
+    ],
+    access: {
+      bycar: "Z Lublina: S17/S12 → Zamość (ok. 90 km, 1h 15min). Parkingi w centrum i przy murach.",
+      bybus: "PolskiBus i PKS z Lublina: ok. 1h 30min, liczne kursy dziennie.",
+      bytrain: "Stacja Zamość Starówka — pociągi z Lublina (ok. 2h).",
+      cycling_access: "Trasa Green Velo przechodzi przez miasto, dobra infrastruktura.",
+      parking: { coordinates: [50.7215, 23.2540], description: "Parking przy murach — 150 miejsc, 3 zł/h" },
+      tips: "Zamość świetny jako baza wypadowa na Roztocze. Sezon turystyczny: V-IX."
+    },
+    practical: {
+      bestSeason: "Maj - Wrzesień",
+      weather: "Klimat umiarkowany kontynentalny, ciepłe lata, mroźne zimy",
+      accommodation: "Hotele w Starym Mieście, liczne pensjonaty i apartamenty",
+      food: "Regionalne potrawy: pierogi zamojskie, cebularz. Polecane: Restauracja Muzealna",
+      bike_rental: "Wypożyczalnia przy dworcu, 40 zł/dzień. Stacja Green Velo.",
+      emergency: "Pogotowie: 112, Szpital Zamość: 84 677 33 33",
+      wifi: "Darmowe WiFi na Rynku Wielkim"
+    }
+  },
+  {
+    id: "szczebrzeszyn",
+    name: "Szczebrzeszyn",
+    region: "Roztocze",
+    lat: 50.6919,
+    lng: 23.1047,
+    description: "Historyczne miasteczko słynące z łamańca językowego i pięknego położenia nad Wieprzem u bram Roztocza.",
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/SM_Szczebrzeszyn_ko%C5%9Bci%C3%B3%C5%82_%C5%9Bw_Miko%C5%82aja_%281%29_ID_603870.jpg/1280px-SM_Szczebrzeszyn_ko%C5%9Bci%C3%B3%C5%82_%C5%9Bw_Miko%C5%82aja_%281%29_ID_603870.jpg",
+    badge: "",
+    hiking: [
+      {
+        name: "Szlak Roztoczański — odcinek Szczebrzeszyn",
+        color: "red",
+        distance: "12 km",
+        time: "3-4 h",
+        difficulty: "medium",
+        elevation: "+210m",
+        type: "linear",
+        description: "Fragment Centralnego Szlaku Roztoczańskiego z malowniczymi widokami na wzgórza Roztocza.",
+        highlights: ["Góra Łysiec", "Dolina Wieprza", "Wąwozy lessowe"],
+        waypoints: [[50.6919,23.1047],[50.6850,23.0900],[50.6750,23.0700],[50.6600,23.0500]]
+      },
+      {
+        name: "Ścieżka Przyrodnicza Szum",
+        color: "green",
+        distance: "5 km",
+        time: "1,5 h",
+        difficulty: "easy",
+        elevation: "+60m",
+        type: "loop",
+        description: "Łatwa ścieżka edukacyjna wzdłuż rezerwatu Szum ze stanowiskami informacyjnymi.",
+        highlights: ["Rezerwat Szum", "Progi skalne", "Źródła rzeczne"],
+        waypoints: [[50.6919,23.1047],[50.6880,23.0980],[50.6850,23.1020],[50.6919,23.1047]]
+      },
+      {
+        name: "Szlak Wąwozów Lessowych",
+        color: "yellow",
+        distance: "9 km",
+        time: "2,5-3 h",
+        difficulty: "medium",
+        elevation: "+180m",
+        type: "loop",
+        description: "Wędrówka przez unikalne wąwozy lessowe w okolicach Szczebrzeszyna.",
+        highlights: ["Wąwóz Piekiełko", "Wąwóz św. Mikołaja", "Panorama miasta"],
+        waypoints: [[50.6919,23.1047],[50.6960,23.1100],[50.7000,23.1050],[50.6950,23.0980],[50.6919,23.1047]]
+      },
+      {
+        name: "Szlak Grodzisk Szczebrzeskich",
+        color: "red",
+        distance: "11 km",
+        time: "3,5 h",
+        difficulty: "medium",
+        elevation: "+200m",
+        type: "loop",
+        description: "Trasa przez dawne grodziska i stanowiska archeologiczne na wzgórzach wokół Szczebrzeszyna.",
+        highlights: ["Grodzisko Zamczysko", "Wzgórze Wigierskie", "Dolina Wieprza", "Ruiny zamku"],
+        waypoints: [[50.6919,23.1047],[50.6980,23.1100],[50.7020,23.1000],[50.6970,23.0950],[50.6919,23.1047]]
+      },
+      {
+        name: "Ścieżka Nad Wieprzem",
+        color: "blue",
+        distance: "7 km",
+        time: "2 h",
+        difficulty: "easy",
+        elevation: "+25m",
+        type: "outAndBack",
+        description: "Spokojna ścieżka wzdłuż Wieprza z obserwacją ptaków i bobrów.",
+        highlights: ["Tamy bobrowe", "Zimorodki", "Łąki nadrzeczne", "Starorzecza"],
+        waypoints: [[50.6919,23.1047],[50.6950,23.1150],[50.6980,23.1250]]
+      },
+      {
+        name: "Szlak Panoram Roztocza",
+        color: "black",
+        distance: "15 km",
+        time: "4,5 h",
+        difficulty: "hard",
+        elevation: "+320m",
+        type: "linear",
+        description: "Wymagający szlak grzbietowy z rozległymi panoramami na Roztocze Zachodnie.",
+        highlights: ["Góra Łysiec", "Panorama 360°", "Las bukowy", "Polany śródleśne"],
+        waypoints: [[50.6919,23.1047],[50.6800,23.0900],[50.6700,23.0700],[50.6550,23.0500]]
+      }
+    ],
+    cycling: [
+      {
+        name: "Pętla Rowerowa Szczebrzeszyn — Zwierzyniec",
+        distance: "28 km",
+        time: "2 h",
+        difficulty: "easy",
+        elevation: "+150m",
+        surface: "asphalt",
+        type: "loop",
+        description: "Przyjemna trasa asfaltowa łącząca dwa urokliwe miasteczka Roztocza.",
+        highlights: ["Zwierzyniec", "Dolina Wieprza", "Roztoczański PN"],
+        waypoints: [[50.6919,23.1047],[50.6700,23.0500],[50.6130,22.9740],[50.6919,23.1047]]
+      },
+      {
+        name: "Trasa Rowerowa Doliną Wieprza",
+        distance: "22 km",
+        time: "1,5 h",
+        difficulty: "easy",
+        elevation: "+80m",
+        surface: "mixed",
+        type: "linear",
+        description: "Spokojna jazda wzdłuż doliny Wieprza z widokami na łąki i lasy.",
+        highlights: ["Dolina Wieprza", "Brodowe łąki", "Stary młyn"],
+        waypoints: [[50.6919,23.1047],[50.7050,23.1300],[50.7200,23.1600]]
+      },
+      {
+        name: "Szlak Rowerowy Roztocza Zachodniego",
+        distance: "40 km",
+        time: "3 h",
+        difficulty: "medium",
+        elevation: "+350m",
+        surface: "mixed",
+        type: "linear",
+        description: "Urozmaicona trasa przez zachodnie Roztocze z odcinkami szutrowymi i leśnymi.",
+        highlights: ["Lasy bukowe", "Rezerwat Czartowe Pole", "Osada młyńska"],
+        waypoints: [[50.6919,23.1047],[50.6600,23.0600],[50.6300,23.0200],[50.6000,22.9800]]
+      },
+      {
+        name: "Szlak Rowerowy Nadwieprzański",
+        distance: "32 km",
+        time: "2 h",
+        difficulty: "easy",
+        elevation: "+90m",
+        surface: "asphalt",
+        type: "linear",
+        description: "Asfaltowa trasa wzdłuż Wieprza ze Szczebrzeszyna do Kraśnika przez malownicze wsie.",
+        highlights: ["Dolina Wieprza", "Mosty drewniane", "Brodowe wsie", "Stawy hodowlane"],
+        waypoints: [[50.6919,23.1047],[50.7100,23.1400],[50.7300,23.1700]]
+      },
+      {
+        name: "Szczebrzeszyn — Zamość Green Velo",
+        distance: "24 km",
+        time: "1,5 h",
+        difficulty: "easy",
+        elevation: "+100m",
+        surface: "asphalt",
+        type: "linear",
+        description: "Wygodny odcinek Green Velo łączący Szczebrzeszyn z Zamościem przez pola i łąki.",
+        highlights: ["Green Velo", "Wsie roztoczańskie", "Panorama Zamościa"],
+        waypoints: [[50.6919,23.1047],[50.7000,23.1500],[50.7100,23.2000],[50.7231,23.2521]]
+      },
+      {
+        name: "Rowerowa Pętla Kamieniołomów",
+        distance: "18 km",
+        time: "1-1,5 h",
+        difficulty: "easy",
+        elevation: "+70m",
+        surface: "gravel",
+        type: "loop",
+        description: "Szutrowa pętla przez dawne kamieniołomy i lasy wokół Szczebrzeszyna.",
+        highlights: ["Kamieniołom Piekiełko", "Las sosnowy", "Wąwóz Św. Mikołaja"],
+        waypoints: [[50.6919,23.1047],[50.6850,23.1100],[50.6800,23.1050],[50.6850,23.0980],[50.6919,23.1047]]
+      }
+    ],
+    attractions: [
+      { name: "Pomnik Chrząszcza", category: "inne", lat: 50.6919, lng: 23.1047, description: "Słynny pomnik chrząszcza nawiązujący do łamańca Jana Brzechwy.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Idealne miejsce na pamiątkowe zdjęcie" },
+      { name: "Kościół św. Mikołaja", category: "kosciol", lat: 50.6925, lng: 23.1055, description: "Gotycki kościół z XV w. z cennym ołtarzem i freskami.", openHours: "7:00-18:00", price: "Bezpłatny", tip: "Zwróć uwagę na gotycki portal" },
+      { name: "Synagoga w Szczebrzeszynie", category: "zabytek", lat: 50.6915, lng: 23.1035, description: "Renesansowa synagoga z XVII w., dziś centrum kultury.", openHours: "10:00-16:00 (wt-sb)", price: "5 zł", tip: "Cenna polichromia na sklepieniu" },
+      { name: "Rezerwat Szum", category: "przyroda", lat: 50.6750, lng: 23.0700, description: "Rezerwat chroniący przełom rzeki Szum z unikatowymi progami skalnymi.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Wiosną najwyższy poziom wody — najpiękniejsze progi" },
+      { name: "Wzgórze Trzech Krzyży", category: "widok", lat: 50.6940, lng: 23.1080, description: "Punkt widokowy nad miastem z panoramą na dolinę Wieprza i Roztocze.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Świetny punkt na zachód słońca" }
+    ],
+    access: {
+      bycar: "Z Zamościa: droga 74 (20 km, 25 min). Z Lublina: S17 → droga 74 (75 km, 1h).",
+      bybus: "PKS ze Zamościa i Lublina, kilka kursów dziennie.",
+      bytrain: "Brak bezpośredniego połączenia kolejowego.",
+      cycling_access: "Green Velo przechodzi w pobliżu, dojazd szlakiem z Zamościa lub Zwierzyńca.",
+      parking: { coordinates: [50.6920, 23.1050], description: "Parking przy rynku — bezpłatny, 50 miejsc" },
+      tips: "Baza do jednodniowych wycieczek na Roztocze. Mało turystów poza sezonem."
+    },
+    practical: {
+      bestSeason: "Maj - Październik",
+      weather: "Klimat umiarkowany, łagodne lata",
+      accommodation: "Agroturystyka i pokoje gościnne w okolicy",
+      food: "Lokalne jadłodajnie, produkty z Roztocza. Polecane: mleczarnia regionalna",
+      bike_rental: "Brak wypożyczalni — warto zabrać własny rower",
+      emergency: "Pogotowie: 112, Szpital Zamość: 84 677 33 33",
+      wifi: "Ograniczony dostęp — warto mieć własny internet"
+    }
+  },
+  {
+    id: "zwierzyniec",
+    name: "Zwierzyniec",
+    region: "Roztocze",
+    lat: 50.6130,
+    lng: 22.9740,
+    description: "Brama Roztoczańskiego Parku Narodowego, miasteczko z kościołem na wodzie i bogatą historią ordynacji zamojskiej.",
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/Kosciol_na_wodzie_-_panoramio.jpg/1280px-Kosciol_na_wodzie_-_panoramio.jpg",
+    badge: "⭐ Park Narodowy",
+    hiking: [
+      {
+        name: "Szlak na Bukową Górę",
+        color: "red",
+        distance: "10 km",
+        time: "3-4 h",
+        difficulty: "medium",
+        elevation: "+250m",
+        type: "loop",
+        description: "Sztandarowa trasa RPN przez starodrzew bukowy z najwyższym szczytem Roztocza.",
+        highlights: ["Bukowa Góra (390 m)", "Starodrzew bukowy", "Ścieżka edukacyjna"],
+        waypoints: [[50.6130,22.9740],[50.6050,22.9600],[50.5950,22.9500],[50.6000,22.9700],[50.6130,22.9740]]
+      },
+      {
+        name: "Ścieżka Przyrodnicza Stawy Echo",
+        color: "green",
+        distance: "4 km",
+        time: "1-1,5 h",
+        difficulty: "easy",
+        elevation: "+20m",
+        type: "loop",
+        description: "Łatwa ścieżka wokół legendarnych Stawów Echo, idealna dla rodzin z dziećmi.",
+        highlights: ["Stawy Echo", "Kościół na Wodzie", "Plaża leśna"],
+        waypoints: [[50.6130,22.9740],[50.6100,22.9680],[50.6080,22.9720],[50.6130,22.9740]]
+      },
+      {
+        name: "Szlak Centralny Roztocza",
+        color: "blue",
+        distance: "16 km",
+        time: "5-6 h",
+        difficulty: "hard",
+        elevation: "+380m",
+        type: "linear",
+        description: "Ambitny odcinek głównego szlaku Roztocza z Zwierzyńca do Józefowa przez lasy i wzgórza.",
+        highlights: ["Czartowe Pole", "Rezerwat Nad Tanwią", "Szumy nad Tanwią"],
+        waypoints: [[50.6130,22.9740],[50.5900,22.9300],[50.5600,22.8800],[50.4800,22.8200]]
+      },
+      {
+        name: "Szlak Florianka — Obrocz",
+        color: "yellow",
+        distance: "8 km",
+        time: "2,5 h",
+        difficulty: "easy",
+        elevation: "+100m",
+        type: "outAndBack",
+        description: "Trasa do dawnej osady leśnej Florianka z muzeum przyrodniczym i dalej do Obroczy.",
+        highlights: ["Florianka", "Muzeum leśne", "Starodrzew jodłowy", "Obrocz"],
+        waypoints: [[50.6130,22.9740],[50.6050,22.9850],[50.5980,22.9950]]
+      },
+      {
+        name: "Szlak Nad Wieprzem ze Zwierzyńca",
+        color: "blue",
+        distance: "14 km",
+        time: "4 h",
+        difficulty: "medium",
+        elevation: "+130m",
+        type: "linear",
+        description: "Malownicza trasa wzdłuż meandrów Wieprza ze Zwierzyńca do Guciowa.",
+        highlights: ["Meandry Wieprza", "Guciów", "Zagroda Guciów", "Bobry"],
+        waypoints: [[50.6130,22.9740],[50.6250,22.9900],[50.6400,23.0100],[50.6500,23.0250]]
+      },
+      {
+        name: "Ścieżka Jeleni",
+        color: "green",
+        distance: "6 km",
+        time: "2 h",
+        difficulty: "easy",
+        elevation: "+50m",
+        type: "loop",
+        description: "Ścieżka przyrodnicza RPN z ambonami obserwacyjnymi do podglądania jeleni.",
+        highlights: ["Ambony obserwacyjne", "Paśniki jeleni", "Las jodłowy", "Polany"],
+        waypoints: [[50.6130,22.9740],[50.6080,22.9680],[50.6050,22.9750],[50.6090,22.9800],[50.6130,22.9740]]
+      }
+    ],
+    cycling: [
+      {
+        name: "Rowerem po Roztoczańskim PN",
+        distance: "25 km",
+        time: "2-2,5 h",
+        difficulty: "easy",
+        elevation: "+180m",
+        surface: "gravel",
+        type: "loop",
+        description: "Oficjalna trasa rowerowa RPN przez szutrowe drogi leśne wśród buków i jodeł.",
+        highlights: ["Stawy Echo", "Florianka", "Rezerwat Bukowy"],
+        waypoints: [[50.6130,22.9740],[50.6000,22.9500],[50.5900,22.9700],[50.6050,22.9900],[50.6130,22.9740]]
+      },
+      {
+        name: "Green Velo — odcinek roztoczański",
+        distance: "42 km",
+        time: "3 h",
+        difficulty: "medium",
+        elevation: "+320m",
+        surface: "asphalt",
+        type: "linear",
+        description: "Odcinek trasy Green Velo ze Zwierzyńca do Józefowa przez najpiękniejsze tereny Roztocza.",
+        highlights: ["Dolina Tanwi", "Krasnobród", "Rezerwaty leśne"],
+        waypoints: [[50.6130,22.9740],[50.5800,22.9200],[50.5400,22.8600],[50.4800,22.8200]]
+      },
+      {
+        name: "Pętla Rowerowa Doliny Wieprza",
+        distance: "30 km",
+        time: "2 h",
+        difficulty: "easy",
+        elevation: "+120m",
+        surface: "mixed",
+        type: "loop",
+        description: "Spokojna trasa wzdłuż Wieprza ze Zwierzyńca przez łąki i wioski Roztocza.",
+        highlights: ["Dolina Wieprza", "Guciów", "Osada Florianka"],
+        waypoints: [[50.6130,22.9740],[50.6300,22.9900],[50.6500,23.0200],[50.6400,23.0000],[50.6130,22.9740]]
+      },
+      {
+        name: "Zwierzyniec — Susiec rowerem",
+        distance: "38 km",
+        time: "2,5-3 h",
+        difficulty: "medium",
+        elevation: "+280m",
+        surface: "mixed",
+        type: "linear",
+        description: "Trasa przez serce Roztocza ze Zwierzyńca do Suśca przez lasy i wsie.",
+        highlights: ["Rezerwat Bukowy", "Osada Obrocz", "Rzeka Tanew", "Susiec"],
+        waypoints: [[50.6130,22.9740],[50.5900,22.9400],[50.5600,22.9100],[50.5300,22.8800]]
+      },
+      {
+        name: "Pętla Rowerowa Stawów",
+        distance: "15 km",
+        time: "1 h",
+        difficulty: "easy",
+        elevation: "+40m",
+        surface: "gravel",
+        type: "loop",
+        description: "Krótka pętla szutrowa wokół kompleksu stawów hodowlanych przy Zwierzyńcu.",
+        highlights: ["Stawy Echo", "Stawy hodowlane", "Czaple siwe", "Łabędzie"],
+        waypoints: [[50.6130,22.9740],[50.6050,22.9650],[50.6000,22.9750],[50.6070,22.9850],[50.6130,22.9740]]
+      },
+      {
+        name: "Szlak Rowerowy Roztocza Centralnego",
+        distance: "55 km",
+        time: "4 h",
+        difficulty: "hard",
+        elevation: "+520m",
+        surface: "mixed",
+        type: "linear",
+        description: "Ambitna trasa przez centralną część Roztocza ze Zwierzyńca do Narola.",
+        highlights: ["Rezerwaty leśne", "Dolina Tanwi", "Wzgórza Roztocza", "Narol"],
+        waypoints: [[50.6130,22.9740],[50.5700,22.9200],[50.5200,22.8600],[50.4800,23.0000]]
+      }
+    ],
+    attractions: [
+      { name: "Kościół na Wodzie", category: "kosciol", lat: 50.6110, lng: 22.9710, description: "Unikatowy kościółek na wyspie pośrodku stawu, symbol Zwierzyńca z XVIII w.", openHours: "Widok całodobowo", price: "Bezpłatny", tip: "Najpiękniejszy widok rano we mgle" },
+      { name: "Stawy Echo", category: "przyroda", lat: 50.6080, lng: 22.9680, description: "Kompleks stawów w sercu RPN, popularne kąpielisko w sezonie letnim.", openHours: "Maj-Wrzesień 9:00-19:00", price: "10 zł (plaża)", tip: "Idealne miejsce na piknik z rodziną" },
+      { name: "Muzeum Roztoczańskiego PN", category: "muzeum", lat: 50.6135, lng: 22.9745, description: "Ekspozycja przyrodnicza Roztocza: flora, fauna, geologia i historia parku.", openHours: "9:00-16:00 (wt-nd)", price: "8 zł", tip: "Zacznij wizytę tutaj — mapy i informacje o szlakach" },
+      { name: "Pałac Ordynacji Zamojskiej", category: "zabytek", lat: 50.6140, lng: 22.9750, description: "Dawna rezydencja zarządców ordynacji, otoczona parkiem angielskim.", openHours: "Teren zewnętrzny całodobowo", price: "Bezpłatny", tip: "Park piękny jesienią" },
+      { name: "Browar Zwierzyniec", category: "inne", lat: 50.6145, lng: 22.9730, description: "Historyczny browar z XVIII w., dziś produkujący regionalne piwo roztoczańskie.", openHours: "Sklep: 10:00-18:00", price: "Degustacja: 15 zł", tip: "Piwo Roztocze — lokalny specjał" }
+    ],
+    access: {
+      bycar: "Z Zamościa: droga 74 → Szczebrzeszyn → Zwierzyniec (35 km, 40 min). Z Lublina: ok. 100 km, 1h 30min.",
+      bybus: "PKS z Zamościa przez Szczebrzeszyn, kilka kursów dziennie.",
+      bytrain: "Brak połączenia kolejowego.",
+      cycling_access: "Trasa Green Velo, doskonała infrastruktura rowerowa w RPN.",
+      parking: { coordinates: [50.6135, 22.9750], description: "Parking przy wejściu do RPN — bezpłatny, 80 miejsc" },
+      tips: "Zarezerwuj nocleg wcześniej w sezonie (VI-VIII). Idealna baza na 2-3 dni."
+    },
+    practical: {
+      bestSeason: "Maj - Październik",
+      weather: "Mikroklimat Roztocza — ciepłe lata, dużo słońca, czyste powietrze",
+      accommodation: "Ośrodki wypoczynkowe, pensjonaty, camping przy Stawach Echo",
+      food: "Regionalne jadło roztoczańskie, piwo ze Zwierzyńca. Polecane: Karczma Roztocze",
+      bike_rental: "Wypożyczalnia przy Stawach Echo: 35 zł/dzień, e-rowery: 80 zł/dzień",
+      emergency: "Pogotowie: 112, Dyżurka RPN: 84 687 20 66",
+      wifi: "WiFi w centrum informacji turystycznej"
+    }
+  },
+  {
+    id: "jozefow",
+    name: "Józefów Roztoczański",
+    region: "Roztocze",
+    lat: 50.4815,
+    lng: 23.0578,
+    description: "Stolica kamieniołomów Roztocza, miasteczko otoczone lasami z unikatowymi formacjami skalnymi i rzeką Tanew.",
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Szumy_nad_Tanwi%C4%85.jpg/1280px-Szumy_nad_Tanwi%C4%85.jpg",
+    badge: "",
+    hiking: [
+      {
+        name: "Szlak Szumów nad Tanwią",
+        color: "red",
+        distance: "7 km",
+        time: "2-3 h",
+        difficulty: "easy",
+        elevation: "+80m",
+        type: "outAndBack",
+        description: "Kultowy szlak do wodospadów i szumów na rzece Tanew — wizytówka Roztocza.",
+        highlights: ["Szumy nad Tanwią", "Progi skalne", "Las łęgowy"],
+        waypoints: [[50.4815,23.0578],[50.4750,23.0400],[50.4700,23.0300]]
+      },
+      {
+        name: "Szlak Czartowe Pole",
+        color: "blue",
+        distance: "11 km",
+        time: "3-4 h",
+        difficulty: "medium",
+        elevation: "+190m",
+        type: "loop",
+        description: "Pętla przez rezerwat Czartowe Pole z malowniczymi przełomami rzeki Sopot.",
+        highlights: ["Czartowe Pole", "Przełom Sopotu", "Wodospad"],
+        waypoints: [[50.4815,23.0578],[50.4900,23.0400],[50.5000,23.0300],[50.4950,23.0500],[50.4815,23.0578]]
+      },
+      {
+        name: "Szlak po Kamieniołomach",
+        color: "yellow",
+        distance: "5 km",
+        time: "1,5-2 h",
+        difficulty: "easy",
+        elevation: "+70m",
+        type: "loop",
+        description: "Ścieżka przez dawne kamieniołomy wapienia z unikalnymi formacjami geologicznymi.",
+        highlights: ["Kamieniołom Babia Dolina", "Formacje skalne", "Amfiteatr skalny"],
+        waypoints: [[50.4815,23.0578],[50.4840,23.0620],[50.4860,23.0580],[50.4830,23.0550],[50.4815,23.0578]]
+      },
+      {
+        name: "Szlak Nad Tanwią",
+        color: "green",
+        distance: "13 km",
+        time: "4 h",
+        difficulty: "medium",
+        elevation: "+160m",
+        type: "linear",
+        description: "Trasa wzdłuż rzeki Tanew z Józefowa przez rezerwat Nad Tanwią do Hamerni.",
+        highlights: ["Rezerwat Nad Tanwią", "Szumy", "Hamernia", "Stary młyn"],
+        waypoints: [[50.4815,23.0578],[50.4750,23.0400],[50.4650,23.0200],[50.4550,23.0000]]
+      },
+      {
+        name: "Szlak Wielki Dział",
+        color: "black",
+        distance: "18 km",
+        time: "5-6 h",
+        difficulty: "hard",
+        elevation: "+350m",
+        type: "linear",
+        description: "Wymagająca trasa grzbietowa przez Wielki Dział Roztocza z panoramicznymi widokami.",
+        highlights: ["Wielki Dział", "Starodrzew bukowy", "Źródła Tanwi", "Panoramy 360°"],
+        waypoints: [[50.4815,23.0578],[50.4700,23.0300],[50.4550,23.0000],[50.4400,22.9700]]
+      },
+      {
+        name: "Ścieżka Skalnych Grzybów",
+        color: "yellow",
+        distance: "4 km",
+        time: "1,5 h",
+        difficulty: "easy",
+        elevation: "+60m",
+        type: "loop",
+        description: "Krótka ścieżka do formacji skalnych przypominających grzyby w dawnym kamieniołomie.",
+        highlights: ["Skalne grzyby", "Piaskowcowe formacje", "Amfiteatr", "Jezioro kamieniołomowe"],
+        waypoints: [[50.4815,23.0578],[50.4830,23.0610],[50.4850,23.0600],[50.4840,23.0570],[50.4815,23.0578]]
+      }
+    ],
+    cycling: [
+      {
+        name: "Pętla Roztoczańska z Józefowa",
+        distance: "45 km",
+        time: "3-4 h",
+        difficulty: "medium",
+        elevation: "+420m",
+        surface: "mixed",
+        type: "loop",
+        description: "Pełna pętla przez serce Roztocza z wąwozami, lasami i malowniczymi wioskami.",
+        highlights: ["Dolina Tanwi", "Wąwóz Hamernia", "Susiec"],
+        waypoints: [[50.4815,23.0578],[50.4500,23.0000],[50.4200,22.9500],[50.4600,23.0200],[50.4815,23.0578]]
+      },
+      {
+        name: "Green Velo — odcinek Józefów-Horyniec",
+        distance: "55 km",
+        time: "4-5 h",
+        difficulty: "hard",
+        elevation: "+520m",
+        surface: "asphalt",
+        type: "linear",
+        description: "Wymagający odcinek Green Velo przez Roztocze Wschodnie do Horyńca-Zdroju.",
+        highlights: ["Rezerwat Nad Tanwią", "Narol", "Horyniec-Zdrój"],
+        waypoints: [[50.4815,23.0578],[50.4500,23.1200],[50.4200,23.2000],[50.3800,23.3500]]
+      },
+      {
+        name: "Trasa Rowerowa Kamieniołomów",
+        distance: "18 km",
+        time: "1-1,5 h",
+        difficulty: "easy",
+        elevation: "+120m",
+        surface: "gravel",
+        type: "loop",
+        description: "Krótka pętla rowerowa łącząca dawne kamieniołomy w okolicach Józefowa.",
+        highlights: ["Kamieniołom Babia Dolina", "Kamieniołom Nowiny", "Staw w Józefowie"],
+        waypoints: [[50.4815,23.0578],[50.4900,23.0700],[50.4950,23.0600],[50.4850,23.0500],[50.4815,23.0578]]
+      },
+      {
+        name: "Trasa Rowerowa Doliną Tanwi",
+        distance: "30 km",
+        time: "2 h",
+        difficulty: "easy",
+        elevation: "+140m",
+        surface: "gravel",
+        type: "linear",
+        description: "Szutrowa trasa wzdłuż Tanwi z Józefowa przez rezerwaty i osady młyńskie.",
+        highlights: ["Szumy", "Czartowe Pole", "Hamernia", "Stary młyn"],
+        waypoints: [[50.4815,23.0578],[50.4700,23.0300],[50.4550,23.0000],[50.4400,22.9700]]
+      },
+      {
+        name: "Pętla MTB Roztocze",
+        distance: "35 km",
+        time: "3-4 h",
+        difficulty: "hard",
+        elevation: "+550m",
+        surface: "offroad",
+        type: "loop",
+        description: "Wymagająca pętla MTB przez lasy i wąwozy Roztocza dla zaawansowanych kolarzy.",
+        highlights: ["Single tracki", "Wąwozy", "Las bukowy", "Zjazdy techniczne"],
+        waypoints: [[50.4815,23.0578],[50.4600,23.0300],[50.4500,23.0500],[50.4700,23.0700],[50.4815,23.0578]]
+      },
+      {
+        name: "Józefów — Narol szlakiem rowerowym",
+        distance: "42 km",
+        time: "3 h",
+        difficulty: "medium",
+        elevation: "+380m",
+        surface: "mixed",
+        type: "linear",
+        description: "Trasa przez wschodnie Roztocze do zabytkowego Narola z dworem i parkiem.",
+        highlights: ["Dolina Tanwi", "Łówcza", "Narol", "Dwór Łosiów"],
+        waypoints: [[50.4815,23.0578],[50.4600,23.1000],[50.4400,23.1500],[50.4200,23.2000]]
+      }
+    ],
+    attractions: [
+      { name: "Szumy nad Tanwią", category: "przyroda", lat: 50.4700, lng: 23.0300, description: "Jedyne w Polsce kaskady rzeczne na piaskowcu — seria progów na Tanwi.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Najefektowniejsze po opadach wiosną" },
+      { name: "Kamieniołom Babia Dolina", category: "przyroda", lat: 50.4850, lng: 23.0610, description: "Dawny kamieniołom wapienia z amfiteatrem skalnym i jeziorem.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Latem można się kąpać w szmaragdowej wodzie" },
+      { name: "Czartowe Pole", category: "przyroda", lat: 50.5000, lng: 23.0300, description: "Rezerwat z kaskadami i przełomem rzeki Sopot — bajkowy krajobraz.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Trasa wymaga wygodnego obuwia" },
+      { name: "Kościół w Józefowie", category: "kosciol", lat: 50.4820, lng: 23.0585, description: "Klasycystyczny kościół z XIX w. z piaskowcowymi detalami.", openHours: "7:00-18:00", price: "Bezpłatny", tip: "Piaskowiec roztoczański w architekturze sakralnej" },
+      { name: "Punkt widokowy Klewce", category: "widok", lat: 50.4780, lng: 23.0650, description: "Panoramiczny punkt widokowy na dolinę Tanwi i Roztocze.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Najlepszy punkt na zachód słońca w okolicy" }
+    ],
+    access: {
+      bycar: "Z Zamościa: droga 74 → Zwierzyniec → Józefów (55 km, 50 min). Z Lublina: ok. 120 km.",
+      bybus: "PKS z Zamościa przez Zwierzyniec, 3-4 kursy dziennie.",
+      bytrain: "Brak połączenia kolejowego.",
+      cycling_access: "Green Velo z Zwierzyńca lub Krasnobrodu.",
+      parking: { coordinates: [50.4818, 23.0580], description: "Parking przy rynku — bezpłatny, 40 miejsc" },
+      tips: "Józefów to idealna baza na Roztocze Wschodnie. Ciszej niż w Zwierzyńcu."
+    },
+    practical: {
+      bestSeason: "Maj - Październik",
+      weather: "Mikroklimat Roztocza, czyste powietrze",
+      accommodation: "Agroturystyka, pensjonaty. Polecane: Zagroda Guciów (15 km)",
+      food: "Kuchnia roztoczańska, miody i sery lokalne",
+      bike_rental: "Ograniczone — warto mieć własny rower",
+      emergency: "Pogotowie: 112",
+      wifi: "Ograniczony dostęp do internetu"
+    }
+  },
+
+  /* ============================== */
+  /* REGION POLESIE                 */
+  /* ============================== */
+  {
+    id: "wlodawa",
+    name: "Włodawa",
+    region: "Polesie",
+    lat: 51.5500,
+    lng: 23.5500,
+    description: "Miasto trzech kultur (polskiej, żydowskiej, prawosławnej) nad Bugiem, brama Polesia Lubelskiego.",
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/W%C5%82odawa-synagoga_3.jpg/1280px-W%C5%82odawa-synagoga_3.jpg",
+    badge: "",
+    hiking: [
+      {
+        name: "Szlak Trzech Kultur",
+        color: "red",
+        distance: "6 km",
+        time: "2 h",
+        difficulty: "easy",
+        elevation: "+30m",
+        type: "loop",
+        description: "Ścieżka po zabytkach trzech kultur Włodawy — polskiej, żydowskiej i prawosławnej.",
+        highlights: ["Synagoga", "Cerkiew", "Kościół", "Rynek"],
+        waypoints: [[51.5500,23.5500],[51.5520,23.5530],[51.5540,23.5510],[51.5510,23.5480],[51.5500,23.5500]]
+      },
+      {
+        name: "Szlak Nadburzański",
+        color: "blue",
+        distance: "15 km",
+        time: "4-5 h",
+        difficulty: "medium",
+        elevation: "+60m",
+        type: "linear",
+        description: "Malownicza trasa wzdłuż Bugu z widokami na graniczną rzekę i tereny Polesia.",
+        highlights: ["Dolina Bugu", "Okuninka", "Plaże nadrzeczne"],
+        waypoints: [[51.5500,23.5500],[51.5400,23.5800],[51.5300,23.6100],[51.5200,23.6500]]
+      },
+      {
+        name: "Ścieżka Przyrodnicza Sobibór",
+        color: "green",
+        distance: "8 km",
+        time: "2,5 h",
+        difficulty: "easy",
+        elevation: "+20m",
+        type: "loop",
+        description: "Ścieżka przez lasy soborskie z miejscem pamięci i unikatową przyrodą Polesia.",
+        highlights: ["Muzeum Sobibór", "Lasy soborskie", "Torfowiska"],
+        waypoints: [[51.5500,23.5500],[51.4800,23.6000],[51.4700,23.5900],[51.5500,23.5500]]
+      },
+      {
+        name: "Szlak Graniczny nad Bugiem",
+        color: "red",
+        distance: "20 km",
+        time: "6 h",
+        difficulty: "hard",
+        elevation: "+80m",
+        type: "linear",
+        description: "Długa trasa wzdłuż granicznej rzeki Bug z widokami na Białoruś i unikatową przyrodą.",
+        highlights: ["Dolina Bugu", "Skarpa nadbużańska", "Wsie nadgraniczne", "Ptaki drapieżne"],
+        waypoints: [[51.5500,23.5500],[51.5600,23.5800],[51.5700,23.6200],[51.5800,23.6600]]
+      },
+      {
+        name: "Szlak Wielokulturowy Włodawy",
+        color: "yellow",
+        distance: "5 km",
+        time: "2 h",
+        difficulty: "easy",
+        elevation: "+15m",
+        type: "loop",
+        description: "Ścieżka po śladach trzech kultur — polskiej, żydowskiej i prawosławnej w centrum Włodawy.",
+        highlights: ["Wielka Synagoga", "Mała Synagoga", "Cerkiew", "Kościół augustianów"],
+        waypoints: [[51.5500,23.5500],[51.5510,23.5520],[51.5520,23.5510],[51.5505,23.5485],[51.5500,23.5500]]
+      },
+      {
+        name: "Ścieżka Leśna Okuninka",
+        color: "green",
+        distance: "7 km",
+        time: "2 h",
+        difficulty: "easy",
+        elevation: "+25m",
+        type: "loop",
+        description: "Spacer przez lasy sosnowe wokół Okunniki z widokami na Jezioro Białe.",
+        highlights: ["Las sosnowy", "Plaża Okuninka", "Jezioro Białe", "Wydmy śródlądowe"],
+        waypoints: [[51.5100,23.5300],[51.5050,23.5250],[51.5000,23.5350],[51.5050,23.5400],[51.5100,23.5300]]
+      }
+    ],
+    cycling: [
+      {
+        name: "Rowerem wokół Jeziora Białego",
+        distance: "20 km",
+        time: "1,5 h",
+        difficulty: "easy",
+        elevation: "+40m",
+        surface: "asphalt",
+        type: "loop",
+        description: "Łatwa trasa wokół popularnego Jeziora Białego z plażami i kąpieliskami.",
+        highlights: ["Jezioro Białe", "Okuninka", "Plaże"],
+        waypoints: [[51.5500,23.5500],[51.5100,23.5300],[51.5000,23.5600],[51.5200,23.5800],[51.5500,23.5500]]
+      },
+      {
+        name: "Green Velo — Włodawa-Chełm",
+        distance: "60 km",
+        time: "4 h",
+        difficulty: "medium",
+        elevation: "+280m",
+        surface: "asphalt",
+        type: "linear",
+        description: "Odcinek trasy Green Velo z Włodawy do Chełma przez Polesie Lubelskie.",
+        highlights: ["Pojezierze Łęczyńsko-Włodawskie", "Okuninka", "Chełm"],
+        waypoints: [[51.5500,23.5500],[51.4800,23.4500],[51.3500,23.4000],[51.1300,23.4700]]
+      },
+      {
+        name: "Pętla Rowerowa Jezior Poleskich",
+        distance: "48 km",
+        time: "3-4 h",
+        difficulty: "medium",
+        elevation: "+120m",
+        surface: "mixed",
+        type: "loop",
+        description: "Trasa łącząca najpiękniejsze jeziora Pojezierza Łęczyńsko-Włodawskiego.",
+        highlights: ["Jezioro Białe", "Jezioro Zagłębocze", "Jezioro Piaseczno"],
+        waypoints: [[51.5500,23.5500],[51.5000,23.5000],[51.4500,23.4500],[51.4800,23.5200],[51.5500,23.5500]]
+      },
+      {
+        name: "Szlak Rowerowy Nadbużański",
+        distance: "45 km",
+        time: "3 h",
+        difficulty: "medium",
+        elevation: "+100m",
+        surface: "mixed",
+        type: "linear",
+        description: "Trasa wzdłuż Bugu z Włodawy na południe przez nadgraniczne wioski i lasy.",
+        highlights: ["Dolina Bugu", "Wsie nadgraniczne", "Skarpa nadbużańska", "Bocianie gniazda"],
+        waypoints: [[51.5500,23.5500],[51.5200,23.5800],[51.4900,23.6100],[51.4600,23.6400]]
+      },
+      {
+        name: "Rowerem przez Polesie",
+        distance: "52 km",
+        time: "3,5-4 h",
+        difficulty: "medium",
+        elevation: "+90m",
+        surface: "asphalt",
+        type: "linear",
+        description: "Trasa z Włodawy do Urszulina przez tereny Poleskiego PN i pojezierze.",
+        highlights: ["Lasy poleskie", "Jezioro Łukie", "Poleski PN", "Torfowiska"],
+        waypoints: [[51.5500,23.5500],[51.4800,23.4500],[51.4200,23.3500],[51.3960,23.2000]]
+      },
+      {
+        name: "Pętla Rowerowa Sobibór",
+        distance: "25 km",
+        time: "1,5-2 h",
+        difficulty: "easy",
+        elevation: "+30m",
+        surface: "asphalt",
+        type: "loop",
+        description: "Pętla przez lasy soborskie z wizytą w miejscu pamięci i kąpielą w jeziorze.",
+        highlights: ["Muzeum Sobibór", "Lasy soborskie", "Jezioro Białe", "Okuninka"],
+        waypoints: [[51.5500,23.5500],[51.4900,23.5800],[51.4800,23.5600],[51.5100,23.5300],[51.5500,23.5500]]
+      }
+    ],
+    attractions: [
+      { name: "Zespół Synagogalny", category: "zabytek", lat: 51.5505, lng: 23.5510, description: "Unikatowy zespół trzech budynków synagogalnych z XVII-XVIII w., dziś muzeum.", openHours: "10:00-17:00 (wt-nd)", price: "10 zł", tip: "Jedna z najlepiej zachowanych synagog w Polsce" },
+      { name: "Cerkiew Narodzenia NMP", category: "kosciol", lat: 51.5515, lng: 23.5490, description: "XVIII-wieczna cerkiew unicka, dziś prawosławna, z pięknymi ikonami.", openHours: "Po nabożeństwach", price: "Bezpłatny", tip: "Ikonostas wart zobaczenia" },
+      { name: "Okuninka", category: "przyroda", lat: 51.5100, lng: 23.5300, description: "Popularne kąpielisko nad Jeziorem Białym z szeroką plażą piaszczystą.", openHours: "Sezon: VI-VIII", price: "Parking: 10 zł", tip: "Najczystsza woda w regionie" },
+      { name: "Muzeum Pojezierza Łęczyńsko-Włodawskiego", category: "muzeum", lat: 51.5498, lng: 23.5515, description: "Ekspozycja przyrodnicza i etnograficzna Polesia Lubelskiego.", openHours: "9:00-16:00 (wt-pt)", price: "8 zł", tip: "Ciekawy dział ornitologiczny" },
+      { name: "Spływ kajakowy Bugiem", category: "przyroda", lat: 51.5480, lng: 23.5550, description: "Organizowane spływy kajakowe rzeką Bug — dzika graniczna rzeka.", openHours: "V-IX, rezerwacja", price: "od 60 zł/os", tip: "Jednodniowy spływ — niezapomniane przeżycie" }
+    ],
+    access: {
+      bycar: "Z Lublina: droga 82 → Włodawa (ok. 70 km, 1h 15min). Parking w centrum.",
+      bybus: "PKS z Lublina: 3-4 kursy dziennie, ok. 2h.",
+      bytrain: "Brak bezpośredniego połączenia kolejowego.",
+      cycling_access: "Trasa Green Velo, dobra nawierzchnia na odcinku poleskim.",
+      parking: { coordinates: [51.5502, 23.5505], description: "Parking przy rynku — bezpłatny" },
+      tips: "Włodawa to brama na Polesie i nad Bug. Idealna na weekend."
+    },
+    practical: {
+      bestSeason: "Maj - Wrzesień (jeziora), cały rok (zabytki)",
+      weather: "Klimat kontynentalny, ciepłe lata, zimne zimy",
+      accommodation: "Ośrodki nad jeziorem, agroturystyka, hotel Narvil w Okunince",
+      food: "Kuchnia poleska: ryby, kartacze. Polecane: Karczma nad Bugiem",
+      bike_rental: "Wypożyczalnia w Okunince, 35 zł/dzień",
+      emergency: "Pogotowie: 112",
+      wifi: "WiFi w ośrodkach nad jeziorem"
+    }
+  },
+  {
+    id: "urszulin",
+    name: "Urszulin",
+    region: "Polesie",
+    lat: 51.3960,
+    lng: 23.2000,
+    description: "Gmina w sercu Poleskiego Parku Narodowego, kraina torfowisk, jezior i unikatowej przyrody bagiennej.",
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Poleski_Park_Narodowy_03.jpg/1280px-Poleski_Park_Narodowy_03.jpg",
+    badge: "⭐ Park Narodowy",
+    hiking: [
+      {
+        name: "Ścieżka Przyrodnicza Dominik",
+        color: "green",
+        distance: "4,5 km",
+        time: "1,5-2 h",
+        difficulty: "easy",
+        elevation: "+10m",
+        type: "loop",
+        description: "Najsłynniejsza ścieżka PPN na drewnianych kładkach przez torfowiska.",
+        highlights: ["Kładki nad torfowiskiem", "Wieża widokowa", "Jezioro Moszne"],
+        waypoints: [[51.3960,23.2000],[51.3900,23.1900],[51.3880,23.1950],[51.3960,23.2000]]
+      },
+      {
+        name: "Szlak Poleskiego PN — Perehod",
+        color: "red",
+        distance: "9 km",
+        time: "3 h",
+        difficulty: "medium",
+        elevation: "+15m",
+        type: "linear",
+        description: "Trasa przez mokradła i bagna Polesia do jeziora Łukie z obserwacją ptaków.",
+        highlights: ["Jezioro Łukie", "Bagna", "Ptaki wodno-błotne"],
+        waypoints: [[51.3960,23.2000],[51.3800,23.2200],[51.3700,23.2400]]
+      },
+      {
+        name: "Ścieżka Dąb Dominik",
+        color: "yellow",
+        distance: "3 km",
+        time: "1 h",
+        difficulty: "easy",
+        elevation: "+5m",
+        type: "outAndBack",
+        description: "Krótka trasa do pomnikowego dębu i stanowisk roślinności bagiennej.",
+        highlights: ["Dąb Dominik", "Roślinność torfowiskowa", "Storczyki"],
+        waypoints: [[51.3960,23.2000],[51.3940,23.1950],[51.3920,23.1900]]
+      },
+      {
+        name: "Szlak Torfowisk Wysokich",
+        color: "red",
+        distance: "11 km",
+        time: "3,5 h",
+        difficulty: "medium",
+        elevation: "+10m",
+        type: "loop",
+        description: "Trasa przez unikatowe torfowiska wysokie PPN ze stanowiskami rosiczek i żurawin.",
+        highlights: ["Torfowisko wysokie", "Rosiczki", "Żurawiny", "Kładki drewniane"],
+        waypoints: [[51.3960,23.2000],[51.3850,23.1850],[51.3800,23.1950],[51.3850,23.2100],[51.3960,23.2000]]
+      },
+      {
+        name: "Szlak Żurawi",
+        color: "blue",
+        distance: "8 km",
+        time: "2,5 h",
+        difficulty: "easy",
+        elevation: "+5m",
+        type: "outAndBack",
+        description: "Szlak do miejsc noclegowisk żurawi z wieżami obserwacyjnymi. Najlepszy jesienią.",
+        highlights: ["Wieże obserwacyjne", "Noclegowiska żurawi", "Łąki podmokłe", "Czajki"],
+        waypoints: [[51.3960,23.2000],[51.4000,23.2100],[51.4050,23.2200]]
+      },
+      {
+        name: "Ścieżka Jezior Dystroficznych",
+        color: "green",
+        distance: "5,5 km",
+        time: "2 h",
+        difficulty: "easy",
+        elevation: "+5m",
+        type: "loop",
+        description: "Ścieżka edukacyjna wokół jezior dystroficznych z tablicami o unikalnej przyrodzie.",
+        highlights: ["Jezioro Moszne", "Jezioro Długie", "Torfowiska przejściowe", "Bagna"],
+        waypoints: [[51.3960,23.2000],[51.3920,23.1950],[51.3880,23.2000],[51.3920,23.2050],[51.3960,23.2000]]
+      }
+    ],
+    cycling: [
+      {
+        name: "Rowerem po Poleskim PN",
+        distance: "22 km",
+        time: "2 h",
+        difficulty: "easy",
+        elevation: "+30m",
+        surface: "gravel",
+        type: "loop",
+        description: "Oficjalna trasa rowerowa PPN przez lasy, łąki i torfowiska Polesia.",
+        highlights: ["Jezioro Moszne", "Torfowiska", "Wieże widokowe"],
+        waypoints: [[51.3960,23.2000],[51.3800,23.1800],[51.3700,23.2000],[51.3800,23.2200],[51.3960,23.2000]]
+      },
+      {
+        name: "Trasa Rowerowa Jezior Poleskich",
+        distance: "35 km",
+        time: "2,5-3 h",
+        difficulty: "medium",
+        elevation: "+80m",
+        surface: "mixed",
+        type: "loop",
+        description: "Pętla rowerowa łącząca najciekawsze jeziora i torfowiska Polesia Lubelskiego.",
+        highlights: ["Jezioro Moszne", "Jezioro Długie", "Jezioro Łukie"],
+        waypoints: [[51.3960,23.2000],[51.3700,23.1600],[51.3500,23.1800],[51.3600,23.2200],[51.3960,23.2000]]
+      },
+      {
+        name: "Green Velo — odcinek poleski",
+        distance: "30 km",
+        time: "2 h",
+        difficulty: "easy",
+        elevation: "+50m",
+        surface: "asphalt",
+        type: "linear",
+        description: "Odcinek Green Velo przez płaskie tereny Polesia z jeziorem na trasie.",
+        highlights: ["Tereny PPN", "Wsie poleskie", "Łąki"],
+        waypoints: [[51.3960,23.2000],[51.4200,23.2500],[51.4500,23.3000]]
+      },
+      {
+        name: "Pętla Rowerowa Wokół PPN",
+        distance: "40 km",
+        time: "3 h",
+        difficulty: "medium",
+        elevation: "+60m",
+        surface: "mixed",
+        type: "loop",
+        description: "Duża pętla rowerowa dookoła granic Poleskiego Parku Narodowego.",
+        highlights: ["Granice PPN", "Wsie poleskie", "Torfowiska", "Jeziora"],
+        waypoints: [[51.3960,23.2000],[51.4100,23.1700],[51.3800,23.1400],[51.3600,23.1700],[51.3800,23.2100],[51.3960,23.2000]]
+      },
+      {
+        name: "Rowerem do Włodawy",
+        distance: "55 km",
+        time: "3,5-4 h",
+        difficulty: "medium",
+        elevation: "+80m",
+        surface: "asphalt",
+        type: "linear",
+        description: "Trasa asfaltowa z Urszulina do Włodawy przez tereny Polesia Lubelskiego.",
+        highlights: ["Wsie poleskie", "Lasy", "Kanały", "Włodawa"],
+        waypoints: [[51.3960,23.2000],[51.4200,23.3000],[51.4600,23.4000],[51.5500,23.5500]]
+      },
+      {
+        name: "Ścieżka Rowerowa Bagien",
+        distance: "12 km",
+        time: "45 min",
+        difficulty: "easy",
+        elevation: "+10m",
+        surface: "gravel",
+        type: "loop",
+        description: "Krótka pętla po gruntowych drogach wokół bagien i torfowisk na obrzeżach PPN.",
+        highlights: ["Bagna", "Torfowiska", "Bocianie gniazda", "Łąki"],
+        waypoints: [[51.3960,23.2000],[51.4000,23.2100],[51.4050,23.2050],[51.4000,23.1950],[51.3960,23.2000]]
+      }
+    ],
+    attractions: [
+      { name: "Poleski Park Narodowy", category: "przyroda", lat: 51.3900, lng: 23.1900, description: "Jedyny park narodowy w Polsce chroniący ekosystemy torfowiskowo-bagienne.", openHours: "Całodobowo (szlaki)", price: "5 zł (wstęp)", tip: "Weź lornetkę — żurawie i bociany czarne" },
+      { name: "Jezioro Moszne", category: "przyroda", lat: 51.3850, lng: 23.1850, description: "Dystroficzne jezioro otoczone torfowiskiem — unikat w skali europejskiej.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Zachód słońca nad jeziorem jest niezapomniany" },
+      { name: "Wieża widokowa Dominik", category: "widok", lat: 51.3870, lng: 23.1920, description: "20-metrowa wieża z panoramą na torfowiska i lasy PPN.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Rano widać żurawie i mgły nad torfowiskami" },
+      { name: "Muzeum PPN w Urszulinie", category: "muzeum", lat: 51.3965, lng: 23.2010, description: "Centrum edukacyjne Poleskiego PN z ekspozycją przyrodniczą.", openHours: "9:00-16:00 (wt-pt)", price: "6 zł", tip: "Tu zdobędziesz mapy szlaków PPN" },
+      { name: "Chata Poleska", category: "muzeum", lat: 51.3950, lng: 23.1980, description: "Rekonstrukcja tradycyjnej zagrody poleskiej z XIX w.", openHours: "10:00-16:00 (V-IX)", price: "5 zł", tip: "Pokazy rękodzieła w sezonie" }
+    ],
+    access: {
+      bycar: "Z Lublina: droga 82 → Łęczna → Urszulin (ok. 70 km, 1h 10min).",
+      bybus: "PKS z Lublina przez Łęczną, 2-3 kursy dziennie.",
+      bytrain: "Brak połączenia kolejowego.",
+      cycling_access: "Green Velo w pobliżu, drogi rowerowe w PPN.",
+      parking: { coordinates: [51.3960, 23.2005], description: "Parking przy siedzibie PPN — bezpłatny" },
+      tips: "PPN to raj dla ornitologów. Sezon na żurawie: IX-X. Zaplanuj 2 dni."
+    },
+    practical: {
+      bestSeason: "Kwiecień - Październik (przyroda), Wrzesień (żurawie)",
+      weather: "Klimat kontynentalny, wilgotny, mgły jesienią",
+      accommodation: "Agroturystyka, kwatery przy PPN, camping",
+      food: "Kuchnia poleska, sery i miody lokalne",
+      bike_rental: "Wypożyczalnia przy siedzibie PPN, 30 zł/dzień",
+      emergency: "Pogotowie: 112",
+      wifi: "Bardzo ograniczony zasięg — idealne na cyfrowy detoks"
+    }
+  },
+  {
+    id: "leczna",
+    name: "Łęczna",
+    region: "Polesie",
+    lat: 51.3017,
+    lng: 22.8789,
+    description: "Historyczne miasteczko z renesansowym rynkiem i tradycjami jarmarczymi, brama na Pojezierze Łęczyńsko-Włodawskie.",
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Leczna-ratusz2.jpg/1024px-Leczna-ratusz2.jpg",
+    badge: "",
+    hiking: [
+      {
+        name: "Szlak Łęczyński Doliną Wieprza",
+        color: "blue",
+        distance: "10 km",
+        time: "3 h",
+        difficulty: "easy",
+        elevation: "+40m",
+        type: "linear",
+        description: "Spokojna trasa wzdłuż doliny Wieprza z Łęcznej na południe.",
+        highlights: ["Dolina Wieprza", "Stary most", "Łąki nadrzeczne"],
+        waypoints: [[51.3017,22.8789],[51.2900,22.8700],[51.2800,22.8600]]
+      },
+      {
+        name: "Ścieżka Nadstawnego Stawu",
+        color: "green",
+        distance: "5 km",
+        time: "1,5 h",
+        difficulty: "easy",
+        elevation: "+15m",
+        type: "loop",
+        description: "Spacerowa pętla wokół stawów z obserwacją ptaków wodnych.",
+        highlights: ["Stawy hodowlane", "Czaple", "Łąki"],
+        waypoints: [[51.3017,22.8789],[51.3050,22.8830],[51.3070,22.8800],[51.3017,22.8789]]
+      },
+      {
+        name: "Szlak Historyczny Łęcznej",
+        color: "yellow",
+        distance: "4 km",
+        time: "1,5 h",
+        difficulty: "easy",
+        elevation: "+20m",
+        type: "loop",
+        description: "Spacer po zabytkowym centrum Łęcznej z przewodnikiem historycznym.",
+        highlights: ["Rynek renesansowy", "Synagoga", "Kościół farny"],
+        waypoints: [[51.3017,22.8789],[51.3030,22.8800],[51.3040,22.8780],[51.3020,22.8770],[51.3017,22.8789]]
+      },
+      {
+        name: "Szlak Jarmarczny",
+        color: "red",
+        distance: "8 km",
+        time: "2,5 h",
+        difficulty: "easy",
+        elevation: "+35m",
+        type: "loop",
+        description: "Trasa śladami historycznych jarmarków łęczyńskich z przystankami przy zabytkach handlowych.",
+        highlights: ["Stary rynek", "Kamienice kupieckie", "Dawna komora celna", "Spichlerze"],
+        waypoints: [[51.3017,22.8789],[51.3040,22.8810],[51.3060,22.8790],[51.3040,22.8760],[51.3017,22.8789]]
+      },
+      {
+        name: "Ścieżka Wokół Stawów Łęczyńskich",
+        color: "green",
+        distance: "6 km",
+        time: "2 h",
+        difficulty: "easy",
+        elevation: "+10m",
+        type: "loop",
+        description: "Spacer wokół kompleksu stawów z obserwacją czapli, łabędzi i kormoranów.",
+        highlights: ["Stawy hodowlane", "Czaple siwe", "Kormorany", "Łabędzie"],
+        waypoints: [[51.3017,22.8789],[51.3060,22.8830],[51.3090,22.8810],[51.3060,22.8770],[51.3017,22.8789]]
+      },
+      {
+        name: "Szlak Kanału Wieprz-Krzna",
+        color: "blue",
+        distance: "14 km",
+        time: "4 h",
+        difficulty: "medium",
+        elevation: "+20m",
+        type: "linear",
+        description: "Trasa wzdłuż unikatowego kanału Wieprz-Krzna z śluzami i infrastrukturą wodną.",
+        highlights: ["Kanał Wieprz-Krzna", "Śluzy", "Jazy", "Ptaki wodne"],
+        waypoints: [[51.3017,22.8789],[51.3100,22.9000],[51.3200,22.9200],[51.3350,22.9400]]
+      }
+    ],
+    cycling: [
+      {
+        name: "Pętla Rowerowa Pojezierza",
+        distance: "40 km",
+        time: "3 h",
+        difficulty: "medium",
+        elevation: "+100m",
+        surface: "asphalt",
+        type: "loop",
+        description: "Trasa rowerowa przez najpiękniejsze jeziora Pojezierza Łęczyńsko-Włodawskiego.",
+        highlights: ["Jezioro Piaseczno", "Jezioro Krasne", "Kanał Wieprz-Krzna"],
+        waypoints: [[51.3017,22.8789],[51.3200,22.9200],[51.3500,22.9500],[51.3300,22.9100],[51.3017,22.8789]]
+      },
+      {
+        name: "Łęczna — Kanał Wieprz-Krzna",
+        distance: "28 km",
+        time: "2 h",
+        difficulty: "easy",
+        elevation: "+40m",
+        surface: "asphalt",
+        type: "outAndBack",
+        description: "Spokojna trasa wzdłuż kanału Wieprz-Krzna z towarzyszeniem przyrody.",
+        highlights: ["Kanał Wieprz-Krzna", "Śluzy", "Ptaki wodne"],
+        waypoints: [[51.3017,22.8789],[51.3200,22.9100],[51.3400,22.9400]]
+      },
+      {
+        name: "Trasa Rowerowa Gminnych Stawów",
+        distance: "15 km",
+        time: "1 h",
+        difficulty: "easy",
+        elevation: "+30m",
+        surface: "asphalt",
+        type: "loop",
+        description: "Krótka pętla przez okolice Łęcznej ze stawami rybnymi i łąkami.",
+        highlights: ["Stawy rybne", "Łąki nadrzeczne", "Wieś Podzamcze"],
+        waypoints: [[51.3017,22.8789],[51.3100,22.8900],[51.3150,22.8800],[51.3050,22.8700],[51.3017,22.8789]]
+      },
+      {
+        name: "Łęczna — Lublin rowerem",
+        distance: "28 km",
+        time: "1,5-2 h",
+        difficulty: "easy",
+        elevation: "+60m",
+        surface: "asphalt",
+        type: "linear",
+        description: "Trasa asfaltowa z Łęcznej do Lublina przez Spiczyn i przedmieścia.",
+        highlights: ["Spiczyn", "Dolina Wieprza", "Lublin", "Tereny podmiejskie"],
+        waypoints: [[51.3017,22.8789],[51.2800,22.8500],[51.2600,22.7500],[51.2465,22.5684]]
+      },
+      {
+        name: "Pętla Rowerowa Kanałów",
+        distance: "35 km",
+        time: "2,5 h",
+        difficulty: "easy",
+        elevation: "+40m",
+        surface: "asphalt",
+        type: "loop",
+        description: "Płaska pętla wzdłuż kanałów melioracyjnych z widokami na mokradła i łąki.",
+        highlights: ["Kanał Wieprz-Krzna", "Śluzy wodne", "Łąki podmokłe", "Ptaki"],
+        waypoints: [[51.3017,22.8789],[51.3200,22.9100],[51.3300,22.9300],[51.3100,22.9200],[51.3017,22.8789]]
+      },
+      {
+        name: "Szlak Rowerowy Piaseczno",
+        distance: "20 km",
+        time: "1,5 h",
+        difficulty: "easy",
+        elevation: "+50m",
+        surface: "asphalt",
+        type: "outAndBack",
+        description: "Trasa do najgłębszego jeziora Lubelszczyzny z możliwością kąpieli.",
+        highlights: ["Jezioro Piaseczno", "Plaża", "Las sosnowy", "Nurkowanie"],
+        waypoints: [[51.3017,22.8789],[51.3200,22.9200],[51.3500,22.9500]]
+      }
+    ],
+    attractions: [
+      { name: "Rynek Renesansowy", category: "zabytek", lat: 51.3017, lng: 22.8789, description: "Jeden z najlepiej zachowanych renesansowych rynków w Polsce z XVII w.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Jarmarki w sezonie — sprawdź kalendarz" },
+      { name: "Synagoga w Łęcznej", category: "zabytek", lat: 51.3010, lng: 22.8780, description: "XVII-wieczna synagoga, jedna z cenniejszych na Lubelszczyźnie.", openHours: "10:00-16:00 (po umówieniu)", price: "5 zł", tip: "Zachowana bima i fragmenty polichromii" },
+      { name: "Kościół farny św. Marii Magdaleny", category: "kosciol", lat: 51.3025, lng: 22.8795, description: "Barokowy kościół z XVIII w. z cennym wyposażeniem.", openHours: "7:00-18:00", price: "Bezpłatny", tip: "Piękne organy barokowe" },
+      { name: "Pojezierze Łęczyńsko-Włodawskie", category: "przyroda", lat: 51.3500, lng: 22.9500, description: "Kompleks 67 jezior — raj dla wędkarzy, kajakarzy i ornitologów.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Jezioro Piaseczno — najgłębsze (38m) i najczystsze" },
+      { name: "Muzeum Regionalne Łęcznej", category: "muzeum", lat: 51.3020, lng: 22.8785, description: "Historia miasta i jarmarków łęczyńskich od XVI w.", openHours: "10:00-15:00 (wt-pt)", price: "5 zł", tip: "Ciekawe archiwalia o jarmarkach" }
+    ],
+    access: {
+      bycar: "Z Lublina: droga 82 (ok. 25 km, 30 min). Parking przy rynku.",
+      bybus: "Częste połączenia z Lublina (co 30-60 min), ok. 40 min.",
+      bytrain: "Brak bezpośredniego połączenia.",
+      cycling_access: "Łatwy dojazd rowerem z Lublina drogami lokalnymi, 25 km.",
+      parking: { coordinates: [51.3020, 22.8785], description: "Parking przy rynku — bezpłatny, 60 miejsc" },
+      tips: "Łęczna jako baza na Pojezierze Łęczyńsko-Włodawskie. Jarmarki w VII-VIII."
+    },
+    practical: {
+      bestSeason: "Maj - Wrzesień (jeziora), cały rok (miasto)",
+      weather: "Klimat umiarkowany, lata ciepłe",
+      accommodation: "Hotele i pensjonaty w Łęcznej, ośrodki nad jeziorami",
+      food: "Kuchnia regionalna, ryby z jezior. Polecane: Gospoda Łęczyńska",
+      bike_rental: "Wypożyczalnia przy biurze turystycznym, 35 zł/dzień",
+      emergency: "Pogotowie: 112, Szpital Łęczna: 81 752 65 00",
+      wifi: "WiFi w centrum miasta i kawiarniach"
+    }
+  },
+  {
+    id: "cycow",
+    name: "Cyców",
+    region: "Polesie",
+    lat: 51.2975,
+    lng: 23.1500,
+    description: "Gmina w sercu Pojezierza Łęczyńsko-Włodawskiego, otoczona jeziorami i terenami Nadwieprzańskiego Parku Krajobrazowego.",
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Jezioro_Piaseczno_01.jpg/1280px-Jezioro_Piaseczno_01.jpg",
+    badge: "",
+    hiking: [
+      {
+        name: "Szlak Nadwieprzański",
+        color: "blue",
+        distance: "12 km",
+        time: "3,5 h",
+        difficulty: "easy",
+        elevation: "+30m",
+        type: "linear",
+        description: "Trasa wzdłuż doliny Wieprza przez tereny Nadwieprzańskiego Parku Krajobrazowego.",
+        highlights: ["Dolina Wieprza", "Łąki zalewowe", "Starorzecza"],
+        waypoints: [[51.2975,23.1500],[51.2850,23.1300],[51.2700,23.1100]]
+      },
+      {
+        name: "Ścieżka Jeziora Zagłębocze",
+        color: "green",
+        distance: "6 km",
+        time: "2 h",
+        difficulty: "easy",
+        elevation: "+15m",
+        type: "loop",
+        description: "Ścieżka wokół jednego z najczystszych jezior Polesia z plażami.",
+        highlights: ["Jezioro Zagłębocze", "Plaża", "Obserwacja ptaków"],
+        waypoints: [[51.2975,23.1500],[51.3050,23.1600],[51.3100,23.1550],[51.3050,23.1450],[51.2975,23.1500]]
+      },
+      {
+        name: "Szlak Poleskich Wsi",
+        color: "yellow",
+        distance: "8 km",
+        time: "2,5 h",
+        difficulty: "easy",
+        elevation: "+20m",
+        type: "loop",
+        description: "Trasa przez tradycyjne wsie poleskie z drewnianą zabudową.",
+        highlights: ["Wieś Ludwin", "Drewniane chałupy", "Kapliczki"],
+        waypoints: [[51.2975,23.1500],[51.3050,23.1400],[51.3100,23.1500],[51.3000,23.1600],[51.2975,23.1500]]
+      },
+      {
+        name: "Szlak Starorzecza Wieprza",
+        color: "blue",
+        distance: "10 km",
+        time: "3 h",
+        difficulty: "easy",
+        elevation: "+15m",
+        type: "linear",
+        description: "Trasa wzdłuż starorzecza Wieprza z obserwacją ptaków i bobrów.",
+        highlights: ["Starorzecza", "Tamy bobrowe", "Czaple", "Łąki zalewowe"],
+        waypoints: [[51.2975,23.1500],[51.2900,23.1350],[51.2800,23.1200],[51.2700,23.1050]]
+      },
+      {
+        name: "Ścieżka Kapliczek Poleskich",
+        color: "yellow",
+        distance: "9 km",
+        time: "3 h",
+        difficulty: "easy",
+        elevation: "+25m",
+        type: "loop",
+        description: "Trasa łącząca drewniane kapliczki przydrożne w okolicznych wioskach poleskich.",
+        highlights: ["Kapliczki drewniane", "Krzyże przydrożne", "Wieś Świerszczów", "Architektura poleska"],
+        waypoints: [[51.2975,23.1500],[51.3000,23.1400],[51.3050,23.1350],[51.3100,23.1450],[51.2975,23.1500]]
+      },
+      {
+        name: "Szlak Wokół Jeziora Uściwierz",
+        color: "green",
+        distance: "12 km",
+        time: "3,5 h",
+        difficulty: "medium",
+        elevation: "+20m",
+        type: "loop",
+        description: "Pętla wokół jednego z większych jezior pojezierza z bogatą awifauną.",
+        highlights: ["Jezioro Uściwierz", "Trzcinowiska", "Bąki", "Rybitwy"],
+        waypoints: [[51.2975,23.1500],[51.3100,23.1600],[51.3200,23.1500],[51.3100,23.1350],[51.2975,23.1500]]
+      }
+    ],
+    cycling: [
+      {
+        name: "Pętla Rowerowa Trzech Jezior",
+        distance: "32 km",
+        time: "2,5 h",
+        difficulty: "easy",
+        elevation: "+70m",
+        surface: "asphalt",
+        type: "loop",
+        description: "Pętla rowerowa łącząca trzy jeziora z kąpieliskami i plażami.",
+        highlights: ["Jezioro Zagłębocze", "Jezioro Piaseczno", "Jezioro Uściwierz"],
+        waypoints: [[51.2975,23.1500],[51.3200,23.1800],[51.3400,23.1600],[51.3200,23.1300],[51.2975,23.1500]]
+      },
+      {
+        name: "Cyców — Łęczna szlakiem rowerowym",
+        distance: "25 km",
+        time: "1,5-2 h",
+        difficulty: "easy",
+        elevation: "+50m",
+        surface: "asphalt",
+        type: "linear",
+        description: "Łatwa trasa asfaltowa łącząca Cyców z Łęczną przez tereny pojezierza.",
+        highlights: ["Wieś Ludwin", "Kanały", "Łąki"],
+        waypoints: [[51.2975,23.1500],[51.3000,23.0800],[51.3017,22.8789]]
+      },
+      {
+        name: "Rowerem po Nadwieprzańskim PK",
+        distance: "38 km",
+        time: "3 h",
+        difficulty: "medium",
+        elevation: "+90m",
+        surface: "mixed",
+        type: "loop",
+        description: "Trasa przez Nadwieprzański Park Krajobrazowy z urozmaiconym krajobrazem.",
+        highlights: ["Dolina Wieprza", "Lasy", "Wsie poleskie"],
+        waypoints: [[51.2975,23.1500],[51.2700,23.1200],[51.2500,23.1500],[51.2700,23.1800],[51.2975,23.1500]]
+      },
+      {
+        name: "Cyców — Urszulin rowerem",
+        distance: "22 km",
+        time: "1,5 h",
+        difficulty: "easy",
+        elevation: "+30m",
+        surface: "asphalt",
+        type: "linear",
+        description: "Łatwa trasa asfaltowa z Cycowa do Urszulina z widokiem na tereny PPN.",
+        highlights: ["Wsie poleskie", "Torfowiska", "Poleski PN", "Urszulin"],
+        waypoints: [[51.2975,23.1500],[51.3200,23.1700],[51.3500,23.1900],[51.3960,23.2000]]
+      },
+      {
+        name: "Pętla Rowerowa Pięciu Jezior",
+        distance: "45 km",
+        time: "3-3,5 h",
+        difficulty: "medium",
+        elevation: "+90m",
+        surface: "mixed",
+        type: "loop",
+        description: "Ambitna pętla łącząca pięć jezior pojezierza z kąpieliskami i plażami.",
+        highlights: ["Zagłębocze", "Piaseczno", "Uściwierz", "Krasne", "Łukie"],
+        waypoints: [[51.2975,23.1500],[51.3200,23.1800],[51.3500,23.1500],[51.3300,23.1200],[51.3000,23.1300],[51.2975,23.1500]]
+      },
+      {
+        name: "Szlak Rowerowy Doliny Wieprza",
+        distance: "30 km",
+        time: "2 h",
+        difficulty: "easy",
+        elevation: "+40m",
+        surface: "mixed",
+        type: "linear",
+        description: "Trasa wzdłuż Wieprza z Cycowa na zachód przez Nadwieprzański PK.",
+        highlights: ["Dolina Wieprza", "Nadwieprzański PK", "Łąki", "Bociany"],
+        waypoints: [[51.2975,23.1500],[51.2800,23.1100],[51.2600,23.0700],[51.2400,23.0300]]
+      }
+    ],
+    attractions: [
+      { name: "Jezioro Zagłębocze", category: "przyroda", lat: 51.3100, lng: 23.1550, description: "Czyste jezioro krasowe z piaszczystą plażą, idealne na kąpiel.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Ciepła woda latem dzięki płytkości" },
+      { name: "Jezioro Piaseczno", category: "przyroda", lat: 51.3700, lng: 23.0300, description: "Najgłębsze jezioro Lubelszczyzny (38,8 m), krystaliczna woda.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Idealne do nurkowania — widoczność do 6 m" },
+      { name: "Nadwieprzański Park Krajobrazowy", category: "przyroda", lat: 51.2700, lng: 23.1200, description: "Park chroniący dolinę Wieprza z bogatą awifauną.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Bociany i żurawie wiosną i jesienią" },
+      { name: "Kościół w Cycowie", category: "kosciol", lat: 51.2978, lng: 23.1505, description: "Neoromański kościół z początku XX w.", openHours: "7:00-18:00", price: "Bezpłatny", tip: "Ciekawa architektura ceglana" },
+      { name: "Dwór w Ludwinie", category: "zabytek", lat: 51.3200, lng: 23.1000, description: "XIX-wieczny dwór szlachecki z parkiem angielskim.", openHours: "Teren zewnętrzny całodobowo", price: "Bezpłatny", tip: "Piękny stary drzewostan w parku" }
+    ],
+    access: {
+      bycar: "Z Lublina: droga 82 → Łęczna → Cyców (ok. 50 km, 50 min).",
+      bybus: "PKS z Lublina przez Łęczną, 2-3 kursy dziennie.",
+      bytrain: "Brak połączenia.",
+      cycling_access: "Drogi rowerowe z Łęcznej, teren płaski.",
+      parking: { coordinates: [51.2975, 23.1500], description: "Parking przy kościele — bezpłatny" },
+      tips: "Idealne na spokojny wypoczynek nad jeziorami. Mało turystów."
+    },
+    practical: {
+      bestSeason: "Czerwiec - Wrzesień (jeziora)",
+      weather: "Klimat umiarkowany, ciepłe lata",
+      accommodation: "Agroturystyka, domki nad jeziorami",
+      food: "Kuchnia domowa w gospodarstwach agroturystycznych, ryby z jezior",
+      bike_rental: "Brak wypożyczalni — zabierz własny rower",
+      emergency: "Pogotowie: 112",
+      wifi: "Ograniczony zasięg — spokój gwarantowany"
+    }
+  },
+
+  /* ============================== */
+  /* REGION KAZIMIERSKI             */
+  /* ============================== */
+  {
+    id: "kazimierz-dolny",
+    name: "Kazimierz Dolny",
+    region: "Kazimierski",
+    lat: 51.3197,
+    lng: 21.9527,
+    description: "Perła nadwiślańska, miasto malarzy i artystów. Renesansowe kamieniczki, wąwozy lessowe i malownicze położenie nad Wisłą.",
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Kazimierz_Dolny_%28Koziorożec%29_%2812%29.jpg/1280px-Kazimierz_Dolny_%28Koziorożec%29_%2812%29.jpg",
+    badge: "⭐ Polecane",
+    hiking: [
+      {
+        name: "Szlak Małopolskiego Przełomu Wisły",
+        color: "red",
+        distance: "18 km",
+        time: "5-6 h",
+        difficulty: "medium",
+        elevation: "+320m",
+        type: "linear",
+        description: "Malowniczy szlak wzdłuż przełomu Wisły z widokami na dolinę i Janowiec po drugiej stronie.",
+        highlights: ["Góra Trzech Krzyży", "Zamek Kazimierski", "Wąwóz Korzeniowy", "Męćmierz"],
+        waypoints: [[51.3197,21.9527],[51.3250,21.9600],[51.3350,21.9700],[51.3500,21.9800],[51.3600,21.9500]]
+      },
+      {
+        name: "Szlak Wąwozów Lessowych",
+        color: "yellow",
+        distance: "12 km",
+        time: "3,5-4 h",
+        difficulty: "medium",
+        elevation: "+280m",
+        type: "loop",
+        description: "Pętla przez unikalne wąwozy lessowe — jedne z najgłębszych w Europie.",
+        highlights: ["Wąwóz Korzeniowy", "Wąwóz Norowy", "Wąwóz Marynki"],
+        waypoints: [[51.3197,21.9527],[51.3150,21.9450],[51.3100,21.9400],[51.3050,21.9500],[51.3100,21.9600],[51.3197,21.9527]]
+      },
+      {
+        name: "Ścieżka na Górę Trzech Krzyży",
+        color: "green",
+        distance: "3 km",
+        time: "1 h",
+        difficulty: "easy",
+        elevation: "+120m",
+        type: "outAndBack",
+        description: "Krótkie, ale strome podejście na ikoniczny punkt widokowy Kazimierza.",
+        highlights: ["Góra Trzech Krzyży", "Panorama Wisły", "Widok na Rynek"],
+        waypoints: [[51.3197,21.9527],[51.3210,21.9530],[51.3230,21.9540]]
+      },
+      {
+        name: "Szlak Zamków i Wąwozów",
+        color: "blue",
+        distance: "14 km",
+        time: "4,5 h",
+        difficulty: "hard",
+        elevation: "+380m",
+        type: "loop",
+        description: "Wymagająca pętla przez zamek, Górę Trzech Krzyży i najgłębsze wąwozy lessowe regionu.",
+        highlights: ["Zamek Kazimierski", "Wąwóz Korzeniowy Dół", "Wąwóz Norowy", "Baszta Przyłuska"],
+        waypoints: [[51.3197,21.9527],[51.3220,21.9510],[51.3150,21.9400],[51.3100,21.9350],[51.3150,21.9550],[51.3197,21.9527]]
+      },
+      {
+        name: "Szlak do Bochotnicy",
+        color: "red",
+        distance: "10 km",
+        time: "3 h",
+        difficulty: "medium",
+        elevation: "+200m",
+        type: "outAndBack",
+        description: "Trasa do ruin wieży rycerskiej w Bochotnicy przez lessowe wzgórza z panoramami.",
+        highlights: ["Wieża w Bochotnicy", "Panorama Wisły", "Sady wiśniowe", "Wzgórza lessowe"],
+        waypoints: [[51.3197,21.9527],[51.3100,21.9400],[51.3000,21.9300]]
+      },
+      {
+        name: "Ścieżka Męćmierz — Cholewianka",
+        color: "green",
+        distance: "8 km",
+        time: "2,5 h",
+        difficulty: "medium",
+        elevation: "+180m",
+        type: "loop",
+        description: "Pętla przez unikatowe wsie lessowe z wąwozami i widokiem na Wisłę.",
+        highlights: ["Męćmierz", "Cholewianka", "Wąwóz Grodzisko", "Pałac Czartoryskich"],
+        waypoints: [[51.3197,21.9527],[51.3300,21.9600],[51.3400,21.9550],[51.3350,21.9450],[51.3197,21.9527]]
+      },
+      {
+        name: "Szlak Albrechtówka",
+        color: "black",
+        distance: "6 km",
+        time: "2 h",
+        difficulty: "medium",
+        elevation: "+160m",
+        type: "loop",
+        description: "Krótka ale intensywna pętla przez wzgórze Albrechtówka z najlepszym widokiem panoramicznym.",
+        highlights: ["Wzgórze Albrechtówka", "Panorama 360°", "Las sosnowy", "Widok na Janowiec"],
+        waypoints: [[51.3197,21.9527],[51.3180,21.9480],[51.3160,21.9500],[51.3170,21.9540],[51.3197,21.9527]]
+      }
+    ],
+    cycling: [
+      {
+        name: "Trasa Rowerowa Dolin Lessowych",
+        distance: "32 km",
+        time: "2,5-3 h",
+        difficulty: "medium",
+        elevation: "+480m",
+        surface: "mixed",
+        type: "loop",
+        description: "Wymagająca pętla przez wąwozy i doliny lessowe z intensywnymi podjazdami.",
+        highlights: ["Wąwóz Korzeniowy", "Wąwóz Marynki", "Panorama Wisły", "Bochotnica"],
+        waypoints: [[51.3197,21.9527],[51.3100,21.9300],[51.3000,21.9200],[51.3050,21.9600],[51.3197,21.9527]]
+      },
+      {
+        name: "Kazimierz — Puławy Wisłostradą",
+        distance: "15 km",
+        time: "1 h",
+        difficulty: "easy",
+        elevation: "+40m",
+        surface: "asphalt",
+        type: "linear",
+        description: "Przyjemna trasa wzdłuż Wisły do Puław po asfaltowej ścieżce rowerowej.",
+        highlights: ["Wisłostrada", "Prom w Kazimierzu", "Puławy"],
+        waypoints: [[51.3197,21.9527],[51.3400,21.9700],[51.3600,21.9600],[51.4100,21.9700]]
+      },
+      {
+        name: "Pętla Rowerowa EuroVelo 11",
+        distance: "45 km",
+        time: "3-4 h",
+        difficulty: "medium",
+        elevation: "+350m",
+        surface: "asphalt",
+        type: "loop",
+        description: "Odcinek trasy EuroVelo 11 przez Kazimierz, Nałęczów i Puławy.",
+        highlights: ["Nałęczów", "Puławy", "Dolina Bystrzycy"],
+        waypoints: [[51.3197,21.9527],[51.3100,21.9200],[51.2850,21.8700],[51.4100,21.9700],[51.3197,21.9527]]
+      },
+      {
+        name: "Kazimierz — Janowiec promem i rowerem",
+        distance: "20 km",
+        time: "1,5 h",
+        difficulty: "easy",
+        elevation: "+180m",
+        surface: "mixed",
+        type: "loop",
+        description: "Pętla rowerowa z przeprawą promową przez Wisłę do Janowca i z powrotem.",
+        highlights: ["Prom Kazimierz-Janowiec", "Zamek Janowiecki", "Wisła", "Skarpa wiślana"],
+        waypoints: [[51.3197,21.9527],[51.3250,21.9400],[51.3284,21.9127],[51.3400,21.9200],[51.3197,21.9527]]
+      },
+      {
+        name: "Rowerem przez Sady Nadwiślańskie",
+        distance: "25 km",
+        time: "1,5-2 h",
+        difficulty: "easy",
+        elevation: "+120m",
+        surface: "asphalt",
+        type: "loop",
+        description: "Spokojana pętla przez sady wiśniowe i śliwkowe z widokiem na przełom Wisły.",
+        highlights: ["Sady wiśniowe", "Bochotnica", "Wzgórza lessowe", "Panorama Wisły"],
+        waypoints: [[51.3197,21.9527],[51.3100,21.9300],[51.3000,21.9400],[51.3100,21.9600],[51.3197,21.9527]]
+      },
+      {
+        name: "Trasa Gravelowa Wąwozów",
+        distance: "38 km",
+        time: "3 h",
+        difficulty: "hard",
+        elevation: "+620m",
+        surface: "offroad",
+        type: "loop",
+        description: "Wymagająca trasa gravel/MTB przez wąwozy lessowe — intensywne podjazdy i zjazdy.",
+        highlights: ["Wąwóz Korzeniowy", "Wąwóz Norowy", "Wąwóz Marynki", "Single tracki"],
+        waypoints: [[51.3197,21.9527],[51.3100,21.9350],[51.3000,21.9200],[51.3050,21.9500],[51.3150,21.9600],[51.3197,21.9527]]
+      }
+    ],
+    attractions: [
+      { name: "Zamek Kazimierski", category: "zabytek", lat: 51.3209, lng: 21.9518, description: "Ruiny gotyckiego zamku Kazimierza Wielkiego z XIV w. na wzgórzu nad Wisłą.", openHours: "8:00-18:00 (sezon)", price: "Bezpłatny", tip: "Najpiękniejszy widok o zachodzie słońca" },
+      { name: "Góra Trzech Krzyży", category: "widok", lat: 51.3230, lng: 21.9540, description: "Trzy krzyże z XVII w. na wzgórzu — symbol miasta i najlepszy punkt widokowy.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Wschód słońca zapiera dech" },
+      { name: "Rynek z Kamieniczkami", category: "zabytek", lat: 51.3197, lng: 21.9527, description: "Renesansowe kamieniczki Przybyłów i Celej z XVII w. z bogatą dekoracją.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Zwróć uwagę na attyki z płaskorzeźbami" },
+      { name: "Wąwóz Korzeniowy Dół", category: "przyroda", lat: 51.3150, lng: 21.9450, description: "Spektakularny wąwóz lessowy z odsłoniętymi korzeniami drzew — cudnatury.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Trasa wymaga wygodnego obuwia" },
+      { name: "Muzeum Nadwiślańskie", category: "muzeum", lat: 51.3200, lng: 21.9530, description: "Muzeum sztuki i rzemiosła artystycznego w zabytkowej kamienicy.", openHours: "10:00-16:00 (wt-nd)", price: "10 zł", tip: "Cenna kolekcja złotnictwa" },
+      { name: "Klasztor Franciszkanów", category: "kosciol", lat: 51.3185, lng: 21.9510, description: "Barokowy kościół i klasztor z XVII w. z pięknym ogrodem.", openHours: "7:00-18:00", price: "Bezpłatny", tip: "Spokojny ogród klasztorny z widokiem" }
+    ],
+    access: {
+      bycar: "Z Lublina: DK17 → Kazimierz (ok. 40 km, 50 min). Parkingi: P1 przy rynku (200 miejsc), P2 przy Wisłostradzie.",
+      bybus: "PKS Lublin → Kazimierz Dolny: 8 kursów dziennie, ok. 1h 15min. Przystanek: Rynek.",
+      bytrain: "Stacja Puławy (12 km), dalej PKS lub rower.",
+      cycling_access: "Trasa rowerowa z Puław (EuroVelo 11), 15 km wzdłuż Wisły.",
+      parking: { coordinates: [51.3190, 21.9510], description: "Parking P1 - Rynek (200 miejsc, 5 zł/h w sezonie)" },
+      tips: "Sezon szczytowy: maj-wrzesień — rezerwuj nocleg z wyprzedzeniem. Weekendy bardzo tłoczne."
+    },
+    practical: {
+      bestSeason: "Kwiecień - Październik",
+      weather: "Klimat umiarkowany, ciepłe lata, malownicza jesień",
+      accommodation: "Liczne pensjonaty, apartamenty i agroturystyka. Polecane: Hotel Spichlerz",
+      food: "Słynne cebularze i pierogi z mięsem. Polecane: Restauracja Zielona Tawerna",
+      bike_rental: "Wypożyczalnia rowerów przy rynku, 40 zł/dzień. E-rowery: 80 zł/dzień",
+      emergency: "Pogotowie: 112, Szpital Puławy: 81 886 60 00",
+      wifi: "Wolny internet na Rynku i w kawiarniach"
+    }
+  },
+  {
+    id: "naleczow",
+    name: "Nałęczów",
+    region: "Kazimierski",
+    lat: 51.2861,
+    lng: 22.2133,
+    description: "Uzdrowisko z tradycjami od XIX w., park zdrojowy, i ślady Bolesława Prusa i Stefana Żeromskiego.",
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/ParkZdrojowyNaleczow.jpg/1280px-ParkZdrojowyNaleczow.jpg",
+    badge: "",
+    hiking: [
+      {
+        name: "Szlak Zdrojowy Nałęczowa",
+        color: "green",
+        distance: "6 km",
+        time: "2 h",
+        difficulty: "easy",
+        elevation: "+60m",
+        type: "loop",
+        description: "Spacer po zabytkowym parku zdrojowym z pijalniami i willami uzdrowiskowymi.",
+        highlights: ["Park Zdrojowy", "Pijalnia wód", "Stara Poczta", "Willa Żeromskiego"],
+        waypoints: [[51.2861,22.2133],[51.2880,22.2170],[51.2900,22.2150],[51.2870,22.2100],[51.2861,22.2133]]
+      },
+      {
+        name: "Szlak Wąwozami do Kazimierza",
+        color: "red",
+        distance: "15 km",
+        time: "4-5 h",
+        difficulty: "hard",
+        elevation: "+350m",
+        type: "linear",
+        description: "Wymagająca trasa przez wąwozy lessowe z Nałęczowa do Kazimierza Dolnego.",
+        highlights: ["Wąwóz Pontowa", "Bochotnica", "Zamek Kazimierski"],
+        waypoints: [[51.2861,22.2133],[51.2950,22.1800],[51.3050,22.0500],[51.3197,21.9527]]
+      },
+      {
+        name: "Ścieżka Literacka",
+        color: "yellow",
+        distance: "4 km",
+        time: "1,5 h",
+        difficulty: "easy",
+        elevation: "+40m",
+        type: "loop",
+        description: "Spacer śladami pisarzy — Żeromskiego, Prusa, Orzeszkowej — po uzdrowiskowej dzielnicy.",
+        highlights: ["Muzeum Żeromskiego", "Dworek Prusa", "Aleja Lipowa"],
+        waypoints: [[51.2861,22.2133],[51.2880,22.2100],[51.2850,22.2080],[51.2840,22.2120],[51.2861,22.2133]]
+      },
+      {
+        name: "Szlak Wąwozami Nałęczowskimi",
+        color: "red",
+        distance: "12 km",
+        time: "3,5 h",
+        difficulty: "hard",
+        elevation: "+300m",
+        type: "loop",
+        description: "Wymagająca pętla przez sieć głębokich wąwozów lessowych wokół Nałęczowa.",
+        highlights: ["Wąwóz Pontowa", "Wąwóz Głęboki", "Lessowe ściany", "Panorama doliny"],
+        waypoints: [[51.2861,22.2133],[51.2900,22.2000],[51.2950,22.1900],[51.2880,22.1850],[51.2861,22.2133]]
+      },
+      {
+        name: "Ścieżka Wód Mineralnych",
+        color: "green",
+        distance: "5 km",
+        time: "1,5 h",
+        difficulty: "easy",
+        elevation: "+40m",
+        type: "loop",
+        description: "Spacer po źródłach wód mineralnych Nałęczowa z degustacją w pijalniach.",
+        highlights: ["Pijalnia główna", "Źródło Bolesława", "Park zdrojowy", "Tężnia solankowa"],
+        waypoints: [[51.2861,22.2133],[51.2870,22.2150],[51.2885,22.2140],[51.2875,22.2110],[51.2861,22.2133]]
+      },
+      {
+        name: "Szlak Dworów i Pałaców",
+        color: "blue",
+        distance: "16 km",
+        time: "5 h",
+        difficulty: "medium",
+        elevation: "+220m",
+        type: "linear",
+        description: "Trasa łącząca historyczne dwory i pałace w okolicach Nałęczowa.",
+        highlights: ["Pałac Małachowskich", "Dwór w Czesławicach", "Dwór w Bochotnicy", "Park angielski"],
+        waypoints: [[51.2861,22.2133],[51.2800,22.2000],[51.2700,22.1800],[51.2600,22.1600]]
+      }
+    ],
+    cycling: [
+      {
+        name: "Nałęczów — Kazimierz rowerem",
+        distance: "22 km",
+        time: "1,5-2 h",
+        difficulty: "medium",
+        elevation: "+280m",
+        surface: "asphalt",
+        type: "linear",
+        description: "Trasa rowerowa z uzdrowiska do Kazimierza Dolnego z panoramami lessowymi.",
+        highlights: ["Wąwozy lessowe", "Bochotnica", "Panorama Wisły"],
+        waypoints: [[51.2861,22.2133],[51.2950,22.1500],[51.3100,22.0500],[51.3197,21.9527]]
+      },
+      {
+        name: "Pętla Rowerowa Doliny Bystrzycy",
+        distance: "30 km",
+        time: "2 h",
+        difficulty: "easy",
+        elevation: "+150m",
+        surface: "asphalt",
+        type: "loop",
+        description: "Spokojna trasa doliną Bystrzycy z widokami na tereny uzdrowiskowe.",
+        highlights: ["Dolina Bystrzycy", "Wąwolnica", "Kościół na wzgórzu"],
+        waypoints: [[51.2861,22.2133],[51.2700,22.2300],[51.2600,22.2100],[51.2750,22.1900],[51.2861,22.2133]]
+      },
+      {
+        name: "Trasa Rowerowa Uzdrowisk",
+        distance: "35 km",
+        time: "2,5 h",
+        difficulty: "medium",
+        elevation: "+320m",
+        surface: "mixed",
+        type: "loop",
+        description: "Pętla łącząca Nałęczów z okolicami przez wzgórza i wąwozy lessowe.",
+        highlights: ["Ocalenie", "Wzgórza lessowe", "Sady"],
+        waypoints: [[51.2861,22.2133],[51.2700,22.1900],[51.2600,22.2200],[51.2800,22.2400],[51.2861,22.2133]]
+      },
+      {
+        name: "Nałęczów — Puławy rowerem",
+        distance: "18 km",
+        time: "1 h",
+        difficulty: "easy",
+        elevation: "+80m",
+        surface: "asphalt",
+        type: "linear",
+        description: "Krótka asfaltowa trasa z uzdrowiska do Puław przez dolinę Bystrzycy.",
+        highlights: ["Dolina Bystrzycy", "Wąwolnica", "Puławy", "Park Czartoryskich"],
+        waypoints: [[51.2861,22.2133],[51.3200,22.1500],[51.3600,22.0800],[51.4168,21.9696]]
+      },
+      {
+        name: "Pętla Rowerowa Lessowych Wąwozów",
+        distance: "28 km",
+        time: "2 h",
+        difficulty: "medium",
+        elevation: "+350m",
+        surface: "gravel",
+        type: "loop",
+        description: "Szutrowa pętla przez wąwozy lessowe i sady nałęczowskie z panoramami.",
+        highlights: ["Wąwozy lessowe", "Sady owocowe", "Panorama doliny", "Wsie"],
+        waypoints: [[51.2861,22.2133],[51.2750,22.2000],[51.2650,22.2100],[51.2750,22.2300],[51.2861,22.2133]]
+      },
+      {
+        name: "Szlak Rowerowy Zdrojowy",
+        distance: "10 km",
+        time: "40 min",
+        difficulty: "easy",
+        elevation: "+50m",
+        surface: "asphalt",
+        type: "loop",
+        description: "Krótka pętla rowerowa po Nałęczowie z parkami i willami uzdrowiskowymi.",
+        highlights: ["Park Zdrojowy", "Wille uzdrowiskowe", "Pijalnia", "Aleje lipowe"],
+        waypoints: [[51.2861,22.2133],[51.2890,22.2170],[51.2900,22.2140],[51.2870,22.2100],[51.2861,22.2133]]
+      }
+    ],
+    attractions: [
+      { name: "Park Zdrojowy", category: "przyroda", lat: 51.2870, lng: 22.2150, description: "Zabytkowy park uzdrowiskowy z XIX w. z alejami, fontannami i pijalniami.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Najpiękniejszy o poranku — spokój i czyste powietrze" },
+      { name: "Muzeum Stefana Żeromskiego", category: "muzeum", lat: 51.2875, lng: 22.2140, description: "Dworek-muzeum pisarza z ekspozycją biograficzną i literacką.", openHours: "10:00-16:00 (wt-nd)", price: "8 zł", tip: "Pisarz mieszkał tu latami — autentyczne wnętrza" },
+      { name: "Pijalnia Wód Mineralnych", category: "inne", lat: 51.2865, lng: 22.2145, description: "Zabytkowa pijalnia w parku zdrojowym z wodami leczniczymi.", openHours: "7:00-18:00", price: "Bezpłatny", tip: "Warto spróbować wody żelazistej" },
+      { name: "Pałac Małachowskich", category: "zabytek", lat: 51.2855, lng: 22.2125, description: "Klasycystyczny pałac z XVIII w., centrum życia uzdrowiskowego.", openHours: "Teren zewnętrzny", price: "Bezpłatny", tip: "Piękny ogród przy pałacu" },
+      { name: "Wąwóz Pontowa", category: "przyroda", lat: 51.2920, lng: 22.1800, description: "Głęboki wąwóz lessowy w okolicach Nałęczowa — leśna przygoda.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Po deszczu trasa może być śliska" }
+    ],
+    access: {
+      bycar: "Z Lublina: droga 830 (ok. 28 km, 35 min). Parking przy parku zdrojowym.",
+      bybus: "Częste połączenia z Lublina, ok. 45 min.",
+      bytrain: "Stacja Nałęczów na linii Lublin-Radom (ok. 30 min z Lublina).",
+      cycling_access: "Droga rowerowa z Puław przez Kazimierz, ok. 22 km.",
+      parking: { coordinates: [51.2858, 22.2130], description: "Parking przy parku zdrojowym — 3 zł/h" },
+      tips: "Nałęczów to idealne połączenie kultury i natury. Sezon zdrojowy: V-X."
+    },
+    practical: {
+      bestSeason: "Maj - Październik (uzdrowisko), cały rok (sanatoria)",
+      weather: "Mikroklimat uzdrowiskowy, łagodne zimy, ciepłe lata",
+      accommodation: "Sanatoria, pensjonaty, wille uzdrowiskowe. Polecane: Hotel SPA Nałęczów",
+      food: "Kuchnia zdrowotna, lokale z kuchnią polską. Polecane: Stara Poczta",
+      bike_rental: "Wypożyczalnia przy dworcu PKP, 35 zł/dzień",
+      emergency: "Pogotowie: 112, Szpital Puławy: 81 886 60 00",
+      wifi: "WiFi w parku zdrojowym i sanatoriach"
+    }
+  },
+  {
+    id: "pulawy",
+    name: "Puławy",
+    region: "Kazimierski",
+    lat: 51.4168,
+    lng: 21.9696,
+    description: "Miasto z jednym z najstarszych parków romantycznych w Polsce — Czartoryskich, oraz bazą nad Wisłą.",
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/%C5%9Awi%C4%85tynia_Sybilli_w_Pu%C5%82awach.jpg/1280px-%C5%9Awi%C4%85tynia_Sybilli_w_Pu%C5%82awach.jpg",
+    badge: "",
+    hiking: [
+      {
+        name: "Szlak po Parku Czartoryskich",
+        color: "green",
+        distance: "5 km",
+        time: "1,5-2 h",
+        difficulty: "easy",
+        elevation: "+40m",
+        type: "loop",
+        description: "Spacer po zabytkowym parku romantycznym z pawilonami i świątyniami ogrodowymi.",
+        highlights: ["Świątynia Sybilli", "Domek Gotycki", "Pałac Czartoryskich"],
+        waypoints: [[51.4168,21.9696],[51.4180,21.9720],[51.4200,21.9700],[51.4190,21.9680],[51.4168,21.9696]]
+      },
+      {
+        name: "Szlak Nadwiślański — odcinek Puławy",
+        color: "red",
+        distance: "10 km",
+        time: "3 h",
+        difficulty: "easy",
+        elevation: "+50m",
+        type: "linear",
+        description: "Trasa wzdłuż Wisły z Puław na południe w kierunku Kazimierza Dolnego.",
+        highlights: ["Bulwar nadwiślański", "Wały wiślane", "Widoki na dolinę"],
+        waypoints: [[51.4168,21.9696],[51.4000,21.9700],[51.3800,21.9600],[51.3600,21.9500]]
+      },
+      {
+        name: "Ścieżka Edukacyjna Lasu Puławskiego",
+        color: "yellow",
+        distance: "7 km",
+        time: "2 h",
+        difficulty: "easy",
+        elevation: "+30m",
+        type: "loop",
+        description: "Leśna ścieżka edukacyjna w nadwiślańskich lasach z tablicami informacyjnymi.",
+        highlights: ["Las liściasty", "Stanowiska roślin", "Punkt widokowy"],
+        waypoints: [[51.4168,21.9696],[51.4100,21.9600],[51.4050,21.9650],[51.4100,21.9750],[51.4168,21.9696]]
+      },
+      {
+        name: "Szlak Skarpą Wiślaną",
+        color: "red",
+        distance: "9 km",
+        time: "3 h",
+        difficulty: "medium",
+        elevation: "+130m",
+        type: "linear",
+        description: "Trasa wzdłuż skarpy wiślanej z parku Czartoryskich w stronę Kazimierza z panoramami.",
+        highlights: ["Skarpa wiślana", "Panorama Wisły", "Las nadwiślański", "Grodzisko"],
+        waypoints: [[51.4168,21.9696],[51.4050,21.9650],[51.3900,21.9600],[51.3750,21.9550]]
+      },
+      {
+        name: "Ścieżka Czartoryskich",
+        color: "green",
+        distance: "3 km",
+        time: "1 h",
+        difficulty: "easy",
+        elevation: "+30m",
+        type: "loop",
+        description: "Krótki spacer po parku romantycznym z wizytą w pawilonach ogrodowych.",
+        highlights: ["Świątynia Sybilli", "Domek Gotycki", "Altana", "Grota Sybilli"],
+        waypoints: [[51.4168,21.9696],[51.4180,21.9710],[51.4195,21.9700],[51.4185,21.9680],[51.4168,21.9696]]
+      },
+      {
+        name: "Szlak Doliny Kurówki",
+        color: "blue",
+        distance: "11 km",
+        time: "3,5 h",
+        difficulty: "medium",
+        elevation: "+90m",
+        type: "outAndBack",
+        description: "Trasa wzdłuż malowniczej doliny rzeki Kurówki z bogatą florą.",
+        highlights: ["Dolina Kurówki", "Łąki podmokłe", "Las łęgowy", "Bobry"],
+        waypoints: [[51.4168,21.9696],[51.4100,21.9800],[51.4000,21.9900]]
+      }
+    ],
+    cycling: [
+      {
+        name: "Puławy — Kazimierz Wisłostradą",
+        distance: "15 km",
+        time: "1 h",
+        difficulty: "easy",
+        elevation: "+40m",
+        surface: "asphalt",
+        type: "linear",
+        description: "Asfaltowa ścieżka rowerowa wzdłuż Wisły — najpopularniejsza trasa regionu.",
+        highlights: ["Wisłostrada", "Widok na dolinę", "Kazimierz Dolny"],
+        waypoints: [[51.4168,21.9696],[51.3900,21.9650],[51.3600,21.9550],[51.3197,21.9527]]
+      },
+      {
+        name: "Pętla Rowerowa Puławy — Nałęczów — Kazimierz",
+        distance: "55 km",
+        time: "4 h",
+        difficulty: "medium",
+        elevation: "+450m",
+        surface: "asphalt",
+        type: "loop",
+        description: "Klasyczna pętla łącząca trzy najważniejsze miejsca regionu kazimierskiego.",
+        highlights: ["Nałęczów", "Kazimierz Dolny", "Wisłostrada"],
+        waypoints: [[51.4168,21.9696],[51.2861,22.2133],[51.3197,21.9527],[51.4168,21.9696]]
+      },
+      {
+        name: "EuroVelo 11 — odcinek Puławy",
+        distance: "25 km",
+        time: "1,5-2 h",
+        difficulty: "easy",
+        elevation: "+80m",
+        surface: "asphalt",
+        type: "linear",
+        description: "Odcinek międzynarodowej trasy rowerowej EuroVelo 11 przebiegający przez Puławy.",
+        highlights: ["Park Czartoryskich", "Wisła", "Tereny nadrzeczne"],
+        waypoints: [[51.4168,21.9696],[51.4300,21.9800],[51.4500,21.9900]]
+      },
+      {
+        name: "Pętla Rowerowa Doliny Wisły",
+        distance: "40 km",
+        time: "2,5-3 h",
+        difficulty: "medium",
+        elevation: "+200m",
+        surface: "mixed",
+        type: "loop",
+        description: "Duża pętla obu stronami doliny Wisły z promem w Kazimierzu.",
+        highlights: ["Wisłostrada", "Kazimierz", "Prom", "Janowiec", "Skarpa wiślana"],
+        waypoints: [[51.4168,21.9696],[51.3600,21.9550],[51.3197,21.9527],[51.3284,21.9127],[51.3800,21.9400],[51.4168,21.9696]]
+      },
+      {
+        name: "Rowerem do Dęblina",
+        distance: "30 km",
+        time: "2 h",
+        difficulty: "easy",
+        elevation: "+60m",
+        surface: "asphalt",
+        type: "linear",
+        description: "Trasa asfaltowa wzdłuż Wisły z Puław do Dęblina — miasta lotników.",
+        highlights: ["Dolina Wisły", "Irena", "Dęblin", "Szkoła Orląt"],
+        waypoints: [[51.4168,21.9696],[51.4300,21.9500],[51.4500,21.8800],[51.4600,21.8500]]
+      },
+      {
+        name: "Szlak Rowerowy Azalii",
+        distance: "16 km",
+        time: "1 h",
+        difficulty: "easy",
+        elevation: "+50m",
+        surface: "asphalt",
+        type: "loop",
+        description: "Pętla po terenach zielonych Puław z arboretum i lasem nadwiślańskim.",
+        highlights: ["Arboretum", "Las nadwiślański", "Park Czartoryskich", "Bulwar"],
+        waypoints: [[51.4168,21.9696],[51.4100,21.9600],[51.4050,21.9700],[51.4100,21.9800],[51.4168,21.9696]]
+      }
+    ],
+    attractions: [
+      { name: "Pałac Czartoryskich", category: "zabytek", lat: 51.4175, lng: 21.9700, description: "Monumentalny pałac rodu Czartoryskich z XVIII w. w otoczeniu parku romantycznego.", openHours: "10:00-17:00 (wt-nd)", price: "12 zł", tip: "Zarezerwuj 2h na pałac i park" },
+      { name: "Świątynia Sybilli", category: "zabytek", lat: 51.4185, lng: 21.9715, description: "Neogotycki pawilon na skarpie wiślanej — pierwsze muzeum polskie.", openHours: "10:00-16:00", price: "8 zł", tip: "Panoramiczny widok na Wisłę" },
+      { name: "Domek Gotycki", category: "muzeum", lat: 51.4190, lng: 21.9690, description: "Neogotycki pawilon muzealny w parku z kolekcją dzieł sztuki.", openHours: "10:00-16:00 (wt-nd)", price: "8 zł", tip: "Unikatowa kolekcja memorabiliów" },
+      { name: "Park Czartoryskich", category: "przyroda", lat: 51.4180, lng: 21.9710, description: "Jeden z najstarszych parków romantycznych w Polsce — 30 ha zieleni.", openHours: "6:00-22:00", price: "Bezpłatny", tip: "Jesienna kolorystyka jest spektakularna" },
+      { name: "Muzeum Regionalne IUNG", category: "muzeum", lat: 51.4160, lng: 21.9680, description: "Ekspozycja rolnicza i przyrodnicza w historycznych budynkach.", openHours: "9:00-15:00 (pn-pt)", price: "5 zł", tip: "Ciekawa historia rolnictwa regionu" }
+    ],
+    access: {
+      bycar: "Z Lublina: S12/DK17 (ok. 45 km, 40 min). Parkingi przy parku i centrum.",
+      bybus: "Częste połączenia z Lublina: co 30 min, ok. 1h.",
+      bytrain: "Stacja Puławy Miasto — pociągi z Lublina (ok. 40 min) i Radomia.",
+      cycling_access: "Wisłostrada z Kazimierza, EuroVelo 11. Doskonała infrastruktura.",
+      parking: { coordinates: [51.4165, 21.9690], description: "Parking przy Pałacu Czartoryskich — bezpłatny, 100 miejsc" },
+      tips: "Puławy to świetna baza na region kazimierski. Połączenia komunikacyjne."
+    },
+    practical: {
+      bestSeason: "Kwiecień - Październik",
+      weather: "Klimat umiarkowany, wpływ doliny Wisły",
+      accommodation: "Hotele, pensjonaty, apartamenty. Polecane: Hotel Margerita",
+      food: "Restauracje w centrum. Polecane: Pod Złotym Lwem",
+      bike_rental: "Wypożyczalnia przy dworcu PKP, 35 zł/dzień",
+      emergency: "Pogotowie: 112, Szpital Puławy: 81 886 60 00",
+      wifi: "WiFi w parku i centrum miasta"
+    }
+  },
+  {
+    id: "janowiec",
+    name: "Janowiec",
+    region: "Kazimierski",
+    lat: 51.3284,
+    lng: 21.9127,
+    description: "Malownicza wieś z ruinami potężnego zamku Firlejów nad Wisłą, naprzeciw Kazimierza Dolnego.",
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Ruiny_zamku_w_Janowcu%2C_widok_z_po%C5%82udnia.jpg/1280px-Ruiny_zamku_w_Janowcu%2C_widok_z_po%C5%82udnia.jpg",
+    badge: "",
+    hiking: [
+      {
+        name: "Szlak Zamkowy Janowiec",
+        color: "red",
+        distance: "6 km",
+        time: "2 h",
+        difficulty: "easy",
+        elevation: "+100m",
+        type: "loop",
+        description: "Pętla od promu przez wzgórze zamkowe z panoramą Wisły i Kazimierza.",
+        highlights: ["Zamek Firlejów", "Panorama Wisły", "Skansen"],
+        waypoints: [[51.3284,21.9127],[51.3300,21.9150],[51.3320,21.9130],[51.3300,21.9100],[51.3284,21.9127]]
+      },
+      {
+        name: "Szlak Nadwiślański — Janowiec",
+        color: "blue",
+        distance: "10 km",
+        time: "3 h",
+        difficulty: "medium",
+        elevation: "+150m",
+        type: "linear",
+        description: "Trasa wzdłuż Wisły z widokami na obie strony przełomu.",
+        highlights: ["Przełom Wisły", "Skarpa wiślana", "Las nadrzeczny"],
+        waypoints: [[51.3284,21.9127],[51.3400,21.9200],[51.3500,21.9300]]
+      },
+      {
+        name: "Ścieżka Przyrodnicza Janowiec",
+        color: "green",
+        distance: "4 km",
+        time: "1,5 h",
+        difficulty: "easy",
+        elevation: "+50m",
+        type: "loop",
+        description: "Spacer przez tereny nadwiślańskie z bogatą florą i fauną.",
+        highlights: ["Łąki nadwiślańskie", "Starorzecza", "Ptaki"],
+        waypoints: [[51.3284,21.9127],[51.3260,21.9100],[51.3240,21.9130],[51.3260,21.9160],[51.3284,21.9127]]
+      },
+      {
+        name: "Szlak Skarpy Zachodniej",
+        color: "red",
+        distance: "8 km",
+        time: "2,5 h",
+        difficulty: "medium",
+        elevation: "+170m",
+        type: "linear",
+        description: "Trasa wzdłuż zachodniej skarpy wiślanej z widokami na przełom i Kazimierz.",
+        highlights: ["Skarpa zachodnia", "Panorama Kazimierza", "Las nadwiślański", "Grodzisko"],
+        waypoints: [[51.3284,21.9127],[51.3200,21.9050],[51.3100,21.8950],[51.3000,21.8850]]
+      },
+      {
+        name: "Ścieżka Orła Bielika",
+        color: "green",
+        distance: "6 km",
+        time: "2 h",
+        difficulty: "easy",
+        elevation: "+60m",
+        type: "loop",
+        description: "Ścieżka obserwacyjna z możliwością zobaczenia orłów bielików gniazdujących nad Wisłą.",
+        highlights: ["Stanowiska bielików", "Łąki zalewowe", "Starorzecza Wisły", "Czatownia"],
+        waypoints: [[51.3284,21.9127],[51.3250,21.9080],[51.3220,21.9100],[51.3250,21.9150],[51.3284,21.9127]]
+      },
+      {
+        name: "Szlak Średniowieczny Janowiec",
+        color: "yellow",
+        distance: "4 km",
+        time: "1,5 h",
+        difficulty: "easy",
+        elevation: "+90m",
+        type: "loop",
+        description: "Krótka trasa po wzgórzu zamkowym z elementami edukacji historycznej.",
+        highlights: ["Zamek Firlejów", "Skansen", "Baszta", "Widok na dolinę"],
+        waypoints: [[51.3284,21.9127],[51.3300,21.9140],[51.3315,21.9130],[51.3305,21.9110],[51.3284,21.9127]]
+      }
+    ],
+    cycling: [
+      {
+        name: "Janowiec — Puławy rowerem",
+        distance: "12 km",
+        time: "45 min",
+        difficulty: "easy",
+        elevation: "+60m",
+        surface: "asphalt",
+        type: "linear",
+        description: "Krótka trasa asfaltowa łącząca Janowiec z Puławami wzdłuż Wisły.",
+        highlights: ["Dolina Wisły", "Widoki na Kazimierz", "Puławy"],
+        waypoints: [[51.3284,21.9127],[51.3500,21.9200],[51.3800,21.9400],[51.4168,21.9696]]
+      },
+      {
+        name: "Pętla Rowerowa Przełomu Wisły",
+        distance: "35 km",
+        time: "2,5 h",
+        difficulty: "medium",
+        elevation: "+300m",
+        surface: "mixed",
+        type: "loop",
+        description: "Pętla przez zachodnią stronę przełomu Wisły z promem do Kazimierza.",
+        highlights: ["Zamek Janowiecki", "Prom", "Kazimierz Dolny", "Wąwozy"],
+        waypoints: [[51.3284,21.9127],[51.3100,21.8900],[51.3000,21.9000],[51.3197,21.9527],[51.3284,21.9127]]
+      },
+      {
+        name: "Trasa Rowerowa Wąwozów",
+        distance: "20 km",
+        time: "1,5 h",
+        difficulty: "medium",
+        elevation: "+220m",
+        surface: "gravel",
+        type: "loop",
+        description: "Trasa przez wąwozy i wzgórza lessowe po zachodniej stronie Wisły.",
+        highlights: ["Wąwozy lessowe", "Sady", "Widoki na Wisłę"],
+        waypoints: [[51.3284,21.9127],[51.3200,21.9000],[51.3100,21.8900],[51.3200,21.9050],[51.3284,21.9127]]
+      },
+      {
+        name: "Janowiec — Kazimierz promem i rowerem",
+        distance: "15 km",
+        time: "1 h",
+        difficulty: "easy",
+        elevation: "+100m",
+        surface: "mixed",
+        type: "loop",
+        description: "Pętla z przeprawą promową do Kazimierza, powrót drogą przez wsie.",
+        highlights: ["Prom", "Kazimierz Dolny", "Rynek", "Droga powrotna wsiami"],
+        waypoints: [[51.3284,21.9127],[51.3250,21.9200],[51.3197,21.9527],[51.3100,21.9300],[51.3284,21.9127]]
+      },
+      {
+        name: "Pętla Rowerowa Zachodniego Przełomu",
+        distance: "30 km",
+        time: "2 h",
+        difficulty: "medium",
+        elevation: "+250m",
+        surface: "mixed",
+        type: "loop",
+        description: "Pętla po zachodniej stronie Wisły przez wsie, sady i wzgórza lessowe.",
+        highlights: ["Wzgórza lessowe", "Sady wiśniowe", "Kościoły drewniane", "Panoramy"],
+        waypoints: [[51.3284,21.9127],[51.3100,21.8800],[51.2900,21.8700],[51.3000,21.9000],[51.3284,21.9127]]
+      },
+      {
+        name: "Janowiec — Opole Lubelskie",
+        distance: "25 km",
+        time: "1,5 h",
+        difficulty: "easy",
+        elevation: "+80m",
+        surface: "asphalt",
+        type: "linear",
+        description: "Trasa asfaltowa na zachód do Opola Lubelskiego przez tereny rolnicze.",
+        highlights: ["Tereny rolnicze", "Kościoły wiejskie", "Opole Lubelskie", "Rynek"],
+        waypoints: [[51.3284,21.9127],[51.3100,21.8600],[51.2900,21.8100],[51.2700,21.7600]]
+      }
+    ],
+    attractions: [
+      { name: "Zamek w Janowcu", category: "zabytek", lat: 51.3300, lng: 21.9140, description: "Potężne ruiny zamku Firlejów z XVI w. — jeden z największych na Lubelszczyźnie.", openHours: "10:00-18:00 (V-IX)", price: "15 zł", tip: "Widok na Kazimierz z wieży jest fenomenalny" },
+      { name: "Skansen w Janowcu", category: "muzeum", lat: 51.3295, lng: 21.9135, description: "Ekspozycja drewnianych budynków wiejskich z regionu przy zamku.", openHours: "10:00-17:00 (V-IX)", price: "Wliczony w bilet zamku", tip: "Autentyczne chałupy i spichlerze" },
+      { name: "Prom Kazimierz-Janowiec", category: "inne", lat: 51.3250, lng: 21.9200, description: "Historyczna przeprawa promowa przez Wisłę — jedyna w regionie.", openHours: "7:00-20:00 (sezon)", price: "5 zł (pieszy), 15 zł (rower)", tip: "Przeprawa trwa 5 min — świetne widoki" },
+      { name: "Kościół parafialny", category: "kosciol", lat: 51.3280, lng: 21.9120, description: "Zabytkowy kościół z XVI w. z elementami renesansowymi.", openHours: "7:00-18:00", price: "Bezpłatny", tip: "Ciekawe epitafia szlacheckie" },
+      { name: "Punkt widokowy nad Wisłą", category: "widok", lat: 51.3310, lng: 21.9150, description: "Panorama na przełom Wisły, Kazimierz i dolinę — jeden z najpiękniejszych widoków.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Ławka z widokiem — weź kanapki" }
+    ],
+    access: {
+      bycar: "Z Puław: droga 824 (12 km, 15 min). Z Kazimierza: promem (5 min).",
+      bybus: "PKS z Puław, kilka kursów dziennie.",
+      bytrain: "Brak połączenia.",
+      cycling_access: "Rowerem z Puław (12 km) lub promem z Kazimierza.",
+      parking: { coordinates: [51.3288, 21.9130], description: "Parking przy zamku — 5 zł" },
+      tips: "Połącz wizytę z Kazimierzem — prom to dodatkowa atrakcja."
+    },
+    practical: {
+      bestSeason: "Maj - Wrzesień (zamek i prom czynne)",
+      weather: "Klimat umiarkowany, dolina Wisły",
+      accommodation: "Agroturystyka, pokoje gościnne",
+      food: "Gospoda przy zamku, karczma z widokiem na Wisłę",
+      bike_rental: "Brak wypożyczalni — rower z Kazimierza lub Puław",
+      emergency: "Pogotowie: 112",
+      wifi: "Ograniczony zasięg"
+    }
+  },
+
+  /* ============================== */
+  /* REGION CENTRALNY               */
+  /* ============================== */
+  {
+    id: "lublin",
+    name: "Lublin",
+    region: "Centralny",
+    lat: 51.2465,
+    lng: 22.5684,
+    description: "Stolica województwa, miasto wielokulturowe z gotycko-renesansowym Starym Miastem i bogatą historią.",
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Lublin_-_Brama_Krakowska_02.jpg/800px-Lublin_-_Brama_Krakowska_02.jpg",
+    badge: "⭐ Stolica regionu",
+    hiking: [
+      {
+        name: "Szlak po Starym Mieście",
+        color: "red",
+        distance: "5 km",
+        time: "2-3 h",
+        difficulty: "easy",
+        elevation: "+60m",
+        type: "loop",
+        description: "Spacer po zabytkowym Starym Mieście Lublina z najważniejszymi zabytkami.",
+        highlights: ["Zamek Lubelski", "Brama Krakowska", "Rynek", "Kaplica Trójcy Świętej"],
+        waypoints: [[51.2465,22.5684],[51.2480,22.5700],[51.2500,22.5720],[51.2490,22.5660],[51.2465,22.5684]]
+      },
+      {
+        name: "Szlak Doliną Bystrzycy",
+        color: "blue",
+        distance: "12 km",
+        time: "3 h",
+        difficulty: "easy",
+        elevation: "+40m",
+        type: "linear",
+        description: "Zielona trasa wzdłuż rzeki Bystrzycy przez parki i tereny rekreacyjne Lublina.",
+        highlights: ["Zalew Zemborzycki", "Park Ludowy", "Ogród Botaniczny"],
+        waypoints: [[51.2465,22.5684],[51.2300,22.5500],[51.2100,22.5400],[51.2000,22.5300]]
+      },
+      {
+        name: "Ścieżka Wąwozów Lubelskich",
+        color: "yellow",
+        distance: "8 km",
+        time: "2,5 h",
+        difficulty: "medium",
+        elevation: "+150m",
+        type: "loop",
+        description: "Trasa przez wąwozy lessowe na obrzeżach Lublina — dzika przyroda w mieście.",
+        highlights: ["Wąwóz Lipnik", "Las Dąbrowa", "Wzgórza lessowe"],
+        waypoints: [[51.2465,22.5684],[51.2400,22.5600],[51.2350,22.5500],[51.2400,22.5700],[51.2465,22.5684]]
+      },
+      {
+        name: "Szlak Grodzisk Lubelskich",
+        color: "red",
+        distance: "15 km",
+        time: "4,5 h",
+        difficulty: "hard",
+        elevation: "+250m",
+        type: "loop",
+        description: "Wymagająca trasa po historycznych grodziskach na wzgórzach wokół Lublina.",
+        highlights: ["Grodzisko Czwartek", "Góra Zamkowa", "Wąwóz Lipnik", "Wzgórze Staromiejskie"],
+        waypoints: [[51.2465,22.5684],[51.2500,22.5750],[51.2550,22.5800],[51.2500,22.5650],[51.2465,22.5684]]
+      },
+      {
+        name: "Ścieżka nad Czerniejówką",
+        color: "green",
+        distance: "6 km",
+        time: "2 h",
+        difficulty: "easy",
+        elevation: "+30m",
+        type: "outAndBack",
+        description: "Spacer wzdłuż potoku Czerniejówka przez parki i tereny zielone Lublina.",
+        highlights: ["Dolina Czerniejówki", "Ogród Botaniczny", "Park Saski", "Fontanny"],
+        waypoints: [[51.2465,22.5684],[51.2500,22.5600],[51.2550,22.5500]]
+      },
+      {
+        name: "Szlak Multikulturowy Lublina",
+        color: "yellow",
+        distance: "7 km",
+        time: "3 h",
+        difficulty: "easy",
+        elevation: "+80m",
+        type: "loop",
+        description: "Ścieżka po śladach wielokulturowego Lublina — polskiego, żydowskiego, ruskiego.",
+        highlights: ["Stare Miasto", "Grodzka Gate", "Zamek", "Brama Krakowska", "Plac po Farze"],
+        waypoints: [[51.2465,22.5684],[51.2490,22.5710],[51.2510,22.5730],[51.2480,22.5660],[51.2465,22.5684]]
+      },
+      {
+        name: "Szlak Zalewu Zemborzyckiego",
+        color: "blue",
+        distance: "10 km",
+        time: "3 h",
+        difficulty: "easy",
+        elevation: "+40m",
+        type: "loop",
+        description: "Pętla wokół Zalewu Zemborzyckiego z plażami, mariną i terenem rekreacyjnym.",
+        highlights: ["Zalew Zemborzycki", "Marina", "Plaża miejska", "Ścieżka zdrowia"],
+        waypoints: [[51.2000,22.5300],[51.1950,22.5200],[51.1900,22.5350],[51.1950,22.5450],[51.2000,22.5300]]
+      }
+    ],
+    cycling: [
+      {
+        name: "Rowerem wokół Zalewu Zemborzyckiego",
+        distance: "10 km",
+        time: "40 min",
+        difficulty: "easy",
+        elevation: "+20m",
+        surface: "asphalt",
+        type: "loop",
+        description: "Popularna asfaltowa pętla wokół zalewu — ulubiona trasa mieszkańców.",
+        highlights: ["Zalew Zemborzycki", "Marina", "Plaża", "Park rekreacyjny"],
+        waypoints: [[51.2000,22.5300],[51.1950,22.5200],[51.1900,22.5350],[51.1950,22.5450],[51.2000,22.5300]]
+      },
+      {
+        name: "Trasa Rowerowa Lublin — Kazimierz Dolny",
+        distance: "48 km",
+        time: "3 h",
+        difficulty: "medium",
+        elevation: "+350m",
+        surface: "mixed",
+        type: "linear",
+        description: "Najpiękniejsza trasa rowerowa regionu z Lublina do Kazimierza Dolnego.",
+        highlights: ["Dolina Bystrzycy", "Nałęczów", "Wąwozy lessowe", "Kazimierz"],
+        waypoints: [[51.2465,22.5684],[51.2700,22.3500],[51.2861,22.2133],[51.3197,21.9527]]
+      },
+      {
+        name: "Pętla Rowerowa Lublina",
+        distance: "25 km",
+        time: "1,5-2 h",
+        difficulty: "easy",
+        elevation: "+100m",
+        surface: "asphalt",
+        type: "loop",
+        description: "Miejska trasa rowerowa łącząca najważniejsze tereny rekreacyjne Lublina.",
+        highlights: ["Park Ludowy", "Zalew", "Ogród Saski", "Centrum"],
+        waypoints: [[51.2465,22.5684],[51.2300,22.5500],[51.2000,22.5300],[51.2200,22.5600],[51.2465,22.5684]]
+      },
+      {
+        name: "Lublin — Nałęczów rowerem",
+        distance: "30 km",
+        time: "2 h",
+        difficulty: "medium",
+        elevation: "+220m",
+        surface: "asphalt",
+        type: "linear",
+        description: "Trasa z Lublina do uzdrowiska Nałęczów przez wzgórza i wsie podmiejskie.",
+        highlights: ["Przedmieścia Lublina", "Wzgórza lessowe", "Nałęczów", "Park Zdrojowy"],
+        waypoints: [[51.2465,22.5684],[51.2600,22.4500],[51.2700,22.3500],[51.2861,22.2133]]
+      },
+      {
+        name: "Szlak Rowerowy Doliną Bystrzycy",
+        distance: "35 km",
+        time: "2-2,5 h",
+        difficulty: "easy",
+        elevation: "+80m",
+        surface: "asphalt",
+        type: "linear",
+        description: "Asfaltowy szlak rowerowy wzdłuż doliny Bystrzycy z Lublina na południe.",
+        highlights: ["Dolina Bystrzycy", "Zalew Zemborzycki", "Łąki", "Tereny rekreacyjne"],
+        waypoints: [[51.2465,22.5684],[51.2300,22.5500],[51.2100,22.5400],[51.1800,22.5200]]
+      },
+      {
+        name: "Pętla Rowerowa Parków Lublina",
+        distance: "20 km",
+        time: "1,5 h",
+        difficulty: "easy",
+        elevation: "+70m",
+        surface: "asphalt",
+        type: "loop",
+        description: "Trasa łącząca wszystkie główne parki i tereny zielone miasta.",
+        highlights: ["Ogród Saski", "Park Ludowy", "Ogród Botaniczny", "Zalew"],
+        waypoints: [[51.2465,22.5684],[51.2500,22.5600],[51.2400,22.5500],[51.2300,22.5600],[51.2465,22.5684]]
+      },
+      {
+        name: "Lublin — Świdnik — Łęczna",
+        distance: "40 km",
+        time: "2,5-3 h",
+        difficulty: "easy",
+        elevation: "+90m",
+        surface: "asphalt",
+        type: "linear",
+        description: "Trasa podmiejska z Lublina przez Świdnik do Łęcznej — brama na Polesie.",
+        highlights: ["Świdnik", "Lotnisko", "Dolina Giełczwi", "Łęczna"],
+        waypoints: [[51.2465,22.5684],[51.2194,22.6942],[51.2500,22.7500],[51.3017,22.8789]]
+      }
+    ],
+    attractions: [
+      { name: "Zamek Lubelski", category: "zabytek", lat: 51.2500, lng: 22.5720, description: "Gotycki zamek z Kaplicą Trójcy Świętej i słynnymi freskami bizantyjsko-ruskimi.", openHours: "10:00-18:00 (wt-nd)", price: "15 zł", tip: "Kaplica Trójcy Świętej — arcydzieło sztuki średniowiecznej" },
+      { name: "Stare Miasto", category: "zabytek", lat: 51.2475, lng: 22.5695, description: "Gotycko-renesansowe Stare Miasto z Bramą Krakowską i kamieniczkami.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Wieczorem klimatyczne oświetlenie i knajpki" },
+      { name: "Brama Krakowska", category: "zabytek", lat: 51.2488, lng: 22.5670, description: "XIV-wieczna brama z muzeum historii miasta i tarasem widokowym.", openHours: "10:00-17:00 (wt-nd)", price: "8 zł", tip: "Taras widokowy — panorama Starego Miasta" },
+      { name: "Ogród Saski", category: "przyroda", lat: 51.2480, lng: 22.5630, description: "Najstarszy park miejski Lublina z XIX w., pięknie zrewitalizowany.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Fontanna multimedialna wieczorami" },
+      { name: "Muzeum Wsi Lubelskiej (Skansen)", category: "muzeum", lat: 51.2200, lng: 22.5200, description: "Największy skansen w Polsce z 80+ obiektami budownictwa ludowego.", openHours: "9:00-17:00 (IV-X)", price: "15 zł", tip: "Zaplanuj minimum 3h — ogromny teren" },
+      { name: "Majdanek", category: "muzeum", lat: 51.2350, lng: 22.5950, description: "Muzeum i miejsce pamięci na terenie byłego obozu koncentracyjnego.", openHours: "9:00-17:00 (wt-nd)", price: "Bezpłatny", tip: "Miejsce refleksji — zaplanuj co najmniej 2h" }
+    ],
+    access: {
+      bycar: "Autostrady S12, S17, S19 zbiegają się w Lublinie. Parkingi w centrum.",
+      bybus: "Dworzec główny — połączenia z całą Polską. FlixBus, PolskiBus.",
+      bytrain: "Dworzec Lublin Główny — pociągi do Warszawy (2h 15min), Krakowa, Zamościa.",
+      cycling_access: "Rozbudowana sieć dróg rowerowych w mieście. Lublin Bike (rower miejski).",
+      parking: { coordinates: [51.2470, 22.5650], description: "Parking podziemny Plac Zamkowy — 4 zł/h" },
+      tips: "Lublin to idealna baza wypadowa na całe województwo. Bogata oferta nocna."
+    },
+    practical: {
+      bestSeason: "Cały rok (miasto), Maj-Wrzesień (wycieczki)",
+      weather: "Klimat umiarkowany, cztery wyraźne pory roku",
+      accommodation: "Pełna oferta: od hosteli po hotele 4*. Polecane: Hotel & Restauracja Grodzka 20",
+      food: "Cebularz lubelski to must-try. Polecane: Mandragora (Stare Miasto)",
+      bike_rental: "Lublin Bike (rower miejski): 4 zł/30min. Liczne wypożyczalnie prywatne.",
+      emergency: "Pogotowie: 112, Szpital Kliniczny: 81 532 37 66",
+      wifi: "Darmowe WiFi w centrum i parkach"
+    }
+  },
+  {
+    id: "swidnik",
+    name: "Świdnik",
+    region: "Centralny",
+    lat: 51.2194,
+    lng: 22.6942,
+    description: "Miasto lotnictwa i solidarności, z muzeum lotnictwa i zielonymi terenami rekreacyjnymi.",
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/PZL_W-3_Sokol.jpg/1280px-PZL_W-3_Sokol.jpg",
+    badge: "",
+    hiking: [
+      {
+        name: "Szlak Zielony Świdnika",
+        color: "green",
+        distance: "7 km",
+        time: "2 h",
+        difficulty: "easy",
+        elevation: "+30m",
+        type: "loop",
+        description: "Spacerowa trasa przez parki i tereny zielone Świdnika.",
+        highlights: ["Park Avia", "Zalew Świdnik", "Aleje spacerowe"],
+        waypoints: [[51.2194,22.6942],[51.2220,22.6980],[51.2250,22.6950],[51.2220,22.6900],[51.2194,22.6942]]
+      },
+      {
+        name: "Ścieżka wokół Zalewu Świdnickiego",
+        color: "blue",
+        distance: "4 km",
+        time: "1 h",
+        difficulty: "easy",
+        elevation: "+10m",
+        type: "loop",
+        description: "Łatwa pętla wokół zalewu rekreacyjnego z plażą i infrastrukturą.",
+        highlights: ["Zalew Świdnicki", "Plaża", "Ścieżka zdrowia"],
+        waypoints: [[51.2194,22.6942],[51.2210,22.6970],[51.2230,22.6950],[51.2210,22.6920],[51.2194,22.6942]]
+      },
+      {
+        name: "Szlak Lotniczy Świdnika",
+        color: "yellow",
+        distance: "5 km",
+        time: "1,5 h",
+        difficulty: "easy",
+        elevation: "+20m",
+        type: "loop",
+        description: "Trasa tematyczna związana z historią lotnictwa — obok WSK PZL.",
+        highlights: ["Muzeum Lotnictwa", "Zakłady PZL", "Pomnik Lotnika"],
+        waypoints: [[51.2194,22.6942],[51.2180,22.6900],[51.2160,22.6920],[51.2180,22.6960],[51.2194,22.6942]]
+      },
+      {
+        name: "Szlak Solidarności",
+        color: "red",
+        distance: "4 km",
+        time: "1,5 h",
+        difficulty: "easy",
+        elevation: "+15m",
+        type: "loop",
+        description: "Spacer śladami strajków solidarnościowych 1980 roku w Świdniku.",
+        highlights: ["Pomnik Solidarności", "Brama główna WSK", "Mural Solidarności", "Park Pamięci"],
+        waypoints: [[51.2194,22.6942],[51.2200,22.6960],[51.2210,22.6940],[51.2200,22.6920],[51.2194,22.6942]]
+      },
+      {
+        name: "Ścieżka Przyrodnicza Krężniczanka",
+        color: "green",
+        distance: "7 km",
+        time: "2 h",
+        difficulty: "easy",
+        elevation: "+35m",
+        type: "loop",
+        description: "Spacer przez tereny zielone i lasy na obrzeżach Świdnika.",
+        highlights: ["Las sosnowy", "Polany", "Ścieżka zdrowia", "Punkt widokowy"],
+        waypoints: [[51.2194,22.6942],[51.2150,22.6880],[51.2100,22.6920],[51.2150,22.6980],[51.2194,22.6942]]
+      }
+    ],
+    cycling: [
+      {
+        name: "Świdnik — Lublin ścieżką rowerową",
+        distance: "12 km",
+        time: "40 min",
+        difficulty: "easy",
+        elevation: "+40m",
+        surface: "asphalt",
+        type: "linear",
+        description: "Ścieżka rowerowa łącząca Świdnik z centrum Lublina.",
+        highlights: ["Ścieżka rowerowa", "Park Ludowy", "Centrum Lublina"],
+        waypoints: [[51.2194,22.6942],[51.2300,22.6500],[51.2400,22.6000],[51.2465,22.5684]]
+      },
+      {
+        name: "Pętla Rowerowa Doliny Giełczwi",
+        distance: "28 km",
+        time: "2 h",
+        difficulty: "easy",
+        elevation: "+80m",
+        surface: "asphalt",
+        type: "loop",
+        description: "Spokojna trasa doliną Giełczwi przez okoliczne wsie i łąki.",
+        highlights: ["Dolina Giełczwi", "Wsie podmiejskie", "Łąki"],
+        waypoints: [[51.2194,22.6942],[51.2000,22.7200],[51.1900,22.7000],[51.2000,22.6800],[51.2194,22.6942]]
+      },
+      {
+        name: "Trasa Rowerowa Lotnisko",
+        distance: "15 km",
+        time: "1 h",
+        difficulty: "easy",
+        elevation: "+30m",
+        surface: "asphalt",
+        type: "loop",
+        description: "Pętla wokół lotniska Lublin-Świdnik z widokiem na starty i lądowania.",
+        highlights: ["Lotnisko Lublin", "Widok na samoloty", "Tereny zielone"],
+        waypoints: [[51.2194,22.6942],[51.2300,22.7100],[51.2350,22.7000],[51.2250,22.6850],[51.2194,22.6942]]
+      },
+      {
+        name: "Świdnik — Łęczna rowerem",
+        distance: "22 km",
+        time: "1,5 h",
+        difficulty: "easy",
+        elevation: "+50m",
+        surface: "asphalt",
+        type: "linear",
+        description: "Trasa asfaltowa ze Świdnika do Łęcznej przez tereny podmiejskie.",
+        highlights: ["Tereny podmiejskie", "Dolina Giełczwi", "Łęczna", "Rynek"],
+        waypoints: [[51.2194,22.6942],[51.2400,22.7300],[51.2700,22.8000],[51.3017,22.8789]]
+      },
+      {
+        name: "Pętla Rowerowa Podmiejska",
+        distance: "25 km",
+        time: "1,5-2 h",
+        difficulty: "easy",
+        elevation: "+60m",
+        surface: "asphalt",
+        type: "loop",
+        description: "Pętla po drogach podmiejskich Świdnika z widokiem na Lublin i lotnisko.",
+        highlights: ["Widok na lotnisko", "Tereny rolnicze", "Wsie podmiejskie", "Panorama Lublina"],
+        waypoints: [[51.2194,22.6942],[51.2100,22.7100],[51.2000,22.7000],[51.2100,22.6800],[51.2194,22.6942]]
+      },
+      {
+        name: "Szlak Rowerowy Mełgiewka",
+        distance: "30 km",
+        time: "2 h",
+        difficulty: "easy",
+        elevation: "+70m",
+        surface: "mixed",
+        type: "loop",
+        description: "Pętla wzdłuż doliny Mełgiewki przez wsie i tereny rolnicze.",
+        highlights: ["Dolina Mełgiewki", "Mełgiew", "Kościoły drewniane", "Łąki"],
+        waypoints: [[51.2194,22.6942],[51.2000,22.7200],[51.1800,22.7100],[51.2000,22.6800],[51.2194,22.6942]]
+      }
+    ],
+    attractions: [
+      { name: "Muzeum Lotnictwa Polskiego", category: "muzeum", lat: 51.2190, lng: 22.6930, description: "Ekspozycja śmigłowców i samolotów produkowanych w zakładach PZL.", openHours: "10:00-16:00 (wt-nd)", price: "10 zł", tip: "Można wejść do kokpitu śmigłowca" },
+      { name: "Zalew Świdnicki", category: "przyroda", lat: 51.2220, lng: 22.6960, description: "Zbiornik rekreacyjny z plażą, ścieżką zdrowia i infrastrukturą.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Latem tłoczno — przyjedź rano" },
+      { name: "Park Avia", category: "przyroda", lat: 51.2200, lng: 22.6950, description: "Nowoczesny park rekreacyjny z placem zabaw i siłownią plenerową.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Świetne miejsce dla rodzin z dziećmi" },
+      { name: "Pomnik Solidarności", category: "zabytek", lat: 51.2185, lng: 22.6935, description: "Pomnik upamiętniający strajki w WSK PZL Świdnik w 1980 r.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Historia początków Solidarności na Lubelszczyźnie" },
+      { name: "Lotnisko Lublin", category: "inne", lat: 51.2400, lng: 22.7100, description: "Port lotniczy Lublin — brama lotnicza na Lubelszczyznę.", openHours: "Według rozkładu lotów", price: "—", tip: "Taras widokowy na samoloty" }
+    ],
+    access: {
+      bycar: "Z Lublina: droga 822 (8 km, 15 min). Z lotniska: 5 km.",
+      bybus: "Autobusy miejskie MPK z Lublina: linie 3, 5, 55 (co 15 min).",
+      bytrain: "Brak stacji kolejowej w Świdniku.",
+      cycling_access: "Ścieżka rowerowa z Lublina, 12 km.",
+      parking: { coordinates: [51.2190, 22.6940], description: "Parking przy Muzeum Lotnictwa — bezpłatny" },
+      tips: "Świdnik to szybki wypad z Lublina. Bliskość lotniska — wygodny dojazd."
+    },
+    practical: {
+      bestSeason: "Cały rok",
+      weather: "Jak w Lublinie — klimat umiarkowany",
+      accommodation: "Hotele przy lotnisku, nocleg w Lublinie (8 km)",
+      food: "Restauracje i pizzerie w centrum. Polecane: Lotos",
+      bike_rental: "Lublin Bike — stacja w Świdniku",
+      emergency: "Pogotowie: 112",
+      wifi: "WiFi w parkach i centrum"
+    }
+  },
+  {
+    id: "lubartow",
+    name: "Lubartów",
+    region: "Centralny",
+    lat: 51.4610,
+    lng: 22.6060,
+    description: "Miasto z barokowym pałacem Sanguszków, historyczny ośrodek wielokulturowy północnej Lubelszczyzny.",
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/Kozlowka_Palace.jpg/1280px-Kozlowka_Palace.jpg",
+    badge: "",
+    hiking: [
+      {
+        name: "Szlak Pałacowy Lubartowa",
+        color: "red",
+        distance: "5 km",
+        time: "1,5-2 h",
+        difficulty: "easy",
+        elevation: "+20m",
+        type: "loop",
+        description: "Spacer po zabytkowym centrum z pałacem Sanguszków i parkiem.",
+        highlights: ["Pałac Sanguszków", "Park pałacowy", "Rynek", "Kościół"],
+        waypoints: [[51.4610,22.6060],[51.4630,22.6080],[51.4650,22.6060],[51.4630,22.6040],[51.4610,22.6060]]
+      },
+      {
+        name: "Szlak Doliną Wieprza — Lubartów",
+        color: "blue",
+        distance: "10 km",
+        time: "3 h",
+        difficulty: "easy",
+        elevation: "+25m",
+        type: "linear",
+        description: "Spacer wzdłuż Wieprza na północ od miasta przez łąki i zarośla nadrzeczne.",
+        highlights: ["Dolina Wieprza", "Łąki zalewowe", "Ptaki wodne"],
+        waypoints: [[51.4610,22.6060],[51.4700,22.6100],[51.4800,22.6150]]
+      },
+      {
+        name: "Ścieżka Leśna Kozłówka",
+        color: "green",
+        distance: "6 km",
+        time: "2 h",
+        difficulty: "easy",
+        elevation: "+30m",
+        type: "loop",
+        description: "Ścieżka przez lasy w kierunku pałacu w Kozłówce ze stanowiskami przyrody.",
+        highlights: ["Las sosnowy", "Polany", "Droga do Kozłówki"],
+        waypoints: [[51.4610,22.6060],[51.4500,22.5800],[51.4450,22.5900],[51.4550,22.6000],[51.4610,22.6060]]
+      },
+      {
+        name: "Szlak Pałaców i Dworów",
+        color: "red",
+        distance: "18 km",
+        time: "5 h",
+        difficulty: "medium",
+        elevation: "+80m",
+        type: "linear",
+        description: "Trasa łącząca pałac Sanguszków w Lubartowie z pałacem Zamoyskich w Kozłówce.",
+        highlights: ["Pałac Sanguszków", "Park pałacowy", "Wieś Kozłówka", "Pałac Zamoyskich"],
+        waypoints: [[51.4610,22.6060],[51.4550,22.5900],[51.4500,22.5700],[51.4430,22.5470]]
+      },
+      {
+        name: "Ścieżka Wokół Stawów",
+        color: "green",
+        distance: "5 km",
+        time: "1,5 h",
+        difficulty: "easy",
+        elevation: "+10m",
+        type: "loop",
+        description: "Krótki spacer wokół stawów hodowlanych na obrzeżach Lubartowa.",
+        highlights: ["Stawy rybne", "Łabędzie", "Czaple", "Szuwary"],
+        waypoints: [[51.4610,22.6060],[51.4630,22.6100],[51.4650,22.6080],[51.4630,22.6040],[51.4610,22.6060]]
+      },
+      {
+        name: "Szlak Doliną Wieprza na Północ",
+        color: "blue",
+        distance: "14 km",
+        time: "4 h",
+        difficulty: "medium",
+        elevation: "+40m",
+        type: "outAndBack",
+        description: "Trasa na północ wzdłuż Wieprza z bogatą awifauną i krajobrazem łąkowym.",
+        highlights: ["Dolina Wieprza", "Łąki zalewowe", "Czajki", "Bociany"],
+        waypoints: [[51.4610,22.6060],[51.4700,22.6100],[51.4800,22.6150],[51.4900,22.6200]]
+      }
+    ],
+    cycling: [
+      {
+        name: "Lubartów — Kozłówka rowerem",
+        distance: "12 km",
+        time: "45 min",
+        difficulty: "easy",
+        elevation: "+40m",
+        surface: "asphalt",
+        type: "linear",
+        description: "Krótka trasa do jednego z najpiękniejszych pałaców Lubelszczyzny.",
+        highlights: ["Pałac w Kozłówce", "Muzeum Zamoyskich", "Park pałacowy"],
+        waypoints: [[51.4610,22.6060],[51.4500,22.5700],[51.4430,22.5470]]
+      },
+      {
+        name: "Pętla Rowerowa Doliny Wieprza",
+        distance: "35 km",
+        time: "2,5 h",
+        difficulty: "easy",
+        elevation: "+80m",
+        surface: "asphalt",
+        type: "loop",
+        description: "Pętla przez dolinę Wieprza z malowniczymi wsiami i łąkami.",
+        highlights: ["Dolina Wieprza", "Wsie nadrzeczne", "Łąki"],
+        waypoints: [[51.4610,22.6060],[51.4800,22.6300],[51.4900,22.6100],[51.4700,22.5800],[51.4610,22.6060]]
+      },
+      {
+        name: "Trasa Rowerowa Lubartów — Lublin",
+        distance: "28 km",
+        time: "1,5-2 h",
+        difficulty: "easy",
+        elevation: "+70m",
+        surface: "asphalt",
+        type: "linear",
+        description: "Trasa asfaltowa z Lubartowa do Lublina przez Niemce.",
+        highlights: ["Niemce", "Przedmieścia Lublina", "Dolina Bystrzycy"],
+        waypoints: [[51.4610,22.6060],[51.4000,22.6000],[51.3500,22.5800],[51.2465,22.5684]]
+      },
+      {
+        name: "Pętla Rowerowa Kozłówka — Kamionka",
+        distance: "35 km",
+        time: "2,5 h",
+        difficulty: "easy",
+        elevation: "+100m",
+        surface: "asphalt",
+        type: "loop",
+        description: "Trasa przez okoliczne wsie z pałacem w Kozłówce i zabytkową Kamionką.",
+        highlights: ["Kozłówka", "Kamionka", "Kościoły drewniane", "Wsie szlacheckie"],
+        waypoints: [[51.4610,22.6060],[51.4430,22.5470],[51.4200,22.5600],[51.4400,22.6200],[51.4610,22.6060]]
+      },
+      {
+        name: "Lubartów — Łęczna rowerem",
+        distance: "42 km",
+        time: "3 h",
+        difficulty: "medium",
+        elevation: "+110m",
+        surface: "asphalt",
+        type: "linear",
+        description: "Trasa z Lubartowa do Łęcznej przez dolinę Wieprza i tereny rolnicze.",
+        highlights: ["Dolina Wieprza", "Spiczyn", "Tereny rolnicze", "Łęczna"],
+        waypoints: [[51.4610,22.6060],[51.4300,22.6500],[51.3800,22.7500],[51.3017,22.8789]]
+      },
+      {
+        name: "Szlak Rowerowy Lasów Kozłowieckich",
+        distance: "20 km",
+        time: "1,5 h",
+        difficulty: "easy",
+        elevation: "+50m",
+        surface: "gravel",
+        type: "loop",
+        description: "Szutrowa pętla przez lasy wokół Kozłówki ze stanowiskami przyrody.",
+        highlights: ["Lasy mieszane", "Polany leśne", "Sarny i dziki", "Grzybobranie"],
+        waypoints: [[51.4610,22.6060],[51.4500,22.5800],[51.4400,22.5900],[51.4500,22.6100],[51.4610,22.6060]]
+      }
+    ],
+    attractions: [
+      { name: "Pałac Sanguszków", category: "zabytek", lat: 51.4615, lng: 22.6070, description: "Barokowy pałac z XVII w. z rozległym parkiem angielskim.", openHours: "Teren zewnętrzny całodobowo", price: "Bezpłatny (park)", tip: "Park piękny o każdej porze roku" },
+      { name: "Pałac w Kozłówce", category: "zabytek", lat: 51.4430, lng: 22.5470, description: "Wspaniały pałac Zamoyskich z galerią socrealizmu — 12 km od Lubartowa.", openHours: "10:00-16:00 (wt-nd)", price: "20 zł", tip: "Jedyna w Polsce galeria socrealizmu — fascynująca" },
+      { name: "Kościół św. Anny", category: "kosciol", lat: 51.4608, lng: 22.6055, description: "Barokowy kościół z XVIII w. z bogatym wyposażeniem.", openHours: "7:00-18:00", price: "Bezpłatny", tip: "Piękne organy barokowe" },
+      { name: "Rynek Lubartowski", category: "zabytek", lat: 51.4612, lng: 22.6065, description: "Historyczny rynek z zabudową XVIII-XIX w.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Klimatyczne kamieniczki i kawiarnie" },
+      { name: "Park Pałacowy", category: "przyroda", lat: 51.4620, lng: 22.6080, description: "Rozległy park angielski przy pałacu Sanguszków ze starodrzewem.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Pomnikowe dęby i lipy" }
+    ],
+    access: {
+      bycar: "Z Lublina: droga 19 (ok. 25 km, 30 min). Parking przy pałacu.",
+      bybus: "Częste połączenia z Lublina, ok. 40 min.",
+      bytrain: "Stacja Lubartów na linii Lublin-Łuków.",
+      cycling_access: "Droga rowerowa z Lublina (28 km). Trasa do Kozłówki.",
+      parking: { coordinates: [51.4612, 22.6062], description: "Parking przy rynku — bezpłatny, 50 miejsc" },
+      tips: "Połącz wizytę z pałacem w Kozłówce — warty specjalnej wycieczki."
+    },
+    practical: {
+      bestSeason: "Cały rok (Kozłówka), Maj-Wrzesień (szlaki)",
+      weather: "Klimat umiarkowany",
+      accommodation: "Hotele i pensjonaty w centrum. Nocleg w Kozłówce (agroturystyka)",
+      food: "Restauracje przy rynku, kuchnia polska. Polecane: Restauracja Magnolia",
+      bike_rental: "Brak stałej wypożyczalni — Lublin Bike z Lublina",
+      emergency: "Pogotowie: 112",
+      wifi: "WiFi w centrum miasta"
+    }
+  }
+];
+
+/* === REGION COLORS === */
+const REGION_COLORS = {
+  'Roztocze': '#6D4C41',
+  'Polesie': '#1565C0',
+  'Kazimierski': '#2E7D32',
+  'Centralny': '#AD1457'
+};
+
+const REGION_GRADIENTS = {
+  'Roztocze': 'linear-gradient(135deg, #795548, #A1887F)',
+  'Polesie': 'linear-gradient(135deg, #1565C0, #42A5F5)',
+  'Kazimierski': 'linear-gradient(135deg, #2E7D32, #66BB6A)',
+  'Centralny': 'linear-gradient(135deg, #AD1457, #EC407A)'
+};
+
+const CATEGORY_ICONS = {
+  'zabytek': 'fa-landmark',
+  'przyroda': 'fa-leaf',
+  'muzeum': 'fa-building-columns',
+  'widok': 'fa-mountain-sun',
+  'kosciol': 'fa-church',
+  'inne': 'fa-star'
+};
+
+const TRAIL_COLORS_MAP = {
+  'red': '#E63946',
+  'blue': '#4895EF',
+  'green': '#2DC653',
+  'yellow': '#FFB703',
+  'black': '#333333'
+};
+
+const TYPE_ICONS = {
+  'linear': 'fa-arrow-right-long',
+  'loop': 'fa-rotate',
+  'outAndBack': 'fa-arrow-right-arrow-left'
+};
+
+const TYPE_LABELS = {
+  'linear': 'Liniowa',
+  'loop': 'Pętla',
+  'outAndBack': 'Tam i z powrotem'
+};
+
+const SURFACE_LABELS = {
+  'asphalt': 'Asfalt',
+  'gravel': 'Szuter',
+  'mixed': 'Mieszana',
+  'offroad': 'Teren'
+};
+
+/* === APP STATE === */
+const AppState = {
+  selectedMunicipality: null,
+  activeTab: 'hiking',
+  activeRegion: 'all',
+  searchQuery: '',
+  activeFilter: 'all',
+  drawnTrails: [],
+  attractionMarkers: [],
+  map: null,
+  markers: [],
+  favorites: JSON.parse(localStorage.getItem('favorites') || '[]')
+};
+
+/* === INITIALIZATION === */
+function init() {
+  initMap();
+  renderMuniList();
+  addMarkers();
+  bindEvents();
+  restoreState();
+  showOnboarding();
+}
+
+/* === MAP === */
+function initMap() {
+  AppState.map = L.map('map', { zoomControl: false }).setView([51.25, 22.57], 8);
+  L.control.zoom({ position: 'topright' }).addTo(AppState.map);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
+    maxZoom: 19,
+    subdomains: 'abcd'
+  }).addTo(AppState.map);
+}
+
+function addMarkers() {
+  DATA.forEach(m => {
+    const color = REGION_COLORS[m.region] || '#666';
+    const hasImg = m.image ? 'true' : '';
+    const imgBg = m.image ? `background-image:url('${m.image}');background-size:cover;background-position:center;` : `background:${color};`;
+    const icon = L.divIcon({
+      className: 'custom-marker',
+      html: `<div style="width:36px;height:36px;border-radius:10px;border:2px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.25);display:flex;align-items:center;justify-content:center;color:white;font-size:13px;font-weight:700;${imgBg}overflow:hidden;position:relative;">
+        <span style="position:relative;z-index:1;text-shadow:0 1px 3px rgba(0,0,0,0.5);">${m.name.charAt(0)}</span>
+      </div>`,
+      iconSize: [36, 36],
+      iconAnchor: [18, 18],
+      popupAnchor: [0, -20]
+    });
+    const popupImg = m.image ? `<img src="${m.image}" style="width:100%;height:80px;object-fit:cover;border-radius:8px 8px 0 0;margin:-12px -12px 8px -12px;width:calc(100% + 24px);" onerror="this.style.display='none'">` : '';
+    const marker = L.marker([m.lat, m.lng], { icon })
+      .addTo(AppState.map)
+      .bindPopup(`
+        <div style="min-width:200px;font-family:Segoe UI,system-ui,sans-serif;padding:0;">
+          ${popupImg}
+          <strong style="font-size:14px;letter-spacing:-0.01em;">${m.name}</strong>
+          <div style="font-size:10px;color:#888;margin:3px 0;text-transform:uppercase;letter-spacing:0.05em;">${m.region}</div>
+          <p style="font-size:12px;margin:6px 0;color:#555;line-height:1.4;">${m.description.substring(0, 90)}...</p>
+          <button onclick="selectMunicipality('${m.id}')" style="background:#1B5E3B;color:white;border:none;padding:7px 14px;border-radius:6px;font-size:12px;cursor:pointer;font-weight:600;width:100%;">Otwórz szczegóły</button>
+        </div>
+      `, { maxWidth: 240, className: 'modern-popup' });
+    marker._muniId = m.id;
+    AppState.markers.push(marker);
+  });
+}
+
+function clearTrails() {
+  AppState.drawnTrails.forEach(t => AppState.map.removeLayer(t));
+  AppState.drawnTrails = [];
+  AppState.attractionMarkers.forEach(m => AppState.map.removeLayer(m));
+  AppState.attractionMarkers = [];
+}
+
+function showTrailOnMap(trail, type) {
+  clearTrails();
+  if (!trail.waypoints || trail.waypoints.length < 2) return;
+  const color = type === 'hiking' ? (TRAIL_COLORS_MAP[trail.color] || '#E63946') : '#52B788';
+  const opts = {
+    color: color,
+    weight: type === 'hiking' ? 4 : 5,
+    opacity: 0.85,
+    dashArray: type === 'hiking' ? '8 6' : null
+  };
+  const polyline = L.polyline(trail.waypoints, opts).addTo(AppState.map);
+  polyline.bindPopup(`<strong>${trail.name}</strong><br>${trail.distance} | ${trail.time}`);
+  AppState.drawnTrails.push(polyline);
+
+  // Start/end markers
+  const startIcon = L.divIcon({
+    className: '',
+    html: '<div style="background:#52B788;width:20px;height:20px;border-radius:50%;border:2px solid white;display:flex;align-items:center;justify-content:center;font-size:10px;color:white;box-shadow:0 1px 4px rgba(0,0,0,.3);">S</div>',
+    iconSize: [20, 20], iconAnchor: [10, 10]
+  });
+  const endIcon = L.divIcon({
+    className: '',
+    html: '<div style="background:#E63946;width:20px;height:20px;border-radius:50%;border:2px solid white;display:flex;align-items:center;justify-content:center;font-size:10px;color:white;box-shadow:0 1px 4px rgba(0,0,0,.3);">M</div>',
+    iconSize: [20, 20], iconAnchor: [10, 10]
+  });
+  const s = L.marker(trail.waypoints[0], { icon: startIcon }).addTo(AppState.map);
+  const e = L.marker(trail.waypoints[trail.waypoints.length - 1], { icon: endIcon }).addTo(AppState.map);
+  AppState.drawnTrails.push(s, e);
+  AppState.map.fitBounds(polyline.getBounds(), { padding: [40, 40] });
+}
+
+function showAttractionOnMap(attr) {
+  clearTrails();
+  AppState.map.setView([attr.lat, attr.lng], 15);
+  const icon = L.divIcon({
+    className: '',
+    html: `<div style="background:#E76F51;width:24px;height:24px;border-radius:50%;border:2px solid white;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.3);"><i class="fas ${CATEGORY_ICONS[attr.category] || 'fa-star'}" style="color:white;font-size:11px;"></i></div>`,
+    iconSize: [24, 24], iconAnchor: [12, 12]
+  });
+  const m = L.marker([attr.lat, attr.lng], { icon }).addTo(AppState.map)
+    .bindPopup(`<strong>${attr.name}</strong><br>${attr.description.substring(0, 60)}...`).openPopup();
+  AppState.attractionMarkers.push(m);
+}
+
+function showParkingOnMap(parking) {
+  clearTrails();
+  AppState.map.setView(parking.coordinates, 16);
+  const icon = L.divIcon({
+    className: '',
+    html: '<div style="background:#1565C0;width:24px;height:24px;border-radius:50%;border:2px solid white;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.3);"><i class="fas fa-parking" style="color:white;font-size:12px;"></i></div>',
+    iconSize: [24, 24], iconAnchor: [12, 12]
+  });
+  const m = L.marker(parking.coordinates, { icon }).addTo(AppState.map)
+    .bindPopup(`<strong>Parking</strong><br>${parking.description}`).openPopup();
+  AppState.attractionMarkers.push(m);
+}
+
+/* === MUNICIPALITY LIST === */
+function renderMuniList() {
+  const list = document.getElementById('muniList');
+  const filtered = getFilteredMunicipalities();
+  if (filtered.length === 0) {
+    list.innerHTML = `
+      <div class="empty-state">
+        <i class="fas fa-search"></i>
+        <h3>Brak wyników</h3>
+        <p>Spróbuj zmienić kryteria wyszukiwania lub filtry.</p>
+        <button class="btn btn-primary" onclick="resetFilters()">Wyczyść filtry</button>
+      </div>`;
+    return;
+  }
+  list.innerHTML = filtered.map(m => {
+    const isFav = AppState.favorites.includes(m.id);
+    const imgHtml = m.image
+      ? `<img class="muni-card-img" src="${m.image}" alt="${m.name}" loading="lazy" onerror="this.outerHTML='<div class=\\'muni-card-img img-fallback\\' style=\\'background:${REGION_GRADIENTS[m.region]}\\'>${m.name.charAt(0)}</div>'">`
+      : `<div class="muni-card-img img-fallback" style="background:${REGION_GRADIENTS[m.region]}">${m.name.charAt(0)}</div>`;
+    return `
+    <div class="muni-card ${AppState.selectedMunicipality === m.id ? 'active' : ''}" data-id="${m.id}" onclick="selectMunicipality('${m.id}')">
+      ${imgHtml}
+      <div class="muni-card-body">
+        <div class="muni-card-header">
+          <div>
+            <div class="muni-card-name">${m.name}</div>
+            <div class="muni-card-region">${m.region}</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            ${m.badge ? `<span class="muni-card-badge">${m.badge}</span>` : ''}
+            <button class="muni-card-fav ${isFav ? 'liked' : ''}" onclick="event.stopPropagation();toggleFavorite('${m.id}')"><i class="fa${isFav ? 's' : 'r'} fa-heart"></i></button>
+          </div>
+        </div>
+        <div class="muni-card-stats">
+          <span><i class="fas fa-hiking"></i>${m.hiking.length} szlaków</span>
+          <span><i class="fas fa-bicycle"></i>${m.cycling.length} tras</span>
+          <span><i class="fas fa-landmark"></i>${m.attractions.length} atrakcji</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function getFilteredMunicipalities() {
+  return DATA.filter(m => {
+    if (AppState.activeRegion !== 'all' && m.region !== AppState.activeRegion) return false;
+    if (AppState.activeFilter === 'featured' && !m.badge) return false;
+    if (AppState.searchQuery) {
+      const q = AppState.searchQuery.toLowerCase();
+      const inName = m.name.toLowerCase().includes(q);
+      const inRegion = m.region.toLowerCase().includes(q);
+      const inTrails = [...m.hiking, ...m.cycling].some(t => t.name.toLowerCase().includes(q));
+      const inAttrs = m.attractions.some(a => a.name.toLowerCase().includes(q));
+      if (!inName && !inRegion && !inTrails && !inAttrs) return false;
+    }
+    return true;
+  });
+}
+
+/* === SELECT MUNICIPALITY === */
+function selectMunicipality(id) {
+  const muni = DATA.find(m => m.id === id);
+  if (!muni) return;
+  AppState.selectedMunicipality = id;
+  AppState.activeTab = 'hiking';
+  document.getElementById('muniList').style.display = 'none';
+  document.getElementById('regionTabs').style.display = 'none';
+  const detail = document.getElementById('muniDetail');
+  detail.classList.add('visible');
+  renderMunicipalityDetail(muni);
+  AppState.map.setView([muni.lat, muni.lng], 12, { animate: true });
+  clearTrails();
+  // Save to localStorage
+  localStorage.setItem('lastMuni', id);
+  // Update URL hash
+  window.location.hash = `${id}/${AppState.activeTab}`;
+}
+
+function goBack() {
+  AppState.selectedMunicipality = null;
+  document.getElementById('muniList').style.display = '';
+  document.getElementById('regionTabs').style.display = '';
+  document.getElementById('muniDetail').classList.remove('visible');
+  clearTrails();
+  renderMuniList();
+  AppState.map.setView([51.25, 22.57], 8, { animate: true });
+  window.location.hash = '';
+}
+
+/* === RENDER DETAIL === */
+function renderMunicipalityDetail(m) {
+  // Hero with image
+  const heroEl = document.getElementById('detailHero');
+  const existingImg = heroEl.querySelector('.muni-detail-hero-img');
+  if (existingImg) existingImg.remove();
+  if (m.image) {
+    const img = document.createElement('img');
+    img.className = 'muni-detail-hero-img';
+    img.src = m.image;
+    img.alt = m.name;
+    img.onerror = function() { this.style.display='none'; heroEl.style.background=REGION_GRADIENTS[m.region]; };
+    heroEl.insertBefore(img, heroEl.firstChild.nextSibling);
+    heroEl.style.background = 'var(--bg)';
+  } else {
+    heroEl.style.background = REGION_GRADIENTS[m.region];
+  }
+  document.getElementById('detailHeroBg').textContent = m.name;
+  // Info
+  document.getElementById('detailInfo').innerHTML = `
+    <span class="region-badge" style="background:${REGION_COLORS[m.region]}">${m.region}</span>
+    <p>${m.description}</p>
+    <div class="muni-detail-quick-stats">
+      <div class="quick-stat"><i class="fas fa-hiking"></i>${m.hiking.length} pieszych</div>
+      <div class="quick-stat"><i class="fas fa-bicycle"></i>${m.cycling.length} rowerowych</div>
+      <div class="quick-stat"><i class="fas fa-landmark"></i>${m.attractions.length} atrakcji</div>
+    </div>
+  `;
+  // Tabs
+  document.querySelectorAll('.detail-tab').forEach(t => t.classList.remove('active'));
+  document.querySelector('.detail-tab[data-tab="hiking"]').classList.add('active');
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-hiking').classList.add('active');
+  // Panels
+  renderHikingPanel(m);
+  renderCyclingPanel(m);
+  renderAttractionsPanel(m);
+  renderAccessPanel(m);
+  renderInfoPanel(m);
+}
+
+function renderHikingPanel(m) {
+  document.getElementById('panel-hiking').innerHTML = m.hiking.map((t, i) => renderTrailCard(t, i, 'hiking')).join('');
+}
+
+function renderCyclingPanel(m) {
+  document.getElementById('panel-cycling').innerHTML = m.cycling.map((t, i) => renderTrailCard(t, i, 'cycling')).join('');
+}
+
+function renderTrailCard(t, idx, type) {
+  const colorHex = type === 'hiking' ? (TRAIL_COLORS_MAP[t.color] || '#666') : '#52B788';
+  const diffClass = t.difficulty;
+  const diffLevel = t.difficulty === 'easy' ? 1 : t.difficulty === 'medium' ? 2 : 3;
+  const diffLabel = t.difficulty === 'easy' ? 'Łatwy' : t.difficulty === 'medium' ? 'Średni' : 'Trudny';
+  const surfacePill = t.surface ? `<span class="pill surface-${t.surface}"><i class="fas fa-road"></i>${SURFACE_LABELS[t.surface]}</span>` : '';
+  return `
+  <div class="trail-card" id="${type}-trail-${idx}">
+    <div class="trail-card-header" onclick="toggleTrailCard('${type}-trail-${idx}')">
+      <div class="trail-color-badge" style="background:${colorHex}"></div>
+      <div class="trail-card-main">
+        <div class="trail-card-name">${t.name}</div>
+        <div class="trail-pills">
+          <span class="pill"><i class="fas fa-ruler-horizontal"></i>${t.distance}</span>
+          <span class="pill"><i class="fas fa-clock"></i>${t.time}</span>
+          <span class="pill"><i class="fas fa-mountain"></i>${t.elevation}</span>
+          <span class="pill"><i class="fas ${TYPE_ICONS[t.type]}"></i>${TYPE_LABELS[t.type]}</span>
+          ${surfacePill}
+        </div>
+        <div class="difficulty-bar ${diffClass}">
+          ${[1,2,3].map(n => `<div class="difficulty-segment ${n <= diffLevel ? 'filled' : ''}"></div>`).join('')}
+        </div>
+        <span style="font-size:10px;color:var(--text-muted);">${diffLabel}</span>
+      </div>
+      <i class="fas fa-chevron-down trail-expand-icon"></i>
+    </div>
+    <div class="trail-card-body">
+      <div class="trail-card-body-inner">
+        <p>${t.description}</p>
+        <ul class="trail-highlights">
+          ${t.highlights.map(h => `<li><i class="fas fa-map-pin"></i>${h}</li>`).join('')}
+        </ul>
+        <div class="trail-actions">
+          <button class="btn btn-primary" onclick="showTrailOnMap(DATA.find(m=>m.id==='${AppState.selectedMunicipality}').${type}[${idx}], '${type}')"><i class="fas fa-map"></i>Pokaż na mapie</button>
+          ${t.waypoints && t.waypoints.length >= 2 ? `<button class="btn btn-outline" onclick="openNavigation(DATA.find(m=>m.id==='${AppState.selectedMunicipality}').${type}[${idx}].waypoints)"><i class="fas fa-directions"></i>Nawiguj</button>` : ''}
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderAttractionsPanel(m) {
+  const catImgs = {
+    'zabytek': 'https://images.unsplash.com/photo-1564399580075-5dfe19c205f0?w=200&h=200&fit=crop',
+    'przyroda': 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=200&h=200&fit=crop',
+    'muzeum': 'https://images.unsplash.com/photo-1554907984-15263bfd63bd?w=200&h=200&fit=crop',
+    'widok': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200&h=200&fit=crop',
+    'kosciol': 'https://images.unsplash.com/photo-1543349689-9a4d426bee8e?w=200&h=200&fit=crop',
+    'inne': 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=200&h=200&fit=crop'
+  };
+  document.getElementById('panel-attractions').innerHTML = `
+    <div class="attraction-grid">
+      ${m.attractions.map(a => `
+        <div class="attraction-card">
+          <img class="attraction-card-img" src="${catImgs[a.category] || catImgs.inne}" alt="${a.name}" loading="lazy" onerror="this.style.display='none'">
+          <div class="attraction-card-content">
+            <div class="attraction-icon cat-${a.category}"><i class="fas ${CATEGORY_ICONS[a.category] || 'fa-star'}"></i></div>
+            <h4>${a.name}</h4>
+            <p>${a.description}</p>
+            <div class="attraction-meta">
+              <span class="pill"><i class="fas fa-clock"></i>${a.openHours}</span>
+              <span class="pill"><i class="fas fa-ticket"></i>${a.price}</span>
+            </div>
+            ${a.tip ? `<div class="attraction-tip"><i class="fas fa-lightbulb"></i> ${a.tip}</div>` : ''}
+            <button class="btn btn-outline" onclick='showAttractionOnMap(${JSON.stringify({lat:a.lat,lng:a.lng,name:a.name,description:a.description,category:a.category})})'><i class="fas fa-map-marker-alt"></i>Na mapie</button>
+          </div>
+        </div>
+      `).join('')}
+    </div>`;
+}
+
+function renderAccessPanel(m) {
+  const a = m.access;
+  document.getElementById('panel-access').innerHTML = `
+    <div class="access-card"><div class="access-icon"><i class="fas fa-car"></i></div><div><h4>Samochód</h4><p>${a.bycar}</p></div></div>
+    <div class="access-card"><div class="access-icon" style="background:#F4A261"><i class="fas fa-bus"></i></div><div><h4>Autobus</h4><p>${a.bybus}</p></div></div>
+    <div class="access-card"><div class="access-icon" style="background:#4895EF"><i class="fas fa-train"></i></div><div><h4>Pociąg</h4><p>${a.bytrain}</p></div></div>
+    <div class="access-card"><div class="access-icon" style="background:#52B788"><i class="fas fa-bicycle"></i></div><div><h4>Rower</h4><p>${a.cycling_access}</p></div></div>
+    ${a.parking ? `<button class="btn btn-primary" style="margin:8px 0;" onclick='showParkingOnMap(${JSON.stringify(a.parking)})'><i class="fas fa-parking"></i>Pokaż parking na mapie</button>` : ''}
+    <div class="access-card"><div class="access-icon" style="background:#AB47BC"><i class="fas fa-info-circle"></i></div><div><h4>Wskazówki</h4><p>${a.tips}</p></div></div>
+  `;
+}
+
+function renderInfoPanel(m) {
+  const p = m.practical;
+  document.getElementById('panel-info').innerHTML = `
+    <div class="info-grid">
+      <div class="info-item"><h4><i class="fas fa-sun"></i> Najlepszy sezon</h4><p>${p.bestSeason}</p></div>
+      <div class="info-item"><h4><i class="fas fa-cloud-sun"></i> Pogoda</h4><p>${p.weather}</p></div>
+      <div class="info-item"><h4><i class="fas fa-bed"></i> Noclegi</h4><p>${p.accommodation}</p></div>
+      <div class="info-item"><h4><i class="fas fa-utensils"></i> Gastronomia</h4><p>${p.food}</p></div>
+      <div class="info-item"><h4><i class="fas fa-bicycle"></i> Wypożyczalnia</h4><p>${p.bike_rental}</p></div>
+      <div class="info-item"><h4><i class="fas fa-phone"></i> Alarmowe</h4><p>${p.emergency}</p></div>
+      <div class="info-item full-width"><h4><i class="fas fa-wifi"></i> Internet</h4><p>${p.wifi}</p></div>
+    </div>`;
+}
+
+/* === TRAIL TOGGLE === */
+function toggleTrailCard(id) {
+  document.getElementById(id).classList.toggle('expanded');
+}
+
+/* === NAVIGATION === */
+function openNavigation(waypoints) {
+  if (!waypoints || waypoints.length < 2) return;
+  const pts = [waypoints[0], waypoints[waypoints.length - 1]];
+  const url = `https://www.google.com/maps/dir/${pts.map(p => p[0]+','+p[1]).join('/')}`;
+  window.open(url, '_blank');
+}
+
+/* === FAVORITES === */
+function toggleFavorite(id) {
+  const idx = AppState.favorites.indexOf(id);
+  if (idx > -1) AppState.favorites.splice(idx, 1);
+  else AppState.favorites.push(id);
+  localStorage.setItem('favorites', JSON.stringify(AppState.favorites));
+  renderMuniList();
+  showToast(idx > -1 ? 'Usunięto z ulubionych' : 'Dodano do ulubionych');
+}
+
+/* === FILTERS === */
+function resetFilters() {
+  AppState.searchQuery = '';
+  AppState.activeRegion = 'all';
+  AppState.activeFilter = 'all';
+  document.getElementById('searchInput').value = '';
+  document.querySelectorAll('.region-tab').forEach(t => t.classList.remove('active'));
+  document.querySelector('.region-tab[data-region="all"]').classList.add('active');
+  document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+  document.querySelector('.filter-pill[data-filter="all"]').classList.add('active');
+  renderMuniList();
+}
+
+/* === SEARCH === */
+let searchTimeout;
+function handleSearch(query) {
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(() => {
+    AppState.searchQuery = query;
+    if (AppState.selectedMunicipality) {
+      goBack();
+    }
+    renderMuniList();
+    renderSearchResults(query);
+  }, 300);
+}
+
+function renderSearchResults(query) {
+  const sr = document.getElementById('searchResults');
+  if (!query || query.length < 2) { sr.classList.remove('visible'); return; }
+  const q = query.toLowerCase();
+  const results = [];
+  DATA.forEach(m => {
+    if (m.name.toLowerCase().includes(q)) results.push({ type: 'gmina', name: m.name, sub: m.region, id: m.id });
+    [...m.hiking, ...m.cycling].forEach(t => {
+      if (t.name.toLowerCase().includes(q)) results.push({ type: 'szlak', name: t.name, sub: m.name, id: m.id });
+    });
+    m.attractions.forEach(a => {
+      if (a.name.toLowerCase().includes(q)) results.push({ type: 'atrakcja', name: a.name, sub: m.name, id: m.id });
+    });
+  });
+  if (results.length === 0) { sr.classList.remove('visible'); return; }
+  sr.innerHTML = results.slice(0, 8).map(r => `
+    <div class="search-result-item" onclick="selectMunicipality('${r.id}');document.getElementById('searchResults').classList.remove('visible');">
+      <strong>${highlightText(r.name, q)}</strong>
+      <small>${r.type} — ${r.sub}</small>
+    </div>
+  `).join('');
+  sr.classList.add('visible');
+}
+
+function highlightText(text, query) {
+  const idx = text.toLowerCase().indexOf(query);
+  if (idx === -1) return text;
+  return text.substring(0, idx) + '<span class="search-highlight">' + text.substring(idx, idx + query.length) + '</span>' + text.substring(idx + query.length);
+}
+
+/* === TOAST === */
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+/* === DARK MODE === */
+function toggleDarkMode() {
+  document.body.classList.toggle('dark');
+  const isDark = document.body.classList.contains('dark');
+  localStorage.setItem('darkMode', isDark);
+  document.getElementById('darkToggle').innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+}
+
+/* === SHARE === */
+function shareApp() {
+  const url = window.location.href;
+  navigator.clipboard.writeText(url).then(() => showToast('Link skopiowany do schowka!')).catch(() => showToast('Nie udało się skopiować linku'));
+}
+
+/* === ONBOARDING === */
+function showOnboarding() {
+  if (localStorage.getItem('onboardingSeen')) return;
+  document.getElementById('onboarding').style.display = 'block';
+}
+
+/* === STATE RESTORE === */
+function restoreState() {
+  // Dark mode
+  if (localStorage.getItem('darkMode') === 'true') {
+    document.body.classList.add('dark');
+    document.getElementById('darkToggle').innerHTML = '<i class="fas fa-sun"></i>';
+  }
+  // URL hash
+  const hash = window.location.hash.replace('#', '');
+  if (hash) {
+    const [muniId, tab] = hash.split('/');
+    const muni = DATA.find(m => m.id === muniId);
+    if (muni) {
+      selectMunicipality(muniId);
+      if (tab) switchTab(tab);
+      return;
+    }
+  }
+  // Last municipality
+  const last = localStorage.getItem('lastMuni');
+  if (last && DATA.find(m => m.id === last)) {
+    // Don't auto-open, just highlight
+  }
+}
+
+function switchTab(tabName) {
+  AppState.activeTab = tabName;
+  document.querySelectorAll('.detail-tab').forEach(t => t.classList.remove('active'));
+  document.querySelector(`.detail-tab[data-tab="${tabName}"]`).classList.add('active');
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById(`panel-${tabName}`).classList.add('active');
+  window.location.hash = `${AppState.selectedMunicipality}/${tabName}`;
+}
+
+/* === EVENT BINDINGS === */
+function bindEvents() {
+  // Back button
+  document.getElementById('backBtn').addEventListener('click', goBack);
+
+  // Region tabs
+  document.getElementById('regionTabs').addEventListener('click', e => {
+    const tab = e.target.closest('.region-tab');
+    if (!tab) return;
+    document.querySelectorAll('.region-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    AppState.activeRegion = tab.dataset.region;
+    renderMuniList();
+  });
+
+  // Detail tabs
+  document.getElementById('detailTabs').addEventListener('click', e => {
+    const tab = e.target.closest('.detail-tab');
+    if (!tab) return;
+    switchTab(tab.dataset.tab);
+  });
+
+  // Search
+  document.getElementById('searchInput').addEventListener('input', e => handleSearch(e.target.value));
+  document.getElementById('searchInput').addEventListener('focus', e => {
+    if (e.target.value.length >= 2) renderSearchResults(e.target.value);
+  });
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.header-search')) document.getElementById('searchResults').classList.remove('visible');
+  });
+
+  // Filter pills
+  document.getElementById('headerFilters').addEventListener('click', e => {
+    const pill = e.target.closest('.filter-pill');
+    if (!pill) return;
+    document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+    pill.classList.add('active');
+    AppState.activeFilter = pill.dataset.filter;
+    if (AppState.selectedMunicipality) goBack();
+    renderMuniList();
+  });
+
+  // Dark mode
+  document.getElementById('darkToggle').addEventListener('click', toggleDarkMode);
+
+  // Share
+  document.getElementById('shareBtn').addEventListener('click', shareApp);
+
+  // Onboarding
+  document.getElementById('closeOnboarding').addEventListener('click', () => {
+    document.getElementById('onboarding').style.display = 'none';
+    localStorage.setItem('onboardingSeen', 'true');
+  });
+
+  // Hash change
+  window.addEventListener('hashchange', () => {
+    const hash = window.location.hash.replace('#', '');
+    if (!hash && AppState.selectedMunicipality) goBack();
+  });
+}
+
+/* === START === */
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
