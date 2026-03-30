@@ -1,7 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Bash(node add_images.js)"
+      "Bash(node add_images.js)",
+      "WebFetch(domain:commons.wikimedia.org)",
+      "WebSearch",
+      "WebFetch(domain:fmstream.org)",
+      "Bash(node update_app.js)"
     ]
   }
 }

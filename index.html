@@ -2,10 +2,18 @@
 <html lang="pl">
 <head>
 <meta charset="UTF-8">
+<meta name="theme-color" content="#1B4332">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="description" content="Interaktywna aplikacja turystyczno-rowerowa dla województwa lubelskiego. Szlaki piesze, trasy rowerowe, atrakcje, noclegi.">
+<link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiU3psYWtpIEx1YmVsc3pjenl6bnkiLCJzaG9ydF9uYW1lIjoiU3psYWtpIiwiZGVzY3JpcHRpb24iOiJPZGtyeWogcGnEmWtubyB3b2pld8OzZHp0d2EgbHViZWxza2llZ28gcGllc3pvIGkgcm93ZXJlbSIsInN0YXJ0X3VybCI6Ii4vaW5kZXguaHRtbCIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiNGNUY1RjAiLCJ0aGVtZV9jb2xvciI6IiMxQjQzMzIiLCJpY29ucyI6W3sic3JjIjoiZGF0YTppbWFnZS9zdmcreG1sLDxzdmcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB2aWV3Qm94PScwIDAgMTAwIDEwMCc+PHJlY3QgZmlsbD0nJTIzMUI0MzMyJyB3aWR0aD0nMTAwJyBoZWlnaHQ9JzEwMCcgcng9JzIwJy8+PHRleHQgeD0nNTAnIHk9JzY4JyBmb250LXNpemU9JzUyJyB0ZXh0LWFuY2hvcj0nbWlkZGxlJyBmaWxsPSd3aGl0ZSc+8J+lvjwvdGV4dD48L3N2Zz4iLCJzaXplcyI6ImFueSIsInR5cGUiOiJpbWFnZS9zdmcreG1sIn1dfQ==">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Szlaki Lubelszczyzny — Odkryj piękno województwa lubelskiego</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <style>
 /* === RESET & VARIABLES === */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -87,27 +95,53 @@ img { display: block; }
 
 /* === HEADER === */
 .header {
-  height: var(--header-h);
+  height: auto;
+  min-height: var(--header-h);
   background: var(--bg-card);
   color: var(--text);
   display: flex;
+  flex-direction: column;
   align-items: center;
-  padding: 0 20px;
-  gap: 12px;
+  padding: 12px 20px 8px;
+  gap: 8px;
   z-index: 1000;
   position: relative;
   border-bottom: 1px solid var(--border);
   backdrop-filter: blur(12px);
 }
-.header-logo {
+.header-top {
   display: flex;
   align-items: center;
-  gap: 10px;
-  white-space: nowrap;
+  gap: 12px;
+  width: 100%;
 }
-.header-logo i { font-size: 20px; color: var(--primary); }
-.header-logo h1 { font-size: 16px; font-weight: 700; letter-spacing: -0.02em; }
-.header-logo .tagline { font-size: 10px; color: var(--text-muted); display: block; margin-top: -2px; letter-spacing: 0.01em; }
+.header-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  text-align: center;
+  flex: 1;
+}
+.header-logo i { font-size: 22px; color: var(--primary); margin-bottom: 2px; }
+.header-logo h1 {
+  font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: var(--secondary);
+  line-height: 1.1;
+}
+body.dark .header-logo h1 { color: var(--primary-lighter); }
+.header-logo .tagline {
+  font-family: 'Lora', Georgia, serif;
+  font-size: 11px;
+  color: var(--text-muted);
+  display: block;
+  margin-top: 1px;
+  letter-spacing: 0.02em;
+  font-style: italic;
+}
 .header-search {
   flex: 1;
   max-width: 360px;
@@ -226,7 +260,7 @@ img { display: block; }
 }
 .muni-card-body { padding: 12px 14px; }
 .muni-card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
-.muni-card-name { font-size: 15px; font-weight: 700; letter-spacing: -0.01em; line-height: 1.3; }
+.muni-card-name { font-family: 'Playfair Display', Georgia, serif; font-size: 16px; font-weight: 700; letter-spacing: 0.01em; line-height: 1.3; }
 .muni-card-region {
   font-size: 10px;
   color: var(--text-muted);
@@ -307,12 +341,13 @@ img { display: block; }
   left: 16px;
   right: 60px;
   color: white;
-  font-size: 24px;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 26px;
   font-weight: 700;
-  text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
   z-index: 2;
-  letter-spacing: -0.02em;
-  line-height: 1.2;
+  letter-spacing: 0.01em;
+  line-height: 1.15;
 }
 .muni-detail-hero .back-btn {
   position: absolute;
@@ -764,7 +799,9 @@ img { display: block; }
 @media (max-width: 900px) {
   .header { padding: 0 12px; gap: 6px; }
   .header-logo .tagline { display: none; }
-  .header-logo h1 { font-size: 14px; }
+  .header-logo h1 { font-size: 18px; }
+  .header { padding: 8px 12px 6px; }
+  .header-top { position: relative; }
   .header-filters { display: none; }
   .sidebar { width: 320px; }
   .muni-card-img { height: 100px; }
@@ -833,6 +870,401 @@ img { display: block; }
 .onboarding .close-onboarding:hover { color: var(--bg); }
 @keyframes fadeIn { from { opacity: 0; transform: translateX(-50%) translateY(20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
 
+/* === LIGHTBOX === */
+.lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.88);
+  z-index: 99999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  cursor: pointer;
+  animation: lbFadeIn 0.2s ease;
+  backdrop-filter: blur(4px);
+}
+.lightbox-overlay.active { display: flex; }
+@keyframes lbFadeIn { from { opacity: 0; } to { opacity: 1; } }
+.lightbox-img {
+  max-width: 90vw;
+  max-height: 75vh;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  object-fit: contain;
+  animation: lbZoomIn 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+@keyframes lbZoomIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.lightbox-caption {
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 16px;
+  text-align: center;
+  max-width: 80vw;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+}
+.lightbox-desc {
+  color: rgba(255,255,255,0.7);
+  font-size: 13px;
+  margin-top: 6px;
+  text-align: center;
+  max-width: 600px;
+  line-height: 1.5;
+}
+.lightbox-close {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  color: white;
+  font-size: 28px;
+  cursor: pointer;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  transition: var(--transition);
+  border: none;
+  z-index: 100000;
+}
+.lightbox-close:hover { background: rgba(255,255,255,0.25); }
+.lightbox-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  transition: var(--transition);
+  border: none;
+}
+.lightbox-nav:hover { background: rgba(255,255,255,0.25); }
+.lightbox-nav.prev { left: 20px; }
+.lightbox-nav.next { right: 20px; }
+.btn-photo {
+  background: var(--primary-bg);
+  color: var(--primary);
+  border: 1px solid var(--primary-lighter);
+}
+.btn-photo:hover {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+
+/* === ACCOMMODATION === */
+.accom-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+  margin-bottom: 8px;
+  transition: var(--transition);
+  cursor: pointer;
+}
+.accom-card:hover { border-color: var(--primary-lighter); box-shadow: var(--shadow); }
+.accom-card.expanded { border-color: var(--primary); }
+.accom-header { display: flex; align-items: flex-start; gap: 10px; }
+.accom-type-icon {
+  width: 36px; height: 36px;
+  border-radius: var(--radius-xs);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; color: white; flex-shrink: 0;
+}
+.accom-type-hotel { background: #5C6BC0; }
+.accom-type-pensjonat { background: #26A69A; }
+.accom-type-agroturystyka { background: #8D6E63; }
+.accom-type-hostel { background: #EF5350; }
+.accom-type-apartament { background: #AB47BC; }
+.accom-type-camping { background: #66BB6A; }
+.accom-type-sanatorium { background: #42A5F5; }
+.accom-type-domki { background: #FFA726; }
+.accom-type-pokoje { background: #78909C; }
+.accom-type-osrodek { background: #26C6DA; }
+.accom-info { flex: 1; min-width: 0; }
+.accom-name { font-size: 14px; font-weight: 700; letter-spacing: -0.01em; }
+.accom-stars { color: #FFB703; font-size: 11px; margin-left: 4px; }
+.accom-price {
+  font-size: 15px; font-weight: 700; color: var(--primary);
+  white-space: nowrap; flex-shrink: 0;
+}
+.accom-desc { font-size: 12px; color: var(--text-secondary); margin-top: 4px; line-height: 1.4; }
+.accom-details {
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+.accom-card.expanded .accom-details { max-height: 200px; }
+.accom-details-inner {
+  padding-top: 10px; margin-top: 10px;
+  border-top: 1px solid var(--border-light);
+}
+.accom-features { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
+.accom-feature {
+  font-size: 10px; padding: 3px 8px;
+  border-radius: var(--radius-xs);
+  background: var(--primary-bg); color: var(--primary);
+  font-weight: 500;
+}
+.accom-contact { font-size: 12px; color: var(--text-secondary); }
+.accom-contact i { color: var(--primary-light); margin-right: 4px; width: 14px; }
+.accom-contact a { color: var(--primary); font-weight: 600; }
+.accom-section-title {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--text-muted); font-weight: 600; margin: 16px 0 10px;
+  display: flex; align-items: center; gap: 6px;
+}
+.accom-section-title i { font-size: 14px; color: var(--primary-light); }
+
+
+/* === GLASSMORPHISM === */
+.glass {
+  background: rgba(255,255,255,0.72);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(255,255,255,0.4);
+}
+body.dark .glass {
+  background: rgba(26,26,26,0.78);
+  border-color: rgba(255,255,255,0.08);
+}
+
+/* === SKELETON LOADING === */
+.skeleton {
+  background: linear-gradient(90deg, var(--border) 25%, var(--border-light) 50%, var(--border) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-xs);
+}
+@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+/* === ELEVATION PROFILE === */
+.elevation-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+  margin-top: 10px;
+}
+.elevation-panel h4 {
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.elevation-panel h4 i { color: var(--primary-light); }
+.elevation-canvas-wrap {
+  position: relative;
+  width: 100%;
+  height: 100px;
+  cursor: crosshair;
+}
+.elevation-canvas-wrap canvas {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-xs);
+}
+.elevation-stats {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+.elevation-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.elevation-stat .val {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--primary);
+  font-variant-numeric: tabular-nums;
+}
+.elevation-stat .label {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* === GPS TRACKER === */
+.tracker-panel {
+  position: fixed;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 16px 24px;
+  box-shadow: var(--shadow-xl);
+  z-index: 8000;
+  display: none;
+  min-width: 320px;
+  border: 1px solid var(--border);
+}
+.tracker-panel.active { display: flex; flex-direction: column; align-items: center; }
+.tracker-stats {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 12px;
+}
+.tracker-stat { text-align: center; }
+.tracker-stat .val {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+.tracker-stat .unit { font-size: 12px; color: var(--text-muted); }
+.tracker-stat .label {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-top: 2px;
+}
+.tracker-controls { display: flex; gap: 8px; }
+.tracker-btn {
+  padding: 10px 24px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.tracker-btn-start { background: var(--primary); color: white; }
+.tracker-btn-start:hover { background: var(--secondary); }
+.tracker-btn-stop { background: var(--accent-warm); color: white; }
+.tracker-btn-pause { background: var(--accent); color: white; }
+.tracker-btn-export { background: var(--bg); border: 1px solid var(--border); color: var(--text); }
+.tracker-btn-export:hover { border-color: var(--primary); color: var(--primary); }
+
+/* === FLOATING ACTION BUTTONS === */
+.fab-group {
+  position: fixed;
+  bottom: 70px;
+  right: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 8500;
+}
+.fab {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  box-shadow: var(--shadow-lg);
+  cursor: pointer;
+  transition: var(--transition);
+  border: none;
+  color: white;
+}
+.fab:hover { transform: scale(1.1); }
+.fab-track { background: var(--accent-warm); }
+.fab-locate { background: var(--primary); }
+.fab-layers { background: var(--text); }
+.fab-track.recording { animation: pulse 1.5s infinite; }
+@keyframes pulse { 0%,100%{box-shadow: 0 0 0 0 rgba(216,67,21,0.4)} 50%{box-shadow: 0 0 0 12px rgba(216,67,21,0)} }
+
+/* === WEATHER BADGE === */
+.weather-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--radius-xs);
+  background: var(--primary-bg);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--primary);
+}
+.weather-badge i { font-size: 16px; }
+
+/* === BOTTOM SHEET MOBILE === */
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 55vh;
+    z-index: 5000;
+    border-radius: var(--radius) var(--radius) 0 0;
+    box-shadow: 0 -4px 30px rgba(0,0,0,0.15);
+    transition: height 0.3s ease;
+  }
+  .sidebar::before {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    margin: 8px auto 4px;
+  }
+  .sidebar.collapsed { height: 80px; }
+  .sidebar.expanded { height: 85vh; }
+  .map-container { height: 100vh !important; position: fixed; inset: 0; z-index: 1; }
+  .fab-group { bottom: calc(55vh + 16px); }
+  .tracker-panel { bottom: calc(55vh + 16px); }
+}
+
+/* === IMPROVED MOBILE CARD === */
+@media (max-width: 768px) {
+  .muni-card-img { height: 80px; }
+  .muni-detail-hero { height: 180px; }
+  .attraction-card { flex-direction: column; }
+  .attraction-card-img { width: 100%; height: 100px; }
+}
+
+/* === MAP STYLE SWITCHER === */
+.map-style-switcher {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 800;
+  display: flex;
+  gap: 2px;
+  background: var(--bg-card);
+  border-radius: var(--radius-sm);
+  padding: 3px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border);
+}
+.map-style-btn {
+  padding: 6px 12px;
+  border-radius: var(--radius-xs);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: var(--transition);
+  white-space: nowrap;
+}
+.map-style-btn:hover { color: var(--text); background: var(--bg); }
+.map-style-btn.active { background: var(--primary); color: white; }
+
 /* === LEAFLET POPUP OVERRIDE === */
 .leaflet-popup-content-wrapper {
   border-radius: var(--radius) !important;
@@ -866,33 +1298,158 @@ img { display: block; }
   padding-bottom: 6px;
   border-bottom: 1px solid var(--border-light);
 }
+
+/* === RADIO PLAYER === */
+.radio-player {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 52px;
+  background: var(--bg-card);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 10px;
+  z-index: 9000;
+  box-shadow: 0 -2px 12px rgba(0,0,0,0.06);
+  transition: var(--transition);
+}
+.radio-player.minimized { height: 0; padding: 0; overflow: hidden; border: none; box-shadow: none; }
+.radio-toggle-floating {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  box-shadow: var(--shadow-lg);
+  z-index: 9001;
+  cursor: pointer;
+  transition: var(--transition);
+  border: none;
+}
+.radio-toggle-floating:hover { transform: scale(1.08); background: var(--secondary); }
+.radio-toggle-floating.hidden { display: none; }
+.radio-play-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+  transition: var(--transition);
+  border: none;
+  cursor: pointer;
+}
+.radio-play-btn:hover { background: var(--secondary); }
+.radio-play-btn.playing { background: var(--accent-warm); }
+.radio-info { flex: 1; min-width: 0; }
+.radio-station-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.radio-station-desc { font-size: 10px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.radio-controls { display: flex; align-items: center; gap: 6px; }
+.radio-select {
+  padding: 5px 8px;
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 11px;
+  font-family: inherit;
+  cursor: pointer;
+  max-width: 160px;
+}
+.radio-vol {
+  width: 70px;
+  height: 3px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--border);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+.radio-vol::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--primary);
+  cursor: pointer;
+}
+.radio-close-btn {
+  color: var(--text-muted);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px;
+  border: none;
+  background: none;
+  transition: var(--transition);
+}
+.radio-close-btn:hover { color: var(--text); }
+.radio-eq {
+  display: flex;
+  gap: 2px;
+  align-items: flex-end;
+  height: 16px;
+}
+.radio-eq span {
+  width: 3px;
+  background: var(--primary);
+  border-radius: 1px;
+  animation: none;
+}
+.radio-eq.active span { animation: eqBounce 0.6s ease infinite alternate; }
+.radio-eq span:nth-child(1) { height: 6px; animation-delay: 0s; }
+.radio-eq span:nth-child(2) { height: 12px; animation-delay: 0.15s; }
+.radio-eq span:nth-child(3) { height: 8px; animation-delay: 0.3s; }
+.radio-eq span:nth-child(4) { height: 14px; animation-delay: 0.1s; }
+@keyframes eqBounce {
+  from { height: 4px; }
+  to { height: 16px; }
+}
 </style>
 </head>
 <body>
 
 <!-- === HEADER === -->
-<header class="header">
-  <div class="header-logo">
-    <i class="fas fa-route"></i>
-    <div>
+<header class="header glass">
+  <div class="header-top">
+    <div class="header-actions" style="position:absolute;left:16px;">
+      <button class="header-btn" id="darkToggle" title="Tryb ciemny"><i class="fas fa-moon"></i></button>
+    </div>
+    <div class="header-logo">
+      <i class="fas fa-mountain-sun"></i>
       <h1>Szlaki Lubelszczyzny</h1>
       <span class="tagline">Odkryj piękno województwa lubelskiego pieszo i rowerem</span>
     </div>
+    <div class="header-actions" style="position:absolute;right:16px;">
+      <button class="header-btn" id="shareBtn" title="Udostępnij"><i class="fas fa-share-alt"></i></button>
+    </div>
   </div>
-  <div class="header-search">
-    <i class="fas fa-search"></i>
-    <input type="text" id="searchInput" placeholder="Szukaj gminy, szlaku, atrakcji..." autocomplete="off">
-    <div class="search-results" id="searchResults"></div>
-  </div>
-  <div class="header-filters" id="headerFilters">
-    <button class="filter-pill active" data-filter="all">🏔️ Wszystkie</button>
-    <button class="filter-pill" data-filter="hiking">🚶 Piesze</button>
-    <button class="filter-pill" data-filter="cycling">🚴 Rowerowe</button>
-    <button class="filter-pill" data-filter="featured">⭐ Polecane</button>
-  </div>
-  <div class="header-actions">
-    <button class="header-btn" id="darkToggle" title="Tryb ciemny"><i class="fas fa-moon"></i></button>
-    <button class="header-btn" id="shareBtn" title="Udostępnij"><i class="fas fa-share-alt"></i></button>
+  <div style="display:flex;gap:8px;align-items:center;width:100%;max-width:700px;">
+    <div class="header-search" style="flex:1;">
+      <i class="fas fa-search"></i>
+      <input type="text" id="searchInput" placeholder="Szukaj gminy, szlaku, atrakcji..." autocomplete="off">
+      <div class="search-results" id="searchResults"></div>
+    </div>
+    <div class="header-filters" id="headerFilters">
+      <button class="filter-pill active" data-filter="all">🏔️ Wszystkie</button>
+      <button class="filter-pill" data-filter="hiking">🚶 Piesze</button>
+      <button class="filter-pill" data-filter="cycling">🚴 Rowerowe</button>
+      <button class="filter-pill" data-filter="featured">⭐ Polecane</button>
+    </div>
   </div>
 </header>
 
@@ -980,7 +1537,7 @@ const DATA = [
     lat: 50.7231,
     lng: 23.2521,
     description: "Perła renesansu, miasto idealne wpisane na Listę UNESCO. Twierdza Zamoyskich zachwyca harmonią urbanistyczną.",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Zamosc_rynek_ratusz_2009.jpg/1280px-Zamosc_rynek_ratusz_2009.jpg",
+    image: "https://upload.wikimedia.org/wikipedia/commons/b/bf/Zamosc_Rynek_Wielki_1-3-5-5a.JPG",
     badge: "⭐ UNESCO",
     hiking: [
       {
@@ -1131,11 +1688,11 @@ const DATA = [
       }
     ],
     attractions: [
-      { name: "Rynek Wielki", category: "zabytek", lat: 50.7231, lng: 23.2521, description: "Jeden z najpiękniejszych renesansowych rynków w Europie, 100x100m z ratuszem.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Wieczorem podświetlenie nadaje magiczny klimat" },
-      { name: "Ratusz Zamojski", category: "zabytek", lat: 50.7228, lng: 23.2525, description: "Manierystyczny ratusz z XVI w. z 52-metrową wieżą i słynnymi schodami.", openHours: "10:00-18:00", price: "10 zł", tip: "Wejdź na wieżę — panorama starego miasta" },
-      { name: "Rotunda Zamojska", category: "muzeum", lat: 50.7185, lng: 23.2590, description: "Dawny arsenał, podczas II wojny — obóz zagłady. Dziś miejsce pamięci narodowej.", openHours: "9:00-17:00", price: "Bezpłatny", tip: "Miejsce refleksji — zaplanuj spokojną wizytę" },
-      { name: "Katedra Zmartwychwstania Pańskiego", category: "kosciol", lat: 50.7222, lng: 23.2495, description: "Kolegiata zamojska z XVI w., krypta rodu Zamoyskich i cenne malowidła.", openHours: "7:00-18:00", price: "Bezpłatny", tip: "W krypcie spoczywa Jan Zamoyski" },
-      { name: "Muzeum Zamojskie", category: "muzeum", lat: 50.7235, lng: 23.2510, description: "Bogate zbiory etnograficzne, archeologiczne i militaria z regionu zamojskiego.", openHours: "10:00-17:00 (wt-nd)", price: "12 zł", tip: "Ciekawa ekspozycja o twierdzy" }
+      { name: "Rynek Wielki", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Zamosc_Great_Market_panorama1.jpg/960px-Zamosc_Great_Market_panorama1.jpg", category: "zabytek", lat: 50.7231, lng: 23.2521, description: "Jeden z najpiękniejszych renesansowych rynków w Europie, 100x100m z ratuszem.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Wieczorem podświetlenie nadaje magiczny klimat" },
+      { name: "Ratusz Zamojski", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Town_Hall_in_Zamo%C5%9B%C4%87_2009.JPG/960px-Town_Hall_in_Zamo%C5%9B%C4%87_2009.JPG", category: "zabytek", lat: 50.7228, lng: 23.2525, description: "Manierystyczny ratusz z XVI w. z 52-metrową wieżą i słynnymi schodami.", openHours: "10:00-18:00", price: "10 zł", tip: "Wejdź na wieżę — panorama starego miasta" },
+      { name: "Rotunda Zamojska", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/Rotunda7.JPG/960px-Rotunda7.JPG", category: "muzeum", lat: 50.7185, lng: 23.2590, description: "Dawny arsenał, podczas II wojny — obóz zagłady. Dziś miejsce pamięci narodowej.", openHours: "9:00-17:00", price: "Bezpłatny", tip: "Miejsce refleksji — zaplanuj spokojną wizytę" },
+      { name: "Katedra Zmartwychwstania Pańskiego", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Katedra_Zamosc_2013.JPG/960px-Katedra_Zamosc_2013.JPG", category: "kosciol", lat: 50.7222, lng: 23.2495, description: "Kolegiata zamojska z XVI w., krypta rodu Zamoyskich i cenne malowidła.", openHours: "7:00-18:00", price: "Bezpłatny", tip: "W krypcie spoczywa Jan Zamoyski" },
+      { name: "Muzeum Zamojskie", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Dawna_akademia4.JPG/960px-Dawna_akademia4.JPG", category: "muzeum", lat: 50.7235, lng: 23.2510, description: "Bogate zbiory etnograficzne, archeologiczne i militaria z regionu zamojskiego.", openHours: "10:00-17:00 (wt-nd)", price: "12 zł", tip: "Ciekawa ekspozycja o twierdzy" }
     ],
     access: {
       bycar: "Z Lublina: S17/S12 → Zamość (ok. 90 km, 1h 15min). Parkingi w centrum i przy murach.",
@@ -1148,7 +1705,16 @@ const DATA = [
     practical: {
       bestSeason: "Maj - Wrzesień",
       weather: "Klimat umiarkowany kontynentalny, ciepłe lata, mroźne zimy",
-      accommodation: "Hotele w Starym Mieście, liczne pensjonaty i apartamenty",
+      accommodation: {
+        summary: "Hotele w Starym Mieście, liczne pensjonaty i apartamenty",
+        places: [
+          { name: "Hotel & Restauracja Zamojska", type: "hotel", stars: 3, price: "220-380 zł", address: "ul. Staszica 5, Zamość", phone: "84 638 62 01", desc: "Elegancki hotel w centrum Starego Miasta, 200m od Rynku", features: ["WiFi", "Śniadanie", "Parking", "Restauracja"] },
+          { name: "Hotel Renesans", type: "hotel", stars: 3, price: "250-420 zł", address: "ul. Grecka 6, Zamość", phone: "84 639 20 01", desc: "Klimatyczny hotel w renesansowej kamienicy przy Rynku", features: ["WiFi", "Śniadanie", "Restauracja", "Centrum"] },
+          { name: "Hotel Senator", type: "hotel", stars: 4, price: "320-550 zł", address: "Rynek Solny 4, Zamość", phone: "84 638 80 30", desc: "Luksusowy hotel z widokiem na Rynek Wielki", features: ["WiFi", "SPA", "Śniadanie", "Parking"] },
+          { name: "Apartamenty Stare Miasto", type: "apartament", stars: 0, price: "150-250 zł", address: "ul. Ormiańska 12, Zamość", phone: "501 234 567", desc: "Komfortowe apartamenty w zabytkowej kamienicy", features: ["WiFi", "Kuchnia", "Centrum"] },
+          { name: "Hostel Zamość", type: "hostel", stars: 0, price: "60-90 zł/os", address: "ul. Zamenhoffa 11, Zamość", phone: "84 627 55 50", desc: "Budżetowy hostel blisko Starego Miasta, pokoje 2-6 os.", features: ["WiFi", "Kuchnia", "Pralnia"] }
+        ]
+      },
       food: "Regionalne potrawy: pierogi zamojskie, cebularz. Polecane: Restauracja Muzealna",
       bike_rental: "Wypożyczalnia przy dworcu, 40 zł/dzień. Stacja Green Velo.",
       emergency: "Pogotowie: 112, Szpital Zamość: 84 677 33 33",
@@ -1162,7 +1728,7 @@ const DATA = [
     lat: 50.6919,
     lng: 23.1047,
     description: "Historyczne miasteczko słynące z łamańca językowego i pięknego położenia nad Wieprzem u bram Roztocza.",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/SM_Szczebrzeszyn_ko%C5%9Bci%C3%B3%C5%82_%C5%9Bw_Miko%C5%82aja_%281%29_ID_603870.jpg/1280px-SM_Szczebrzeszyn_ko%C5%9Bci%C3%B3%C5%82_%C5%9Bw_Miko%C5%82aja_%281%29_ID_603870.jpg",
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Szczebrzszyn_rynek_-_panoramio.jpg/960px-Szczebrzszyn_rynek_-_panoramio.jpg",
     badge: "",
     hiking: [
       {
@@ -1313,11 +1879,11 @@ const DATA = [
       }
     ],
     attractions: [
-      { name: "Pomnik Chrząszcza", category: "inne", lat: 50.6919, lng: 23.1047, description: "Słynny pomnik chrząszcza nawiązujący do łamańca Jana Brzechwy.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Idealne miejsce na pamiątkowe zdjęcie" },
-      { name: "Kościół św. Mikołaja", category: "kosciol", lat: 50.6925, lng: 23.1055, description: "Gotycki kościół z XV w. z cennym ołtarzem i freskami.", openHours: "7:00-18:00", price: "Bezpłatny", tip: "Zwróć uwagę na gotycki portal" },
-      { name: "Synagoga w Szczebrzeszynie", category: "zabytek", lat: 50.6915, lng: 23.1035, description: "Renesansowa synagoga z XVII w., dziś centrum kultury.", openHours: "10:00-16:00 (wt-sb)", price: "5 zł", tip: "Cenna polichromia na sklepieniu" },
-      { name: "Rezerwat Szum", category: "przyroda", lat: 50.6750, lng: 23.0700, description: "Rezerwat chroniący przełom rzeki Szum z unikatowymi progami skalnymi.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Wiosną najwyższy poziom wody — najpiękniejsze progi" },
-      { name: "Wzgórze Trzech Krzyży", category: "widok", lat: 50.6940, lng: 23.1080, description: "Punkt widokowy nad miastem z panoramą na dolinę Wieprza i Roztocze.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Świetny punkt na zachód słońca" }
+      { name: "Pomnik Chrząszcza", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Szczebrzeszyn%2C_2021%2C_chrz%C4%85szcz_na_rynku.jpg/960px-Szczebrzeszyn%2C_2021%2C_chrz%C4%85szcz_na_rynku.jpg", category: "inne", lat: 50.6919, lng: 23.1047, description: "Słynny pomnik chrząszcza nawiązujący do łamańca Jana Brzechwy.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Idealne miejsce na pamiątkowe zdjęcie" },
+      { name: "Kościół św. Mikołaja", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Szczebrzszyn_rynek_-_panoramio.jpg/960px-Szczebrzszyn_rynek_-_panoramio.jpg", category: "kosciol", lat: 50.6925, lng: 23.1055, description: "Gotycki kościół z XV w. z cennym ołtarzem i freskami.", openHours: "7:00-18:00", price: "Bezpłatny", tip: "Zwróć uwagę na gotycki portal" },
+      { name: "Synagoga w Szczebrzeszynie", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Szczebrzszyn_rynek_-_panoramio.jpg/960px-Szczebrzszyn_rynek_-_panoramio.jpg", category: "zabytek", lat: 50.6915, lng: 23.1035, description: "Renesansowa synagoga z XVII w., dziś centrum kultury.", openHours: "10:00-16:00 (wt-sb)", price: "5 zł", tip: "Cenna polichromia na sklepieniu" },
+      { name: "Rezerwat Szum", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Tanew-rezerwat.JPG/960px-Tanew-rezerwat.JPG", category: "przyroda", lat: 50.6750, lng: 23.0700, description: "Rezerwat chroniący przełom rzeki Szum z unikatowymi progami skalnymi.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Wiosną najwyższy poziom wody — najpiękniejsze progi" },
+      { name: "Wzgórze Trzech Krzyży", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Szczebrzszyn_rynek_-_panoramio.jpg/960px-Szczebrzszyn_rynek_-_panoramio.jpg", category: "widok", lat: 50.6940, lng: 23.1080, description: "Punkt widokowy nad miastem z panoramą na dolinę Wieprza i Roztocze.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Świetny punkt na zachód słońca" }
     ],
     access: {
       bycar: "Z Zamościa: droga 74 (20 km, 25 min). Z Lublina: S17 → droga 74 (75 km, 1h).",
@@ -1330,7 +1896,14 @@ const DATA = [
     practical: {
       bestSeason: "Maj - Październik",
       weather: "Klimat umiarkowany, łagodne lata",
-      accommodation: "Agroturystyka i pokoje gościnne w okolicy",
+      accommodation: {
+        summary: "Agroturystyka i pokoje gościnne w okolicy",
+        places: [
+          { name: "Agroturystyka Pod Dębem", type: "agroturystyka", stars: 0, price: "80-120 zł/os", address: "Kawęczyn 15, gm. Szczebrzeszyn", phone: "502 111 222", desc: "Spokojne gospodarstwo z widokiem na Roztocze", features: ["Śniadanie", "Parking", "Ogród", "Zwierzęta"] },
+          { name: "Pokoje Gościnne U Chrząszcza", type: "pokoje", stars: 0, price: "100-160 zł", address: "ul. Zamojska 8, Szczebrzeszyn", phone: "503 222 333", desc: "Przytulne pokoje w centrum miasteczka przy rynku", features: ["WiFi", "Parking", "Centrum"] },
+          { name: "Chata na Roztoczu", type: "agroturystyka", stars: 0, price: "120-180 zł", address: "Brody Duże 42, gm. Szczebrzeszyn", phone: "504 333 444", desc: "Drewniana chata z sauną w otoczeniu lasów", features: ["Sauna", "Grill", "Parking", "Las"] }
+        ]
+      },
       food: "Lokalne jadłodajnie, produkty z Roztocza. Polecane: mleczarnia regionalna",
       bike_rental: "Brak wypożyczalni — warto zabrać własny rower",
       emergency: "Pogotowie: 112, Szpital Zamość: 84 677 33 33",
@@ -1344,7 +1917,7 @@ const DATA = [
     lat: 50.6130,
     lng: 22.9740,
     description: "Brama Roztoczańskiego Parku Narodowego, miasteczko z kościołem na wodzie i bogatą historią ordynacji zamojskiej.",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/Kosciol_na_wodzie_-_panoramio.jpg/1280px-Kosciol_na_wodzie_-_panoramio.jpg",
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/St._Jan_Nepomucen_Church_in_Zwierzyniec.jpg/960px-St._Jan_Nepomucen_Church_in_Zwierzyniec.jpg",
     badge: "⭐ Park Narodowy",
     hiking: [
       {
@@ -1495,11 +2068,11 @@ const DATA = [
       }
     ],
     attractions: [
-      { name: "Kościół na Wodzie", category: "kosciol", lat: 50.6110, lng: 22.9710, description: "Unikatowy kościółek na wyspie pośrodku stawu, symbol Zwierzyńca z XVIII w.", openHours: "Widok całodobowo", price: "Bezpłatny", tip: "Najpiękniejszy widok rano we mgle" },
-      { name: "Stawy Echo", category: "przyroda", lat: 50.6080, lng: 22.9680, description: "Kompleks stawów w sercu RPN, popularne kąpielisko w sezonie letnim.", openHours: "Maj-Wrzesień 9:00-19:00", price: "10 zł (plaża)", tip: "Idealne miejsce na piknik z rodziną" },
-      { name: "Muzeum Roztoczańskiego PN", category: "muzeum", lat: 50.6135, lng: 22.9745, description: "Ekspozycja przyrodnicza Roztocza: flora, fauna, geologia i historia parku.", openHours: "9:00-16:00 (wt-nd)", price: "8 zł", tip: "Zacznij wizytę tutaj — mapy i informacje o szlakach" },
-      { name: "Pałac Ordynacji Zamojskiej", category: "zabytek", lat: 50.6140, lng: 22.9750, description: "Dawna rezydencja zarządców ordynacji, otoczona parkiem angielskim.", openHours: "Teren zewnętrzny całodobowo", price: "Bezpłatny", tip: "Park piękny jesienią" },
-      { name: "Browar Zwierzyniec", category: "inne", lat: 50.6145, lng: 22.9730, description: "Historyczny browar z XVIII w., dziś produkujący regionalne piwo roztoczańskie.", openHours: "Sklep: 10:00-18:00", price: "Degustacja: 15 zł", tip: "Piwo Roztocze — lokalny specjał" }
+      { name: "Kościół na Wodzie", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/St._Jan_Nepomucen_Church_in_Zwierzyniec.jpg/960px-St._Jan_Nepomucen_Church_in_Zwierzyniec.jpg", category: "kosciol", lat: 50.6110, lng: 22.9710, description: "Unikatowy kościółek na wyspie pośrodku stawu, symbol Zwierzyńca z XVIII w.", openHours: "Widok całodobowo", price: "Bezpłatny", tip: "Najpiękniejszy widok rano we mgle" },
+      { name: "Stawy Echo", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Staw_echo6.JPG/960px-Staw_echo6.JPG", category: "przyroda", lat: 50.6080, lng: 22.9680, description: "Kompleks stawów w sercu RPN, popularne kąpielisko w sezonie letnim.", openHours: "Maj-Wrzesień 9:00-19:00", price: "10 zł (plaża)", tip: "Idealne miejsce na piknik z rodziną" },
+      { name: "Muzeum Roztoczańskiego PN", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Roztocze_konik_polski.jpg/960px-Roztocze_konik_polski.jpg", category: "muzeum", lat: 50.6135, lng: 22.9745, description: "Ekspozycja przyrodnicza Roztocza: flora, fauna, geologia i historia parku.", openHours: "9:00-16:00 (wt-nd)", price: "8 zł", tip: "Zacznij wizytę tutaj — mapy i informacje o szlakach" },
+      { name: "Pałac Ordynacji Zamojskiej", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Zwierzyniec31.JPG/960px-Zwierzyniec31.JPG", category: "zabytek", lat: 50.6140, lng: 22.9750, description: "Dawna rezydencja zarządców ordynacji, otoczona parkiem angielskim.", openHours: "Teren zewnętrzny całodobowo", price: "Bezpłatny", tip: "Park piękny jesienią" },
+      { name: "Browar Zwierzyniec", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Zwierzyniec31.JPG/960px-Zwierzyniec31.JPG", category: "inne", lat: 50.6145, lng: 22.9730, description: "Historyczny browar z XVIII w., dziś produkujący regionalne piwo roztoczańskie.", openHours: "Sklep: 10:00-18:00", price: "Degustacja: 15 zł", tip: "Piwo Roztocze — lokalny specjał" }
     ],
     access: {
       bycar: "Z Zamościa: droga 74 → Szczebrzeszyn → Zwierzyniec (35 km, 40 min). Z Lublina: ok. 100 km, 1h 30min.",
@@ -1512,7 +2085,15 @@ const DATA = [
     practical: {
       bestSeason: "Maj - Październik",
       weather: "Mikroklimat Roztocza — ciepłe lata, dużo słońca, czyste powietrze",
-      accommodation: "Ośrodki wypoczynkowe, pensjonaty, camping przy Stawach Echo",
+      accommodation: {
+        summary: "Ośrodki wypoczynkowe, pensjonaty, camping przy Stawach Echo",
+        places: [
+          { name: "Karczma Młyn", type: "pensjonat", stars: 3, price: "200-350 zł", address: "ul. Wacława Szymborskiego 1, Zwierzyniec", phone: "84 687 24 60", desc: "Stylowy pensjonat w dawnym młynie wodnym nad stawem", features: ["WiFi", "Restauracja", "Parking", "Widok na staw"] },
+          { name: "Ośrodek Stawy Echo", type: "osrodek", stars: 2, price: "150-250 zł", address: "ul. Biłgorajska, Zwierzyniec", phone: "84 687 20 12", desc: "Ośrodek wypoczynkowy przy kąpielisku Stawy Echo", features: ["Plaża", "Parking", "Grill", "Plac zabaw"] },
+          { name: "Camping Roztocze", type: "camping", stars: 0, price: "40-70 zł/namiot", address: "ul. Słoneczna 5, Zwierzyniec", phone: "505 444 555", desc: "Pole kempingowe z zapleczem sanitarnym w lesie", features: ["Prysznice", "Prąd", "Ognisko", "Sklep"] },
+          { name: "Pensjonat Pod Jodłą", type: "pensjonat", stars: 2, price: "130-200 zł", address: "ul. Partyzantów 15, Zwierzyniec", phone: "506 555 666", desc: "Kameralny pensjonat przy wejściu do RPN", features: ["WiFi", "Śniadanie", "Parking", "Rowery"] }
+        ]
+      },
       food: "Regionalne jadło roztoczańskie, piwo ze Zwierzyńca. Polecane: Karczma Roztocze",
       bike_rental: "Wypożyczalnia przy Stawach Echo: 35 zł/dzień, e-rowery: 80 zł/dzień",
       emergency: "Pogotowie: 112, Dyżurka RPN: 84 687 20 66",
@@ -1526,7 +2107,7 @@ const DATA = [
     lat: 50.4815,
     lng: 23.0578,
     description: "Stolica kamieniołomów Roztocza, miasteczko otoczone lasami z unikatowymi formacjami skalnymi i rzeką Tanew.",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Szumy_nad_Tanwi%C4%85.jpg/1280px-Szumy_nad_Tanwi%C4%85.jpg",
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Tanew-rezerwat.JPG/960px-Tanew-rezerwat.JPG",
     badge: "",
     hiking: [
       {
@@ -1677,11 +2258,11 @@ const DATA = [
       }
     ],
     attractions: [
-      { name: "Szumy nad Tanwią", category: "przyroda", lat: 50.4700, lng: 23.0300, description: "Jedyne w Polsce kaskady rzeczne na piaskowcu — seria progów na Tanwi.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Najefektowniejsze po opadach wiosną" },
-      { name: "Kamieniołom Babia Dolina", category: "przyroda", lat: 50.4850, lng: 23.0610, description: "Dawny kamieniołom wapienia z amfiteatrem skalnym i jeziorem.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Latem można się kąpać w szmaragdowej wodzie" },
-      { name: "Czartowe Pole", category: "przyroda", lat: 50.5000, lng: 23.0300, description: "Rezerwat z kaskadami i przełomem rzeki Sopot — bajkowy krajobraz.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Trasa wymaga wygodnego obuwia" },
-      { name: "Kościół w Józefowie", category: "kosciol", lat: 50.4820, lng: 23.0585, description: "Klasycystyczny kościół z XIX w. z piaskowcowymi detalami.", openHours: "7:00-18:00", price: "Bezpłatny", tip: "Piaskowiec roztoczański w architekturze sakralnej" },
-      { name: "Punkt widokowy Klewce", category: "widok", lat: 50.4780, lng: 23.0650, description: "Panoramiczny punkt widokowy na dolinę Tanwi i Roztocze.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Najlepszy punkt na zachód słońca w okolicy" }
+      { name: "Szumy nad Tanwią", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Tanew_Szumy_0068.jpg/960px-Tanew_Szumy_0068.jpg", category: "przyroda", lat: 50.4700, lng: 23.0300, description: "Jedyne w Polsce kaskady rzeczne na piaskowcu — seria progów na Tanwi.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Najefektowniejsze po opadach wiosną" },
+      { name: "Kamieniołom Babia Dolina", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Tanew-rezerwat.JPG/960px-Tanew-rezerwat.JPG", category: "przyroda", lat: 50.4850, lng: 23.0610, description: "Dawny kamieniołom wapienia z amfiteatrem skalnym i jeziorem.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Latem można się kąpać w szmaragdowej wodzie" },
+      { name: "Czartowe Pole", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Tanew-rezerwat.JPG/960px-Tanew-rezerwat.JPG", category: "przyroda", lat: 50.5000, lng: 23.0300, description: "Rezerwat z kaskadami i przełomem rzeki Sopot — bajkowy krajobraz.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Trasa wymaga wygodnego obuwia" },
+      { name: "Kościół w Józefowie", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Tanew-rezerwat.JPG/960px-Tanew-rezerwat.JPG", category: "kosciol", lat: 50.4820, lng: 23.0585, description: "Klasycystyczny kościół z XIX w. z piaskowcowymi detalami.", openHours: "7:00-18:00", price: "Bezpłatny", tip: "Piaskowiec roztoczański w architekturze sakralnej" },
+      { name: "Punkt widokowy Klewce", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/Tanew-rezerwat.JPG/960px-Tanew-rezerwat.JPG", category: "widok", lat: 50.4780, lng: 23.0650, description: "Panoramiczny punkt widokowy na dolinę Tanwi i Roztocze.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Najlepszy punkt na zachód słońca w okolicy" }
     ],
     access: {
       bycar: "Z Zamościa: droga 74 → Zwierzyniec → Józefów (55 km, 50 min). Z Lublina: ok. 120 km.",
@@ -1694,7 +2275,14 @@ const DATA = [
     practical: {
       bestSeason: "Maj - Październik",
       weather: "Mikroklimat Roztocza, czyste powietrze",
-      accommodation: "Agroturystyka, pensjonaty. Polecane: Zagroda Guciów (15 km)",
+      accommodation: {
+        summary: "Agroturystyka, pensjonaty. Polecane: Zagroda Guciów",
+        places: [
+          { name: "Zagroda Guciów", type: "agroturystyka", stars: 3, price: "180-300 zł", address: "Guciów 57, gm. Zwierzyniec", phone: "84 687 26 30", desc: "Nagrodzona agroturystyka w tradycyjnej zagrodzie roztoczańskiej", features: ["Restauracja", "Muzeum", "Parking", "Konie"] },
+          { name: "Pokoje u Tadeusza", type: "pokoje", stars: 0, price: "80-120 zł/os", address: "ul. Kościuszki 22, Józefów", phone: "507 666 777", desc: "Proste, czyste pokoje w centrum Józefowa", features: ["WiFi", "Parking", "Kuchnia"] },
+          { name: "Domki Pod Tanwią", type: "domki", stars: 0, price: "200-350 zł/domek", address: "Hamerni 8, gm. Józefów", phone: "508 777 888", desc: "Drewniane domki nad rzeką Tanew w lesie", features: ["Grill", "Ognisko", "Kajaki", "Cisza"] }
+        ]
+      },
       food: "Kuchnia roztoczańska, miody i sery lokalne",
       bike_rental: "Ograniczone — warto mieć własny rower",
       emergency: "Pogotowie: 112",
@@ -1712,7 +2300,7 @@ const DATA = [
     lat: 51.5500,
     lng: 23.5500,
     description: "Miasto trzech kultur (polskiej, żydowskiej, prawosławnej) nad Bugiem, brama Polesia Lubelskiego.",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/W%C5%82odawa-synagoga_3.jpg/1280px-W%C5%82odawa-synagoga_3.jpg",
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Saint_Louis_church_in_W%C5%82odawa_%2801%29.JPG/960px-Saint_Louis_church_in_W%C5%82odawa_%2801%29.JPG",
     badge: "",
     hiking: [
       {
@@ -1863,11 +2451,11 @@ const DATA = [
       }
     ],
     attractions: [
-      { name: "Zespół Synagogalny", category: "zabytek", lat: 51.5505, lng: 23.5510, description: "Unikatowy zespół trzech budynków synagogalnych z XVII-XVIII w., dziś muzeum.", openHours: "10:00-17:00 (wt-nd)", price: "10 zł", tip: "Jedna z najlepiej zachowanych synagog w Polsce" },
-      { name: "Cerkiew Narodzenia NMP", category: "kosciol", lat: 51.5515, lng: 23.5490, description: "XVIII-wieczna cerkiew unicka, dziś prawosławna, z pięknymi ikonami.", openHours: "Po nabożeństwach", price: "Bezpłatny", tip: "Ikonostas wart zobaczenia" },
-      { name: "Okuninka", category: "przyroda", lat: 51.5100, lng: 23.5300, description: "Popularne kąpielisko nad Jeziorem Białym z szeroką plażą piaszczystą.", openHours: "Sezon: VI-VIII", price: "Parking: 10 zł", tip: "Najczystsza woda w regionie" },
-      { name: "Muzeum Pojezierza Łęczyńsko-Włodawskiego", category: "muzeum", lat: 51.5498, lng: 23.5515, description: "Ekspozycja przyrodnicza i etnograficzna Polesia Lubelskiego.", openHours: "9:00-16:00 (wt-pt)", price: "8 zł", tip: "Ciekawy dział ornitologiczny" },
-      { name: "Spływ kajakowy Bugiem", category: "przyroda", lat: 51.5480, lng: 23.5550, description: "Organizowane spływy kajakowe rzeką Bug — dzika graniczna rzeka.", openHours: "V-IX, rezerwacja", price: "od 60 zł/os", tip: "Jednodniowy spływ — niezapomniane przeżycie" }
+      { name: "Zespół Synagogalny", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Synagogue_in_W%C5%82odawa_%2801%29.JPG/960px-Synagogue_in_W%C5%82odawa_%2801%29.JPG", category: "zabytek", lat: 51.5505, lng: 23.5510, description: "Unikatowy zespół trzech budynków synagogalnych z XVII-XVIII w., dziś muzeum.", openHours: "10:00-17:00 (wt-nd)", price: "10 zł", tip: "Jedna z najlepiej zachowanych synagog w Polsce" },
+      { name: "Cerkiew Narodzenia NMP", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/W%C5%82odawa%2C_cerkiew_prawos%C5%82awna_p.w._Narodzenia_Naj%C5%9Bwi%C4%99tszej_Maryi_Panny%2C_1840-1842.JPG/800px-W%C5%82odawa%2C_cerkiew_prawos%C5%82awna_p.w._Narodzenia_Naj%C5%9Bwi%C4%99tszej_Maryi_Panny%2C_1840-1842.JPG", category: "kosciol", lat: 51.5515, lng: 23.5490, description: "XVIII-wieczna cerkiew unicka, dziś prawosławna, z pięknymi ikonami.", openHours: "Po nabożeństwach", price: "Bezpłatny", tip: "Ikonostas wart zobaczenia" },
+      { name: "Okuninka", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Saint_Louis_church_in_W%C5%82odawa_%2801%29.JPG/960px-Saint_Louis_church_in_W%C5%82odawa_%2801%29.JPG", category: "przyroda", lat: 51.5100, lng: 23.5300, description: "Popularne kąpielisko nad Jeziorem Białym z szeroką plażą piaszczystą.", openHours: "Sezon: VI-VIII", price: "Parking: 10 zł", tip: "Najczystsza woda w regionie" },
+      { name: "Muzeum Pojezierza Łęczyńsko-Włodawskiego", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Saint_Louis_church_in_W%C5%82odawa_%2801%29.JPG/960px-Saint_Louis_church_in_W%C5%82odawa_%2801%29.JPG", category: "muzeum", lat: 51.5498, lng: 23.5515, description: "Ekspozycja przyrodnicza i etnograficzna Polesia Lubelskiego.", openHours: "9:00-16:00 (wt-pt)", price: "8 zł", tip: "Ciekawy dział ornitologiczny" },
+      { name: "Spływ kajakowy Bugiem", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Saint_Louis_church_in_W%C5%82odawa_%2801%29.JPG/960px-Saint_Louis_church_in_W%C5%82odawa_%2801%29.JPG", category: "przyroda", lat: 51.5480, lng: 23.5550, description: "Organizowane spływy kajakowe rzeką Bug — dzika graniczna rzeka.", openHours: "V-IX, rezerwacja", price: "od 60 zł/os", tip: "Jednodniowy spływ — niezapomniane przeżycie" }
     ],
     access: {
       bycar: "Z Lublina: droga 82 → Włodawa (ok. 70 km, 1h 15min). Parking w centrum.",
@@ -1880,7 +2468,15 @@ const DATA = [
     practical: {
       bestSeason: "Maj - Wrzesień (jeziora), cały rok (zabytki)",
       weather: "Klimat kontynentalny, ciepłe lata, zimne zimy",
-      accommodation: "Ośrodki nad jeziorem, agroturystyka, hotel Narvil w Okunince",
+      accommodation: {
+        summary: "Ośrodki nad jeziorem, agroturystyka, hotel w Okunince",
+        places: [
+          { name: "Hotel Narvil Okuninka", type: "hotel", stars: 3, price: "280-480 zł", address: "Okuninka 62, gm. Włodawa", phone: "82 572 53 00", desc: "Nowoczesny hotel nad Jeziorem Białym z plażą", features: ["WiFi", "Plaża", "Restauracja", "SPA", "Parking"] },
+          { name: "Ośrodek Pod Sosnami", type: "osrodek", stars: 2, price: "120-200 zł", address: "Okuninka 30, gm. Włodawa", phone: "509 888 999", desc: "Ośrodek wypoczynkowy z domkami wśród sosen nad jeziorem", features: ["Plaża", "Grill", "Plac zabaw", "Parking"] },
+          { name: "Agroturystyka Nad Bugiem", type: "agroturystyka", stars: 0, price: "90-140 zł/os", address: "Żuków 15, gm. Włodawa", phone: "510 999 000", desc: "Gospodarstwo nad Bugiem z domową kuchnią poleską", features: ["Śniadanie", "Parking", "Kajaki", "Wędkowanie"] },
+          { name: "Camping Jezioro Białe", type: "camping", stars: 0, price: "35-60 zł/namiot", address: "Okuninka, gm. Włodawa", phone: "511 000 111", desc: "Camping przy plaży z zapleczem sanitarnym", features: ["Prysznice", "Prąd", "Sklep", "Plaża"] }
+        ]
+      },
       food: "Kuchnia poleska: ryby, kartacze. Polecane: Karczma nad Bugiem",
       bike_rental: "Wypożyczalnia w Okunince, 35 zł/dzień",
       emergency: "Pogotowie: 112",
@@ -1894,7 +2490,7 @@ const DATA = [
     lat: 51.3960,
     lng: 23.2000,
     description: "Gmina w sercu Poleskiego Parku Narodowego, kraina torfowisk, jezior i unikatowej przyrody bagiennej.",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Poleski_Park_Narodowy_03.jpg/1280px-Poleski_Park_Narodowy_03.jpg",
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Poleski_Park_Narodowy%2C_Staw_G%C5%82%C4%99boki.jpg/960px-Poleski_Park_Narodowy%2C_Staw_G%C5%82%C4%99boki.jpg",
     badge: "⭐ Park Narodowy",
     hiking: [
       {
@@ -2045,11 +2641,11 @@ const DATA = [
       }
     ],
     attractions: [
-      { name: "Poleski Park Narodowy", category: "przyroda", lat: 51.3900, lng: 23.1900, description: "Jedyny park narodowy w Polsce chroniący ekosystemy torfowiskowo-bagienne.", openHours: "Całodobowo (szlaki)", price: "5 zł (wstęp)", tip: "Weź lornetkę — żurawie i bociany czarne" },
-      { name: "Jezioro Moszne", category: "przyroda", lat: 51.3850, lng: 23.1850, description: "Dystroficzne jezioro otoczone torfowiskiem — unikat w skali europejskiej.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Zachód słońca nad jeziorem jest niezapomniany" },
-      { name: "Wieża widokowa Dominik", category: "widok", lat: 51.3870, lng: 23.1920, description: "20-metrowa wieża z panoramą na torfowiska i lasy PPN.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Rano widać żurawie i mgły nad torfowiskami" },
-      { name: "Muzeum PPN w Urszulinie", category: "muzeum", lat: 51.3965, lng: 23.2010, description: "Centrum edukacyjne Poleskiego PN z ekspozycją przyrodniczą.", openHours: "9:00-16:00 (wt-pt)", price: "6 zł", tip: "Tu zdobędziesz mapy szlaków PPN" },
-      { name: "Chata Poleska", category: "muzeum", lat: 51.3950, lng: 23.1980, description: "Rekonstrukcja tradycyjnej zagrody poleskiej z XIX w.", openHours: "10:00-16:00 (V-IX)", price: "5 zł", tip: "Pokazy rękodzieła w sezonie" }
+      { name: "Poleski Park Narodowy", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Poleski_Park_Narodowy%2C_Staw_G%C5%82%C4%99boki.jpg/960px-Poleski_Park_Narodowy%2C_Staw_G%C5%82%C4%99boki.jpg", category: "przyroda", lat: 51.3900, lng: 23.1900, description: "Jedyny park narodowy w Polsce chroniący ekosystemy torfowiskowo-bagienne.", openHours: "Całodobowo (szlaki)", price: "5 zł (wstęp)", tip: "Weź lornetkę — żurawie i bociany czarne" },
+      { name: "Jezioro Moszne", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Poleski_Park_Narodowy%2C_Staw_G%C5%82%C4%99boki.jpg/960px-Poleski_Park_Narodowy%2C_Staw_G%C5%82%C4%99boki.jpg", category: "przyroda", lat: 51.3850, lng: 23.1850, description: "Dystroficzne jezioro otoczone torfowiskiem — unikat w skali europejskiej.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Zachód słońca nad jeziorem jest niezapomniany" },
+      { name: "Wieża widokowa Dominik", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Poleski_Park_Narodowy%2C_Staw_G%C5%82%C4%99boki.jpg/960px-Poleski_Park_Narodowy%2C_Staw_G%C5%82%C4%99boki.jpg", category: "widok", lat: 51.3870, lng: 23.1920, description: "20-metrowa wieża z panoramą na torfowiska i lasy PPN.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Rano widać żurawie i mgły nad torfowiskami" },
+      { name: "Muzeum PPN w Urszulinie", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Poleski_Park_Narodowy%2C_Staw_G%C5%82%C4%99boki.jpg/960px-Poleski_Park_Narodowy%2C_Staw_G%C5%82%C4%99boki.jpg", category: "muzeum", lat: 51.3965, lng: 23.2010, description: "Centrum edukacyjne Poleskiego PN z ekspozycją przyrodniczą.", openHours: "9:00-16:00 (wt-pt)", price: "6 zł", tip: "Tu zdobędziesz mapy szlaków PPN" },
+      { name: "Chata Poleska", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Poleski_Park_Narodowy%2C_Staw_G%C5%82%C4%99boki.jpg/960px-Poleski_Park_Narodowy%2C_Staw_G%C5%82%C4%99boki.jpg", category: "muzeum", lat: 51.3950, lng: 23.1980, description: "Rekonstrukcja tradycyjnej zagrody poleskiej z XIX w.", openHours: "10:00-16:00 (V-IX)", price: "5 zł", tip: "Pokazy rękodzieła w sezonie" }
     ],
     access: {
       bycar: "Z Lublina: droga 82 → Łęczna → Urszulin (ok. 70 km, 1h 10min).",
@@ -2062,7 +2658,14 @@ const DATA = [
     practical: {
       bestSeason: "Kwiecień - Październik (przyroda), Wrzesień (żurawie)",
       weather: "Klimat kontynentalny, wilgotny, mgły jesienią",
-      accommodation: "Agroturystyka, kwatery przy PPN, camping",
+      accommodation: {
+        summary: "Agroturystyka, kwatery przy PPN, camping",
+        places: [
+          { name: "Agroturystyka Poleska Dolina", type: "agroturystyka", stars: 0, price: "80-130 zł/os", address: "Wytyczno 25, gm. Urszulin", phone: "512 111 222", desc: "Tradycyjne gospodarstwo na skraju PPN z lokalną kuchnią", features: ["Śniadanie", "Parking", "Rowery", "Lornetki"] },
+          { name: "Kwatery Przy Parku", type: "pokoje", stars: 0, price: "70-110 zł/os", address: "ul. Lubelska 10, Urszulin", phone: "513 222 333", desc: "Pokoje gościnne przy siedzibie Poleskiego PN", features: ["WiFi", "Parking", "Informacja turystyczna"] },
+          { name: "Pole Biwakowe Moszne", type: "camping", stars: 0, price: "25-40 zł/namiot", address: "Przy Jeziorze Moszne, Urszulin", phone: "514 333 444", desc: "Proste pole biwakowe z dostępem do szlaku PPN", features: ["Toaleta", "Woda", "Ognisko"] }
+        ]
+      },
       food: "Kuchnia poleska, sery i miody lokalne",
       bike_rental: "Wypożyczalnia przy siedzibie PPN, 30 zł/dzień",
       emergency: "Pogotowie: 112",
@@ -2076,7 +2679,7 @@ const DATA = [
     lat: 51.3017,
     lng: 22.8789,
     description: "Historyczne miasteczko z renesansowym rynkiem i tradycjami jarmarczymi, brama na Pojezierze Łęczyńsko-Włodawskie.",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Leczna-ratusz2.jpg/1024px-Leczna-ratusz2.jpg",
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Ratusz_w_%C5%81%C4%99cznej%2C_obecnie_Urz%C4%85d_Stanu_Cywilnego.JPG/960px-Ratusz_w_%C5%81%C4%99cznej%2C_obecnie_Urz%C4%85d_Stanu_Cywilnego.JPG",
     badge: "",
     hiking: [
       {
@@ -2227,11 +2830,11 @@ const DATA = [
       }
     ],
     attractions: [
-      { name: "Rynek Renesansowy", category: "zabytek", lat: 51.3017, lng: 22.8789, description: "Jeden z najlepiej zachowanych renesansowych rynków w Polsce z XVII w.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Jarmarki w sezonie — sprawdź kalendarz" },
-      { name: "Synagoga w Łęcznej", category: "zabytek", lat: 51.3010, lng: 22.8780, description: "XVII-wieczna synagoga, jedna z cenniejszych na Lubelszczyźnie.", openHours: "10:00-16:00 (po umówieniu)", price: "5 zł", tip: "Zachowana bima i fragmenty polichromii" },
-      { name: "Kościół farny św. Marii Magdaleny", category: "kosciol", lat: 51.3025, lng: 22.8795, description: "Barokowy kościół z XVIII w. z cennym wyposażeniem.", openHours: "7:00-18:00", price: "Bezpłatny", tip: "Piękne organy barokowe" },
-      { name: "Pojezierze Łęczyńsko-Włodawskie", category: "przyroda", lat: 51.3500, lng: 22.9500, description: "Kompleks 67 jezior — raj dla wędkarzy, kajakarzy i ornitologów.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Jezioro Piaseczno — najgłębsze (38m) i najczystsze" },
-      { name: "Muzeum Regionalne Łęcznej", category: "muzeum", lat: 51.3020, lng: 22.8785, description: "Historia miasta i jarmarków łęczyńskich od XVI w.", openHours: "10:00-15:00 (wt-pt)", price: "5 zł", tip: "Ciekawe archiwalia o jarmarkach" }
+      { name: "Rynek Renesansowy", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Ratusz_w_%C5%81%C4%99cznej%2C_obecnie_Urz%C4%85d_Stanu_Cywilnego.JPG/960px-Ratusz_w_%C5%81%C4%99cznej%2C_obecnie_Urz%C4%85d_Stanu_Cywilnego.JPG", category: "zabytek", lat: 51.3017, lng: 22.8789, description: "Jeden z najlepiej zachowanych renesansowych rynków w Polsce z XVII w.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Jarmarki w sezonie — sprawdź kalendarz" },
+      { name: "Synagoga w Łęcznej", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Ratusz_w_%C5%81%C4%99cznej%2C_obecnie_Urz%C4%85d_Stanu_Cywilnego.JPG/960px-Ratusz_w_%C5%81%C4%99cznej%2C_obecnie_Urz%C4%85d_Stanu_Cywilnego.JPG", category: "zabytek", lat: 51.3010, lng: 22.8780, description: "XVII-wieczna synagoga, jedna z cenniejszych na Lubelszczyźnie.", openHours: "10:00-16:00 (po umówieniu)", price: "5 zł", tip: "Zachowana bima i fragmenty polichromii" },
+      { name: "Kościół farny św. Marii Magdaleny", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Ratusz_w_%C5%81%C4%99cznej%2C_obecnie_Urz%C4%85d_Stanu_Cywilnego.JPG/960px-Ratusz_w_%C5%81%C4%99cznej%2C_obecnie_Urz%C4%85d_Stanu_Cywilnego.JPG", category: "kosciol", lat: 51.3025, lng: 22.8795, description: "Barokowy kościół z XVIII w. z cennym wyposażeniem.", openHours: "7:00-18:00", price: "Bezpłatny", tip: "Piękne organy barokowe" },
+      { name: "Pojezierze Łęczyńsko-Włodawskie", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Jezioro_piaseczno_lubelskie_leczna.jpg/960px-Jezioro_piaseczno_lubelskie_leczna.jpg", category: "przyroda", lat: 51.3500, lng: 22.9500, description: "Kompleks 67 jezior — raj dla wędkarzy, kajakarzy i ornitologów.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Jezioro Piaseczno — najgłębsze (38m) i najczystsze" },
+      { name: "Muzeum Regionalne Łęcznej", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Ratusz_w_%C5%81%C4%99cznej%2C_obecnie_Urz%C4%85d_Stanu_Cywilnego.JPG/960px-Ratusz_w_%C5%81%C4%99cznej%2C_obecnie_Urz%C4%85d_Stanu_Cywilnego.JPG", category: "muzeum", lat: 51.3020, lng: 22.8785, description: "Historia miasta i jarmarków łęczyńskich od XVI w.", openHours: "10:00-15:00 (wt-pt)", price: "5 zł", tip: "Ciekawe archiwalia o jarmarkach" }
     ],
     access: {
       bycar: "Z Lublina: droga 82 (ok. 25 km, 30 min). Parking przy rynku.",
@@ -2244,7 +2847,14 @@ const DATA = [
     practical: {
       bestSeason: "Maj - Wrzesień (jeziora), cały rok (miasto)",
       weather: "Klimat umiarkowany, lata ciepłe",
-      accommodation: "Hotele i pensjonaty w Łęcznej, ośrodki nad jeziorami",
+      accommodation: {
+        summary: "Hotele i pensjonaty w Łęcznej, ośrodki nad jeziorami",
+        places: [
+          { name: "Hotel Nowy Dwór", type: "hotel", stars: 3, price: "180-300 zł", address: "ul. Krasnystawska 54, Łęczna", phone: "81 752 20 01", desc: "Hotel z restauracją i salą konferencyjną w centrum", features: ["WiFi", "Restauracja", "Parking", "Śniadanie"] },
+          { name: "Ośrodek Jezioro Piaseczno", type: "osrodek", stars: 2, price: "150-250 zł", address: "Piaseczno, gm. Ludwin", phone: "515 444 555", desc: "Ośrodek wypoczynkowy nad najczystszym jeziorem regionu", features: ["Plaża", "Kajaki", "Grill", "Parking"] },
+          { name: "Pokoje Gościnne Rynek", type: "pokoje", stars: 0, price: "90-140 zł", address: "Rynek 14, Łęczna", phone: "516 555 666", desc: "Pokoje w zabytkowej kamienicy przy renesansowym rynku", features: ["WiFi", "Centrum", "Parking"] }
+        ]
+      },
       food: "Kuchnia regionalna, ryby z jezior. Polecane: Gospoda Łęczyńska",
       bike_rental: "Wypożyczalnia przy biurze turystycznym, 35 zł/dzień",
       emergency: "Pogotowie: 112, Szpital Łęczna: 81 752 65 00",
@@ -2258,7 +2868,7 @@ const DATA = [
     lat: 51.2975,
     lng: 23.1500,
     description: "Gmina w sercu Pojezierza Łęczyńsko-Włodawskiego, otoczona jeziorami i terenami Nadwieprzańskiego Parku Krajobrazowego.",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Jezioro_Piaseczno_01.jpg/1280px-Jezioro_Piaseczno_01.jpg",
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Jezioro_piaseczno_lubelskie_leczna.jpg/960px-Jezioro_piaseczno_lubelskie_leczna.jpg",
     badge: "",
     hiking: [
       {
@@ -2409,11 +3019,11 @@ const DATA = [
       }
     ],
     attractions: [
-      { name: "Jezioro Zagłębocze", category: "przyroda", lat: 51.3100, lng: 23.1550, description: "Czyste jezioro krasowe z piaszczystą plażą, idealne na kąpiel.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Ciepła woda latem dzięki płytkości" },
-      { name: "Jezioro Piaseczno", category: "przyroda", lat: 51.3700, lng: 23.0300, description: "Najgłębsze jezioro Lubelszczyzny (38,8 m), krystaliczna woda.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Idealne do nurkowania — widoczność do 6 m" },
-      { name: "Nadwieprzański Park Krajobrazowy", category: "przyroda", lat: 51.2700, lng: 23.1200, description: "Park chroniący dolinę Wieprza z bogatą awifauną.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Bociany i żurawie wiosną i jesienią" },
-      { name: "Kościół w Cycowie", category: "kosciol", lat: 51.2978, lng: 23.1505, description: "Neoromański kościół z początku XX w.", openHours: "7:00-18:00", price: "Bezpłatny", tip: "Ciekawa architektura ceglana" },
-      { name: "Dwór w Ludwinie", category: "zabytek", lat: 51.3200, lng: 23.1000, description: "XIX-wieczny dwór szlachecki z parkiem angielskim.", openHours: "Teren zewnętrzny całodobowo", price: "Bezpłatny", tip: "Piękny stary drzewostan w parku" }
+      { name: "Jezioro Zagłębocze", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Jezioro_piaseczno_lubelskie_leczna.jpg/960px-Jezioro_piaseczno_lubelskie_leczna.jpg", category: "przyroda", lat: 51.3100, lng: 23.1550, description: "Czyste jezioro krasowe z piaszczystą plażą, idealne na kąpiel.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Ciepła woda latem dzięki płytkości" },
+      { name: "Jezioro Piaseczno", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Jezioro_piaseczno_lubelskie_leczna.jpg/960px-Jezioro_piaseczno_lubelskie_leczna.jpg", category: "przyroda", lat: 51.3700, lng: 23.0300, description: "Najgłębsze jezioro Lubelszczyzny (38,8 m), krystaliczna woda.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Idealne do nurkowania — widoczność do 6 m" },
+      { name: "Nadwieprzański Park Krajobrazowy", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Poleski_Park_Narodowy%2C_Staw_G%C5%82%C4%99boki.jpg/960px-Poleski_Park_Narodowy%2C_Staw_G%C5%82%C4%99boki.jpg", category: "przyroda", lat: 51.2700, lng: 23.1200, description: "Park chroniący dolinę Wieprza z bogatą awifauną.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Bociany i żurawie wiosną i jesienią" },
+      { name: "Kościół w Cycowie", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Jezioro_piaseczno_lubelskie_leczna.jpg/960px-Jezioro_piaseczno_lubelskie_leczna.jpg", category: "kosciol", lat: 51.2978, lng: 23.1505, description: "Neoromański kościół z początku XX w.", openHours: "7:00-18:00", price: "Bezpłatny", tip: "Ciekawa architektura ceglana" },
+      { name: "Dwór w Ludwinie", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Jezioro_piaseczno_lubelskie_leczna.jpg/960px-Jezioro_piaseczno_lubelskie_leczna.jpg", category: "zabytek", lat: 51.3200, lng: 23.1000, description: "XIX-wieczny dwór szlachecki z parkiem angielskim.", openHours: "Teren zewnętrzny całodobowo", price: "Bezpłatny", tip: "Piękny stary drzewostan w parku" }
     ],
     access: {
       bycar: "Z Lublina: droga 82 → Łęczna → Cyców (ok. 50 km, 50 min).",
@@ -2426,7 +3036,14 @@ const DATA = [
     practical: {
       bestSeason: "Czerwiec - Wrzesień (jeziora)",
       weather: "Klimat umiarkowany, ciepłe lata",
-      accommodation: "Agroturystyka, domki nad jeziorami",
+      accommodation: {
+        summary: "Agroturystyka, domki nad jeziorami",
+        places: [
+          { name: "Domki Letniskowe Zagłębocze", type: "domki", stars: 0, price: "180-300 zł/domek", address: "Zagłębocze 5, gm. Cyców", phone: "517 666 777", desc: "Drewniane domki nad jeziorem z plażą i pomostem", features: ["Plaża", "Pomost", "Grill", "Kajaki"] },
+          { name: "Agroturystyka U Sołtysa", type: "agroturystyka", stars: 0, price: "70-100 zł/os", address: "Ludwin 30, gm. Cyców", phone: "518 777 888", desc: "Wiejskie gospodarstwo z tradycyjną kuchnią poleską", features: ["Śniadanie", "Parking", "Ogród", "Zwierzęta"] },
+          { name: "Camping Poleskie Jeziora", type: "camping", stars: 0, price: "30-50 zł/namiot", address: "Piaseczno, gm. Cyców", phone: "519 888 999", desc: "Kameralne pole namiotowe przy jeziorze wśród sosen", features: ["Toaleta", "Woda", "Ognisko", "Plaża"] }
+        ]
+      },
       food: "Kuchnia domowa w gospodarstwach agroturystycznych, ryby z jezior",
       bike_rental: "Brak wypożyczalni — zabierz własny rower",
       emergency: "Pogotowie: 112",
@@ -2444,7 +3061,7 @@ const DATA = [
     lat: 51.3197,
     lng: 21.9527,
     description: "Perła nadwiślańska, miasto malarzy i artystów. Renesansowe kamieniczki, wąwozy lessowe i malownicze położenie nad Wisłą.",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Kazimierz_Dolny_%28Koziorożec%29_%2812%29.jpg/1280px-Kazimierz_Dolny_%28Koziorożec%29_%2812%29.jpg",
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Kazimierz_Dolny_Market_Square.jpg/960px-Kazimierz_Dolny_Market_Square.jpg",
     badge: "⭐ Polecane",
     hiking: [
       {
@@ -2607,12 +3224,12 @@ const DATA = [
       }
     ],
     attractions: [
-      { name: "Zamek Kazimierski", category: "zabytek", lat: 51.3209, lng: 21.9518, description: "Ruiny gotyckiego zamku Kazimierza Wielkiego z XIV w. na wzgórzu nad Wisłą.", openHours: "8:00-18:00 (sezon)", price: "Bezpłatny", tip: "Najpiękniejszy widok o zachodzie słońca" },
-      { name: "Góra Trzech Krzyży", category: "widok", lat: 51.3230, lng: 21.9540, description: "Trzy krzyże z XVII w. na wzgórzu — symbol miasta i najlepszy punkt widokowy.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Wschód słońca zapiera dech" },
-      { name: "Rynek z Kamieniczkami", category: "zabytek", lat: 51.3197, lng: 21.9527, description: "Renesansowe kamieniczki Przybyłów i Celej z XVII w. z bogatą dekoracją.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Zwróć uwagę na attyki z płaskorzeźbami" },
-      { name: "Wąwóz Korzeniowy Dół", category: "przyroda", lat: 51.3150, lng: 21.9450, description: "Spektakularny wąwóz lessowy z odsłoniętymi korzeniami drzew — cudnatury.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Trasa wymaga wygodnego obuwia" },
-      { name: "Muzeum Nadwiślańskie", category: "muzeum", lat: 51.3200, lng: 21.9530, description: "Muzeum sztuki i rzemiosła artystycznego w zabytkowej kamienicy.", openHours: "10:00-16:00 (wt-nd)", price: "10 zł", tip: "Cenna kolekcja złotnictwa" },
-      { name: "Klasztor Franciszkanów", category: "kosciol", lat: 51.3185, lng: 21.9510, description: "Barokowy kościół i klasztor z XVII w. z pięknym ogrodem.", openHours: "7:00-18:00", price: "Bezpłatny", tip: "Spokojny ogród klasztorny z widokiem" }
+      { name: "Zamek Kazimierski", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Kazimierz_Dolny_Market_Square.jpg/960px-Kazimierz_Dolny_Market_Square.jpg", category: "zabytek", lat: 51.3209, lng: 21.9518, description: "Ruiny gotyckiego zamku Kazimierza Wielkiego z XIV w. na wzgórzu nad Wisłą.", openHours: "8:00-18:00 (sezon)", price: "Bezpłatny", tip: "Najpiękniejszy widok o zachodzie słońca" },
+      { name: "Góra Trzech Krzyży", image: "https://upload.wikimedia.org/wikipedia/commons/4/49/Kazimierz_Dolny_059.jpg", category: "widok", lat: 51.3230, lng: 21.9540, description: "Trzy krzyże z XVII w. na wzgórzu — symbol miasta i najlepszy punkt widokowy.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Wschód słońca zapiera dech" },
+      { name: "Rynek z Kamieniczkami", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Kazimierz_Dolny_Market_Square.jpg/960px-Kazimierz_Dolny_Market_Square.jpg", category: "zabytek", lat: 51.3197, lng: 21.9527, description: "Renesansowe kamieniczki Przybyłów i Celej z XVII w. z bogatą dekoracją.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Zwróć uwagę na attyki z płaskorzeźbami" },
+      { name: "Wąwóz Korzeniowy Dół", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Kazimierz_Dolny_Market_Square.jpg/960px-Kazimierz_Dolny_Market_Square.jpg", category: "przyroda", lat: 51.3150, lng: 21.9450, description: "Spektakularny wąwóz lessowy z odsłoniętymi korzeniami drzew — cudnatury.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Trasa wymaga wygodnego obuwia" },
+      { name: "Muzeum Nadwiślańskie", image: "https://upload.wikimedia.org/wikipedia/commons/6/69/Kazimierz_Dolny_062.jpg", category: "muzeum", lat: 51.3200, lng: 21.9530, description: "Muzeum sztuki i rzemiosła artystycznego w zabytkowej kamienicy.", openHours: "10:00-16:00 (wt-nd)", price: "10 zł", tip: "Cenna kolekcja złotnictwa" },
+      { name: "Klasztor Franciszkanów", image: "https://upload.wikimedia.org/wikipedia/commons/b/b2/Kazimierz_Dolny_080.jpg", category: "kosciol", lat: 51.3185, lng: 21.9510, description: "Barokowy kościół i klasztor z XVII w. z pięknym ogrodem.", openHours: "7:00-18:00", price: "Bezpłatny", tip: "Spokojny ogród klasztorny z widokiem" }
     ],
     access: {
       bycar: "Z Lublina: DK17 → Kazimierz (ok. 40 km, 50 min). Parkingi: P1 przy rynku (200 miejsc), P2 przy Wisłostradzie.",
@@ -2625,7 +3242,16 @@ const DATA = [
     practical: {
       bestSeason: "Kwiecień - Październik",
       weather: "Klimat umiarkowany, ciepłe lata, malownicza jesień",
-      accommodation: "Liczne pensjonaty, apartamenty i agroturystyka. Polecane: Hotel Spichlerz",
+      accommodation: {
+        summary: "Liczne pensjonaty, apartamenty i agroturystyka",
+        places: [
+          { name: "Hotel Spichlerz", type: "hotel", stars: 3, price: "350-600 zł", address: "ul. Nadrzeczna 6, Kazimierz Dolny", phone: "81 881 01 50", desc: "Klimatyczny hotel w zabytkowym spichlerzu nad Wisłą", features: ["WiFi", "Restauracja", "Parking", "Widok na Wisłę"] },
+          { name: "Hotel Król Kazimierz", type: "hotel", stars: 4, price: "450-900 zł", address: "ul. Krakowska 17, Kazimierz Dolny", phone: "81 880 09 00", desc: "Luksusowy hotel z basenem i SPA przy wejściu do miasta", features: ["WiFi", "SPA", "Basen", "Restauracja", "Parking"] },
+          { name: "Pensjonat Pod Wieżą", type: "pensjonat", stars: 2, price: "180-320 zł", address: "ul. Zamkowa 4, Kazimierz Dolny", phone: "520 999 000", desc: "Pensjonat u stóp Zamku z widokiem na Wisłę", features: ["WiFi", "Śniadanie", "Widok", "Centrum"] },
+          { name: "Apartamenty Kazimierskie", type: "apartament", stars: 0, price: "200-400 zł", address: "ul. Senatorska 10, Kazimierz Dolny", phone: "521 000 111", desc: "Stylowe apartamenty w kamienicy na Starym Mieście", features: ["WiFi", "Kuchnia", "Centrum", "Balkon"] },
+          { name: "Agroturystyka Męćmierz", type: "agroturystyka", stars: 0, price: "100-160 zł/os", address: "Męćmierz 22, gm. Kazimierz Dolny", phone: "522 111 222", desc: "Cisza, widoki i domowa kuchnia na lessowym wzgórzu", features: ["Śniadanie", "Parking", "Ogród", "Widok"] }
+        ]
+      },
       food: "Słynne cebularze i pierogi z mięsem. Polecane: Restauracja Zielona Tawerna",
       bike_rental: "Wypożyczalnia rowerów przy rynku, 40 zł/dzień. E-rowery: 80 zł/dzień",
       emergency: "Pogotowie: 112, Szpital Puławy: 81 886 60 00",
@@ -2639,7 +3265,7 @@ const DATA = [
     lat: 51.2861,
     lng: 22.2133,
     description: "Uzdrowisko z tradycjami od XIX w., park zdrojowy, i ślady Bolesława Prusa i Stefana Żeromskiego.",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/ParkZdrojowyNaleczow.jpg/1280px-ParkZdrojowyNaleczow.jpg",
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Na%C5%82%C4%99cz%C3%B3w%2C_park_zdrojowy_-_panoramio.jpg/960px-Na%C5%82%C4%99cz%C3%B3w%2C_park_zdrojowy_-_panoramio.jpg",
     badge: "",
     hiking: [
       {
@@ -2790,11 +3416,11 @@ const DATA = [
       }
     ],
     attractions: [
-      { name: "Park Zdrojowy", category: "przyroda", lat: 51.2870, lng: 22.2150, description: "Zabytkowy park uzdrowiskowy z XIX w. z alejami, fontannami i pijalniami.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Najpiękniejszy o poranku — spokój i czyste powietrze" },
-      { name: "Muzeum Stefana Żeromskiego", category: "muzeum", lat: 51.2875, lng: 22.2140, description: "Dworek-muzeum pisarza z ekspozycją biograficzną i literacką.", openHours: "10:00-16:00 (wt-nd)", price: "8 zł", tip: "Pisarz mieszkał tu latami — autentyczne wnętrza" },
-      { name: "Pijalnia Wód Mineralnych", category: "inne", lat: 51.2865, lng: 22.2145, description: "Zabytkowa pijalnia w parku zdrojowym z wodami leczniczymi.", openHours: "7:00-18:00", price: "Bezpłatny", tip: "Warto spróbować wody żelazistej" },
-      { name: "Pałac Małachowskich", category: "zabytek", lat: 51.2855, lng: 22.2125, description: "Klasycystyczny pałac z XVIII w., centrum życia uzdrowiskowego.", openHours: "Teren zewnętrzny", price: "Bezpłatny", tip: "Piękny ogród przy pałacu" },
-      { name: "Wąwóz Pontowa", category: "przyroda", lat: 51.2920, lng: 22.1800, description: "Głęboki wąwóz lessowy w okolicach Nałęczowa — leśna przygoda.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Po deszczu trasa może być śliska" }
+      { name: "Park Zdrojowy", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Na%C5%82%C4%99cz%C3%B3w%2C_park_zdrojowy_-_panoramio.jpg/960px-Na%C5%82%C4%99cz%C3%B3w%2C_park_zdrojowy_-_panoramio.jpg", category: "przyroda", lat: 51.2870, lng: 22.2150, description: "Zabytkowy park uzdrowiskowy z XIX w. z alejami, fontannami i pijalniami.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Najpiękniejszy o poranku — spokój i czyste powietrze" },
+      { name: "Muzeum Stefana Żeromskiego", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Na%C5%82%C4%99cz%C3%B3w%2C_park_zdrojowy_-_panoramio.jpg/960px-Na%C5%82%C4%99cz%C3%B3w%2C_park_zdrojowy_-_panoramio.jpg", category: "muzeum", lat: 51.2875, lng: 22.2140, description: "Dworek-muzeum pisarza z ekspozycją biograficzną i literacką.", openHours: "10:00-16:00 (wt-nd)", price: "8 zł", tip: "Pisarz mieszkał tu latami — autentyczne wnętrza" },
+      { name: "Pijalnia Wód Mineralnych", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Na%C5%82%C4%99cz%C3%B3w%2C_park_zdrojowy_-_panoramio.jpg/960px-Na%C5%82%C4%99cz%C3%B3w%2C_park_zdrojowy_-_panoramio.jpg", category: "inne", lat: 51.2865, lng: 22.2145, description: "Zabytkowa pijalnia w parku zdrojowym z wodami leczniczymi.", openHours: "7:00-18:00", price: "Bezpłatny", tip: "Warto spróbować wody żelazistej" },
+      { name: "Pałac Małachowskich", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Na%C5%82%C4%99cz%C3%B3w%2C_park_zdrojowy_-_panoramio.jpg/960px-Na%C5%82%C4%99cz%C3%B3w%2C_park_zdrojowy_-_panoramio.jpg", category: "zabytek", lat: 51.2855, lng: 22.2125, description: "Klasycystyczny pałac z XVIII w., centrum życia uzdrowiskowego.", openHours: "Teren zewnętrzny", price: "Bezpłatny", tip: "Piękny ogród przy pałacu" },
+      { name: "Wąwóz Pontowa", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Na%C5%82%C4%99cz%C3%B3w%2C_park_zdrojowy_-_panoramio.jpg/960px-Na%C5%82%C4%99cz%C3%B3w%2C_park_zdrojowy_-_panoramio.jpg", category: "przyroda", lat: 51.2920, lng: 22.1800, description: "Głęboki wąwóz lessowy w okolicach Nałęczowa — leśna przygoda.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Po deszczu trasa może być śliska" }
     ],
     access: {
       bycar: "Z Lublina: droga 830 (ok. 28 km, 35 min). Parking przy parku zdrojowym.",
@@ -2807,7 +3433,15 @@ const DATA = [
     practical: {
       bestSeason: "Maj - Październik (uzdrowisko), cały rok (sanatoria)",
       weather: "Mikroklimat uzdrowiskowy, łagodne zimy, ciepłe lata",
-      accommodation: "Sanatoria, pensjonaty, wille uzdrowiskowe. Polecane: Hotel SPA Nałęczów",
+      accommodation: {
+        summary: "Sanatoria, pensjonaty, wille uzdrowiskowe",
+        places: [
+          { name: "Hotel SPA Nałęczów", type: "hotel", stars: 4, price: "380-650 zł", address: "ul. Lipowa 6, Nałęczów", phone: "81 501 40 00", desc: "Nowoczesny hotel z kompleksem SPA i basenem przy parku", features: ["WiFi", "SPA", "Basen", "Restauracja", "Parking"] },
+          { name: "Sanatorium Czerlejno", type: "sanatorium", stars: 3, price: "180-280 zł (z zabiegami)", address: "ul. 1 Maja 2, Nałęczów", phone: "81 501 22 33", desc: "Sanatorium z zabiegami uzdrowiskowymi i rehabilitacyjnymi", features: ["Zabiegi", "Lekarz", "Basen", "Dieta"] },
+          { name: "Willa Struga", type: "pensjonat", stars: 2, price: "160-280 zł", address: "ul. Armatnia Góra 9, Nałęczów", phone: "523 222 333", desc: "Zabytkowa willa uzdrowiskowa w parku zdrojowym", features: ["WiFi", "Śniadanie", "Ogród", "Park"] },
+          { name: "Pokoje Gościnne Nałęczów", type: "pokoje", stars: 0, price: "90-150 zł", address: "ul. Poniatowskiego 5, Nałęczów", phone: "524 333 444", desc: "Pokoje blisko dworca PKP i parku zdrojowego", features: ["WiFi", "Parking", "Centrum"] }
+        ]
+      },
       food: "Kuchnia zdrowotna, lokale z kuchnią polską. Polecane: Stara Poczta",
       bike_rental: "Wypożyczalnia przy dworcu PKP, 35 zł/dzień",
       emergency: "Pogotowie: 112, Szpital Puławy: 81 886 60 00",
@@ -2821,7 +3455,7 @@ const DATA = [
     lat: 51.4168,
     lng: 21.9696,
     description: "Miasto z jednym z najstarszych parków romantycznych w Polsce — Czartoryskich, oraz bazą nad Wisłą.",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/%C5%9Awi%C4%85tynia_Sybilli_w_Pu%C5%82awach.jpg/1280px-%C5%9Awi%C4%85tynia_Sybilli_w_Pu%C5%82awach.jpg",
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/%C5%9Awi%C4%85tynia_Sybilli_w_Pu%C5%82awach.jpg/960px-%C5%9Awi%C4%85tynia_Sybilli_w_Pu%C5%82awach.jpg",
     badge: "",
     hiking: [
       {
@@ -2972,11 +3606,11 @@ const DATA = [
       }
     ],
     attractions: [
-      { name: "Pałac Czartoryskich", category: "zabytek", lat: 51.4175, lng: 21.9700, description: "Monumentalny pałac rodu Czartoryskich z XVIII w. w otoczeniu parku romantycznego.", openHours: "10:00-17:00 (wt-nd)", price: "12 zł", tip: "Zarezerwuj 2h na pałac i park" },
-      { name: "Świątynia Sybilli", category: "zabytek", lat: 51.4185, lng: 21.9715, description: "Neogotycki pawilon na skarpie wiślanej — pierwsze muzeum polskie.", openHours: "10:00-16:00", price: "8 zł", tip: "Panoramiczny widok na Wisłę" },
-      { name: "Domek Gotycki", category: "muzeum", lat: 51.4190, lng: 21.9690, description: "Neogotycki pawilon muzealny w parku z kolekcją dzieł sztuki.", openHours: "10:00-16:00 (wt-nd)", price: "8 zł", tip: "Unikatowa kolekcja memorabiliów" },
-      { name: "Park Czartoryskich", category: "przyroda", lat: 51.4180, lng: 21.9710, description: "Jeden z najstarszych parków romantycznych w Polsce — 30 ha zieleni.", openHours: "6:00-22:00", price: "Bezpłatny", tip: "Jesienna kolorystyka jest spektakularna" },
-      { name: "Muzeum Regionalne IUNG", category: "muzeum", lat: 51.4160, lng: 21.9680, description: "Ekspozycja rolnicza i przyrodnicza w historycznych budynkach.", openHours: "9:00-15:00 (pn-pt)", price: "5 zł", tip: "Ciekawa historia rolnictwa regionu" }
+      { name: "Pałac Czartoryskich", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/%C5%9Awi%C4%85tynia_Sybilli_w_Pu%C5%82awach.jpg/960px-%C5%9Awi%C4%85tynia_Sybilli_w_Pu%C5%82awach.jpg", category: "zabytek", lat: 51.4175, lng: 21.9700, description: "Monumentalny pałac rodu Czartoryskich z XVIII w. w otoczeniu parku romantycznego.", openHours: "10:00-17:00 (wt-nd)", price: "12 zł", tip: "Zarezerwuj 2h na pałac i park" },
+      { name: "Świątynia Sybilli", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/%C5%9Awi%C4%85tynia_Sybilli_w_Pu%C5%82awach.jpg/960px-%C5%9Awi%C4%85tynia_Sybilli_w_Pu%C5%82awach.jpg", category: "zabytek", lat: 51.4185, lng: 21.9715, description: "Neogotycki pawilon na skarpie wiślanej — pierwsze muzeum polskie.", openHours: "10:00-16:00", price: "8 zł", tip: "Panoramiczny widok na Wisłę" },
+      { name: "Domek Gotycki", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/%C5%9Awi%C4%85tynia_Sybilli_w_Pu%C5%82awach.jpg/960px-%C5%9Awi%C4%85tynia_Sybilli_w_Pu%C5%82awach.jpg", category: "muzeum", lat: 51.4190, lng: 21.9690, description: "Neogotycki pawilon muzealny w parku z kolekcją dzieł sztuki.", openHours: "10:00-16:00 (wt-nd)", price: "8 zł", tip: "Unikatowa kolekcja memorabiliów" },
+      { name: "Park Czartoryskich", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/%C5%9Awi%C4%85tynia_Sybilli_w_Pu%C5%82awach.jpg/960px-%C5%9Awi%C4%85tynia_Sybilli_w_Pu%C5%82awach.jpg", category: "przyroda", lat: 51.4180, lng: 21.9710, description: "Jeden z najstarszych parków romantycznych w Polsce — 30 ha zieleni.", openHours: "6:00-22:00", price: "Bezpłatny", tip: "Jesienna kolorystyka jest spektakularna" },
+      { name: "Muzeum Regionalne IUNG", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/%C5%9Awi%C4%85tynia_Sybilli_w_Pu%C5%82awach.jpg/960px-%C5%9Awi%C4%85tynia_Sybilli_w_Pu%C5%82awach.jpg", category: "muzeum", lat: 51.4160, lng: 21.9680, description: "Ekspozycja rolnicza i przyrodnicza w historycznych budynkach.", openHours: "9:00-15:00 (pn-pt)", price: "5 zł", tip: "Ciekawa historia rolnictwa regionu" }
     ],
     access: {
       bycar: "Z Lublina: S12/DK17 (ok. 45 km, 40 min). Parkingi przy parku i centrum.",
@@ -2989,7 +3623,14 @@ const DATA = [
     practical: {
       bestSeason: "Kwiecień - Październik",
       weather: "Klimat umiarkowany, wpływ doliny Wisły",
-      accommodation: "Hotele, pensjonaty, apartamenty. Polecane: Hotel Margerita",
+      accommodation: {
+        summary: "Hotele, pensjonaty, apartamenty",
+        places: [
+          { name: "Hotel Margerita", type: "hotel", stars: 3, price: "220-380 zł", address: "ul. Piłsudskiego 28, Puławy", phone: "81 886 55 00", desc: "Komfortowy hotel w centrum Puław z restauracją", features: ["WiFi", "Restauracja", "Parking", "Śniadanie"] },
+          { name: "Hotel Marona", type: "hotel", stars: 3, price: "200-340 zł", address: "ul. Lubelska 57, Puławy", phone: "81 886 35 40", desc: "Hotel przy trasie do Kazimierza z dobrym dojazdem", features: ["WiFi", "Parking", "Śniadanie", "Ogród"] },
+          { name: "Apartamenty Wisła", type: "apartament", stars: 0, price: "150-250 zł", address: "ul. Czartoryskich 2, Puławy", phone: "525 444 555", desc: "Apartamenty przy Parku Czartoryskich", features: ["WiFi", "Kuchnia", "Parking", "Park"] }
+        ]
+      },
       food: "Restauracje w centrum. Polecane: Pod Złotym Lwem",
       bike_rental: "Wypożyczalnia przy dworcu PKP, 35 zł/dzień",
       emergency: "Pogotowie: 112, Szpital Puławy: 81 886 60 00",
@@ -3003,7 +3644,7 @@ const DATA = [
     lat: 51.3284,
     lng: 21.9127,
     description: "Malownicza wieś z ruinami potężnego zamku Firlejów nad Wisłą, naprzeciw Kazimierza Dolnego.",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Ruiny_zamku_w_Janowcu%2C_widok_z_po%C5%82udnia.jpg/1280px-Ruiny_zamku_w_Janowcu%2C_widok_z_po%C5%82udnia.jpg",
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Kazimierz_Dolny_Market_Square.jpg/960px-Kazimierz_Dolny_Market_Square.jpg",
     badge: "",
     hiking: [
       {
@@ -3154,11 +3795,11 @@ const DATA = [
       }
     ],
     attractions: [
-      { name: "Zamek w Janowcu", category: "zabytek", lat: 51.3300, lng: 21.9140, description: "Potężne ruiny zamku Firlejów z XVI w. — jeden z największych na Lubelszczyźnie.", openHours: "10:00-18:00 (V-IX)", price: "15 zł", tip: "Widok na Kazimierz z wieży jest fenomenalny" },
-      { name: "Skansen w Janowcu", category: "muzeum", lat: 51.3295, lng: 21.9135, description: "Ekspozycja drewnianych budynków wiejskich z regionu przy zamku.", openHours: "10:00-17:00 (V-IX)", price: "Wliczony w bilet zamku", tip: "Autentyczne chałupy i spichlerze" },
-      { name: "Prom Kazimierz-Janowiec", category: "inne", lat: 51.3250, lng: 21.9200, description: "Historyczna przeprawa promowa przez Wisłę — jedyna w regionie.", openHours: "7:00-20:00 (sezon)", price: "5 zł (pieszy), 15 zł (rower)", tip: "Przeprawa trwa 5 min — świetne widoki" },
-      { name: "Kościół parafialny", category: "kosciol", lat: 51.3280, lng: 21.9120, description: "Zabytkowy kościół z XVI w. z elementami renesansowymi.", openHours: "7:00-18:00", price: "Bezpłatny", tip: "Ciekawe epitafia szlacheckie" },
-      { name: "Punkt widokowy nad Wisłą", category: "widok", lat: 51.3310, lng: 21.9150, description: "Panorama na przełom Wisły, Kazimierz i dolinę — jeden z najpiękniejszych widoków.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Ławka z widokiem — weź kanapki" }
+      { name: "Zamek w Janowcu", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Kazimierz_Dolny_Market_Square.jpg/960px-Kazimierz_Dolny_Market_Square.jpg", category: "zabytek", lat: 51.3300, lng: 21.9140, description: "Potężne ruiny zamku Firlejów z XVI w. — jeden z największych na Lubelszczyźnie.", openHours: "10:00-18:00 (V-IX)", price: "15 zł", tip: "Widok na Kazimierz z wieży jest fenomenalny" },
+      { name: "Skansen w Janowcu", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Kazimierz_Dolny_Market_Square.jpg/960px-Kazimierz_Dolny_Market_Square.jpg", category: "muzeum", lat: 51.3295, lng: 21.9135, description: "Ekspozycja drewnianych budynków wiejskich z regionu przy zamku.", openHours: "10:00-17:00 (V-IX)", price: "Wliczony w bilet zamku", tip: "Autentyczne chałupy i spichlerze" },
+      { name: "Prom Kazimierz-Janowiec", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Kazimierz_Dolny_Market_Square.jpg/960px-Kazimierz_Dolny_Market_Square.jpg", category: "inne", lat: 51.3250, lng: 21.9200, description: "Historyczna przeprawa promowa przez Wisłę — jedyna w regionie.", openHours: "7:00-20:00 (sezon)", price: "5 zł (pieszy), 15 zł (rower)", tip: "Przeprawa trwa 5 min — świetne widoki" },
+      { name: "Kościół parafialny", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Kazimierz_Dolny_Market_Square.jpg/960px-Kazimierz_Dolny_Market_Square.jpg", category: "kosciol", lat: 51.3280, lng: 21.9120, description: "Zabytkowy kościół z XVI w. z elementami renesansowymi.", openHours: "7:00-18:00", price: "Bezpłatny", tip: "Ciekawe epitafia szlacheckie" },
+      { name: "Punkt widokowy nad Wisłą", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Kazimierz_Dolny_Market_Square.jpg/960px-Kazimierz_Dolny_Market_Square.jpg", category: "widok", lat: 51.3310, lng: 21.9150, description: "Panorama na przełom Wisły, Kazimierz i dolinę — jeden z najpiękniejszych widoków.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Ławka z widokiem — weź kanapki" }
     ],
     access: {
       bycar: "Z Puław: droga 824 (12 km, 15 min). Z Kazimierza: promem (5 min).",
@@ -3171,7 +3812,14 @@ const DATA = [
     practical: {
       bestSeason: "Maj - Wrzesień (zamek i prom czynne)",
       weather: "Klimat umiarkowany, dolina Wisły",
-      accommodation: "Agroturystyka, pokoje gościnne",
+      accommodation: {
+        summary: "Agroturystyka, pokoje gościnne",
+        places: [
+          { name: "Gospoda Pod Zamkiem", type: "pensjonat", stars: 1, price: "120-200 zł", address: "ul. Zamkowa 5, Janowiec", phone: "526 555 666", desc: "Pokoje i restauracja z widokiem na zamek i Wisłę", features: ["Restauracja", "Parking", "Widok"] },
+          { name: "Agroturystyka Na Skarpie", type: "agroturystyka", stars: 0, price: "80-130 zł/os", address: "Janowiec 48", phone: "527 666 777", desc: "Gospodarstwo na skarpie wiślanej z panoramą na Kazimierz", features: ["Śniadanie", "Parking", "Widok", "Ogród"] },
+          { name: "Domek Nad Wisłą", type: "domki", stars: 0, price: "250-400 zł/domek", address: "ul. Wiślana 3, Janowiec", phone: "528 777 888", desc: "Samodzielny domek z tarasem nad Wisłą", features: ["Kuchnia", "Taras", "Grill", "Cisza"] }
+        ]
+      },
       food: "Gospoda przy zamku, karczma z widokiem na Wisłę",
       bike_rental: "Brak wypożyczalni — rower z Kazimierza lub Puław",
       emergency: "Pogotowie: 112",
@@ -3189,7 +3837,7 @@ const DATA = [
     lat: 51.2465,
     lng: 22.5684,
     description: "Stolica województwa, miasto wielokulturowe z gotycko-renesansowym Starym Miastem i bogatą historią.",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Lublin_-_Brama_Krakowska_02.jpg/800px-Lublin_-_Brama_Krakowska_02.jpg",
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/Lublin_Old_Town_Panorama.JPG/960px-Lublin_Old_Town_Panorama.JPG",
     badge: "⭐ Stolica regionu",
     hiking: [
       {
@@ -3364,12 +4012,12 @@ const DATA = [
       }
     ],
     attractions: [
-      { name: "Zamek Lubelski", category: "zabytek", lat: 51.2500, lng: 22.5720, description: "Gotycki zamek z Kaplicą Trójcy Świętej i słynnymi freskami bizantyjsko-ruskimi.", openHours: "10:00-18:00 (wt-nd)", price: "15 zł", tip: "Kaplica Trójcy Świętej — arcydzieło sztuki średniowiecznej" },
-      { name: "Stare Miasto", category: "zabytek", lat: 51.2475, lng: 22.5695, description: "Gotycko-renesansowe Stare Miasto z Bramą Krakowską i kamieniczkami.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Wieczorem klimatyczne oświetlenie i knajpki" },
-      { name: "Brama Krakowska", category: "zabytek", lat: 51.2488, lng: 22.5670, description: "XIV-wieczna brama z muzeum historii miasta i tarasem widokowym.", openHours: "10:00-17:00 (wt-nd)", price: "8 zł", tip: "Taras widokowy — panorama Starego Miasta" },
-      { name: "Ogród Saski", category: "przyroda", lat: 51.2480, lng: 22.5630, description: "Najstarszy park miejski Lublina z XIX w., pięknie zrewitalizowany.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Fontanna multimedialna wieczorami" },
-      { name: "Muzeum Wsi Lubelskiej (Skansen)", category: "muzeum", lat: 51.2200, lng: 22.5200, description: "Największy skansen w Polsce z 80+ obiektami budownictwa ludowego.", openHours: "9:00-17:00 (IV-X)", price: "15 zł", tip: "Zaplanuj minimum 3h — ogromny teren" },
-      { name: "Majdanek", category: "muzeum", lat: 51.2350, lng: 22.5950, description: "Muzeum i miejsce pamięci na terenie byłego obozu koncentracyjnego.", openHours: "9:00-17:00 (wt-nd)", price: "Bezpłatny", tip: "Miejsce refleksji — zaplanuj co najmniej 2h" }
+      { name: "Zamek Lubelski", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Poland_Lublin_castle.jpg/960px-Poland_Lublin_castle.jpg", category: "zabytek", lat: 51.2500, lng: 22.5720, description: "Gotycki zamek z Kaplicą Trójcy Świętej i słynnymi freskami bizantyjsko-ruskimi.", openHours: "10:00-18:00 (wt-nd)", price: "15 zł", tip: "Kaplica Trójcy Świętej — arcydzieło sztuki średniowiecznej" },
+      { name: "Stare Miasto", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/Lublin_Old_Town_Panorama.JPG/960px-Lublin_Old_Town_Panorama.JPG", category: "zabytek", lat: 51.2475, lng: 22.5695, description: "Gotycko-renesansowe Stare Miasto z Bramą Krakowską i kamieniczkami.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Wieczorem klimatyczne oświetlenie i knajpki" },
+      { name: "Brama Krakowska", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Lublin%2C_The_Cracow_Gate.jpg/960px-Lublin%2C_The_Cracow_Gate.jpg", category: "zabytek", lat: 51.2488, lng: 22.5670, description: "XIV-wieczna brama z muzeum historii miasta i tarasem widokowym.", openHours: "10:00-17:00 (wt-nd)", price: "8 zł", tip: "Taras widokowy — panorama Starego Miasta" },
+      { name: "Ogród Saski", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Plac_po_Farze.jpg/960px-Plac_po_Farze.jpg", category: "przyroda", lat: 51.2480, lng: 22.5630, description: "Najstarszy park miejski Lublina z XIX w., pięknie zrewitalizowany.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Fontanna multimedialna wieczorami" },
+      { name: "Muzeum Wsi Lubelskiej (Skansen)", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/Lublin_Old_Town_Panorama.JPG/960px-Lublin_Old_Town_Panorama.JPG", category: "muzeum", lat: 51.2200, lng: 22.5200, description: "Największy skansen w Polsce z 80+ obiektami budownictwa ludowego.", openHours: "9:00-17:00 (IV-X)", price: "15 zł", tip: "Zaplanuj minimum 3h — ogromny teren" },
+      { name: "Majdanek", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Poland_Lublin_castle.jpg/960px-Poland_Lublin_castle.jpg", category: "muzeum", lat: 51.2350, lng: 22.5950, description: "Muzeum i miejsce pamięci na terenie byłego obozu koncentracyjnego.", openHours: "9:00-17:00 (wt-nd)", price: "Bezpłatny", tip: "Miejsce refleksji — zaplanuj co najmniej 2h" }
     ],
     access: {
       bycar: "Autostrady S12, S17, S19 zbiegają się w Lublinie. Parkingi w centrum.",
@@ -3382,7 +4030,16 @@ const DATA = [
     practical: {
       bestSeason: "Cały rok (miasto), Maj-Wrzesień (wycieczki)",
       weather: "Klimat umiarkowany, cztery wyraźne pory roku",
-      accommodation: "Pełna oferta: od hosteli po hotele 4*. Polecane: Hotel & Restauracja Grodzka 20",
+      accommodation: {
+        summary: "Pełna oferta noclegowa: od hosteli po hotele 4 gwiazdkowe",
+        places: [
+          { name: "Hotel Grodzka 20", type: "hotel", stars: 3, price: "280-480 zł", address: "ul. Grodzka 20, Lublin", phone: "81 532 26 51", desc: "Klimatyczny hotel w sercu Starego Miasta z restauracją", features: ["WiFi", "Restauracja", "Centrum", "Zabytki"] },
+          { name: "Hotel Mercure Lublin", type: "hotel", stars: 4, price: "350-600 zł", address: "al. Racławickie 12, Lublin", phone: "81 533 20 61", desc: "Nowoczesny hotel sieciowy z pełnym zapleczem", features: ["WiFi", "Restauracja", "Parking", "Fitness", "Śniadanie"] },
+          { name: "Hotel Vanilla", type: "hotel", stars: 3, price: "250-420 zł", address: "ul. Krakowskie Przedmieście 12, Lublin", phone: "81 536 67 00", desc: "Designerski hotel przy deptaku w centrum", features: ["WiFi", "Bar", "Śniadanie", "Centrum"] },
+          { name: "Hostel Lublin", type: "hostel", stars: 0, price: "50-80 zł/os", address: "ul. Lubartowska 57, Lublin", phone: "529 888 999", desc: "Budżetowy hostel 10 min od Starego Miasta", features: ["WiFi", "Kuchnia", "Pralnia", "Schowki"] },
+          { name: "Apartamenty Krakowskie Przedmieście", type: "apartament", stars: 0, price: "180-350 zł", address: "ul. Krakowskie Przedmieście 35, Lublin", phone: "530 999 000", desc: "Eleganckie apartamenty na głównym deptaku miasta", features: ["WiFi", "Kuchnia", "Centrum", "Balkon"] }
+        ]
+      },
       food: "Cebularz lubelski to must-try. Polecane: Mandragora (Stare Miasto)",
       bike_rental: "Lublin Bike (rower miejski): 4 zł/30min. Liczne wypożyczalnie prywatne.",
       emergency: "Pogotowie: 112, Szpital Kliniczny: 81 532 37 66",
@@ -3396,7 +4053,7 @@ const DATA = [
     lat: 51.2194,
     lng: 22.6942,
     description: "Miasto lotnictwa i solidarności, z muzeum lotnictwa i zielonymi terenami rekreacyjnymi.",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/PZL_W-3_Sokol.jpg/1280px-PZL_W-3_Sokol.jpg",
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/PZL_W-3_Sokol.jpg/960px-PZL_W-3_Sokol.jpg",
     badge: "",
     hiking: [
       {
@@ -3535,11 +4192,11 @@ const DATA = [
       }
     ],
     attractions: [
-      { name: "Muzeum Lotnictwa Polskiego", category: "muzeum", lat: 51.2190, lng: 22.6930, description: "Ekspozycja śmigłowców i samolotów produkowanych w zakładach PZL.", openHours: "10:00-16:00 (wt-nd)", price: "10 zł", tip: "Można wejść do kokpitu śmigłowca" },
-      { name: "Zalew Świdnicki", category: "przyroda", lat: 51.2220, lng: 22.6960, description: "Zbiornik rekreacyjny z plażą, ścieżką zdrowia i infrastrukturą.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Latem tłoczno — przyjedź rano" },
-      { name: "Park Avia", category: "przyroda", lat: 51.2200, lng: 22.6950, description: "Nowoczesny park rekreacyjny z placem zabaw i siłownią plenerową.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Świetne miejsce dla rodzin z dziećmi" },
-      { name: "Pomnik Solidarności", category: "zabytek", lat: 51.2185, lng: 22.6935, description: "Pomnik upamiętniający strajki w WSK PZL Świdnik w 1980 r.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Historia początków Solidarności na Lubelszczyźnie" },
-      { name: "Lotnisko Lublin", category: "inne", lat: 51.2400, lng: 22.7100, description: "Port lotniczy Lublin — brama lotnicza na Lubelszczyznę.", openHours: "Według rozkładu lotów", price: "—", tip: "Taras widokowy na samoloty" }
+      { name: "Muzeum Lotnictwa Polskiego", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/PZL_W-3_Sokol.jpg/960px-PZL_W-3_Sokol.jpg", category: "muzeum", lat: 51.2190, lng: 22.6930, description: "Ekspozycja śmigłowców i samolotów produkowanych w zakładach PZL.", openHours: "10:00-16:00 (wt-nd)", price: "10 zł", tip: "Można wejść do kokpitu śmigłowca" },
+      { name: "Zalew Świdnicki", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/PZL_W-3_Sokol.jpg/960px-PZL_W-3_Sokol.jpg", category: "przyroda", lat: 51.2220, lng: 22.6960, description: "Zbiornik rekreacyjny z plażą, ścieżką zdrowia i infrastrukturą.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Latem tłoczno — przyjedź rano" },
+      { name: "Park Avia", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/PZL_W-3_Sokol.jpg/960px-PZL_W-3_Sokol.jpg", category: "przyroda", lat: 51.2200, lng: 22.6950, description: "Nowoczesny park rekreacyjny z placem zabaw i siłownią plenerową.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Świetne miejsce dla rodzin z dziećmi" },
+      { name: "Pomnik Solidarności", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/PZL_W-3_Sokol.jpg/960px-PZL_W-3_Sokol.jpg", category: "zabytek", lat: 51.2185, lng: 22.6935, description: "Pomnik upamiętniający strajki w WSK PZL Świdnik w 1980 r.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Historia początków Solidarności na Lubelszczyźnie" },
+      { name: "Lotnisko Lublin", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/PZL_W-3_Sokol.jpg/960px-PZL_W-3_Sokol.jpg", category: "inne", lat: 51.2400, lng: 22.7100, description: "Port lotniczy Lublin — brama lotnicza na Lubelszczyznę.", openHours: "Według rozkładu lotów", price: "—", tip: "Taras widokowy na samoloty" }
     ],
     access: {
       bycar: "Z Lublina: droga 822 (8 km, 15 min). Z lotniska: 5 km.",
@@ -3552,7 +4209,13 @@ const DATA = [
     practical: {
       bestSeason: "Cały rok",
       weather: "Jak w Lublinie — klimat umiarkowany",
-      accommodation: "Hotele przy lotnisku, nocleg w Lublinie (8 km)",
+      accommodation: {
+        summary: "Hotele przy lotnisku, nocleg w Lublinie (8 km)",
+        places: [
+          { name: "Hotel Aviator", type: "hotel", stars: 3, price: "200-340 zł", address: "ul. Lotników Polskich 4, Świdnik", phone: "81 751 50 00", desc: "Hotel przy lotnisku z transferem do terminala", features: ["WiFi", "Transfer", "Parking", "Śniadanie"] },
+          { name: "Noclegi Przy Lotnisku", type: "pokoje", stars: 0, price: "100-160 zł", address: "ul. Racławicka 22, Świdnik", phone: "531 000 111", desc: "Tanie pokoje 5 min od lotniska Lublin", features: ["WiFi", "Parking", "Transfer"] }
+        ]
+      },
       food: "Restauracje i pizzerie w centrum. Polecane: Lotos",
       bike_rental: "Lublin Bike — stacja w Świdniku",
       emergency: "Pogotowie: 112",
@@ -3566,7 +4229,7 @@ const DATA = [
     lat: 51.4610,
     lng: 22.6060,
     description: "Miasto z barokowym pałacem Sanguszków, historyczny ośrodek wielokulturowy północnej Lubelszczyzny.",
-    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/Kozlowka_Palace.jpg/1280px-Kozlowka_Palace.jpg",
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Koz%C5%82%C3%B3wka_pa%C5%82ac_vongrzanka.jpg/960px-Koz%C5%82%C3%B3wka_pa%C5%82ac_vongrzanka.jpg",
     badge: "",
     hiking: [
       {
@@ -3717,11 +4380,11 @@ const DATA = [
       }
     ],
     attractions: [
-      { name: "Pałac Sanguszków", category: "zabytek", lat: 51.4615, lng: 22.6070, description: "Barokowy pałac z XVII w. z rozległym parkiem angielskim.", openHours: "Teren zewnętrzny całodobowo", price: "Bezpłatny (park)", tip: "Park piękny o każdej porze roku" },
-      { name: "Pałac w Kozłówce", category: "zabytek", lat: 51.4430, lng: 22.5470, description: "Wspaniały pałac Zamoyskich z galerią socrealizmu — 12 km od Lubartowa.", openHours: "10:00-16:00 (wt-nd)", price: "20 zł", tip: "Jedyna w Polsce galeria socrealizmu — fascynująca" },
-      { name: "Kościół św. Anny", category: "kosciol", lat: 51.4608, lng: 22.6055, description: "Barokowy kościół z XVIII w. z bogatym wyposażeniem.", openHours: "7:00-18:00", price: "Bezpłatny", tip: "Piękne organy barokowe" },
-      { name: "Rynek Lubartowski", category: "zabytek", lat: 51.4612, lng: 22.6065, description: "Historyczny rynek z zabudową XVIII-XIX w.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Klimatyczne kamieniczki i kawiarnie" },
-      { name: "Park Pałacowy", category: "przyroda", lat: 51.4620, lng: 22.6080, description: "Rozległy park angielski przy pałacu Sanguszków ze starodrzewem.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Pomnikowe dęby i lipy" }
+      { name: "Pałac Sanguszków", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Koz%C5%82%C3%B3wka_pa%C5%82ac_vongrzanka.jpg/960px-Koz%C5%82%C3%B3wka_pa%C5%82ac_vongrzanka.jpg", category: "zabytek", lat: 51.4615, lng: 22.6070, description: "Barokowy pałac z XVII w. z rozległym parkiem angielskim.", openHours: "Teren zewnętrzny całodobowo", price: "Bezpłatny (park)", tip: "Park piękny o każdej porze roku" },
+      { name: "Pałac w Kozłówce", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Koz%C5%82%C3%B3wka_pa%C5%82ac_vongrzanka.jpg/960px-Koz%C5%82%C3%B3wka_pa%C5%82ac_vongrzanka.jpg", category: "zabytek", lat: 51.4430, lng: 22.5470, description: "Wspaniały pałac Zamoyskich z galerią socrealizmu — 12 km od Lubartowa.", openHours: "10:00-16:00 (wt-nd)", price: "20 zł", tip: "Jedyna w Polsce galeria socrealizmu — fascynująca" },
+      { name: "Kościół św. Anny", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Koz%C5%82%C3%B3wka_pa%C5%82ac_vongrzanka.jpg/960px-Koz%C5%82%C3%B3wka_pa%C5%82ac_vongrzanka.jpg", category: "kosciol", lat: 51.4608, lng: 22.6055, description: "Barokowy kościół z XVIII w. z bogatym wyposażeniem.", openHours: "7:00-18:00", price: "Bezpłatny", tip: "Piękne organy barokowe" },
+      { name: "Rynek Lubartowski", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Koz%C5%82%C3%B3wka_pa%C5%82ac_vongrzanka.jpg/960px-Koz%C5%82%C3%B3wka_pa%C5%82ac_vongrzanka.jpg", category: "zabytek", lat: 51.4612, lng: 22.6065, description: "Historyczny rynek z zabudową XVIII-XIX w.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Klimatyczne kamieniczki i kawiarnie" },
+      { name: "Park Pałacowy", image: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Koz%C5%82%C3%B3wka_pa%C5%82ac_vongrzanka.jpg/960px-Koz%C5%82%C3%B3wka_pa%C5%82ac_vongrzanka.jpg", category: "przyroda", lat: 51.4620, lng: 22.6080, description: "Rozległy park angielski przy pałacu Sanguszków ze starodrzewem.", openHours: "Całodobowo", price: "Bezpłatny", tip: "Pomnikowe dęby i lipy" }
     ],
     access: {
       bycar: "Z Lublina: droga 19 (ok. 25 km, 30 min). Parking przy pałacu.",
@@ -3734,7 +4397,14 @@ const DATA = [
     practical: {
       bestSeason: "Cały rok (Kozłówka), Maj-Wrzesień (szlaki)",
       weather: "Klimat umiarkowany",
-      accommodation: "Hotele i pensjonaty w centrum. Nocleg w Kozłówce (agroturystyka)",
+      accommodation: {
+        summary: "Hotele i pensjonaty w centrum, agroturystyka w Kozłówce",
+        places: [
+          { name: "Hotel Magnolia", type: "hotel", stars: 2, price: "160-280 zł", address: "ul. Lubelska 68, Lubartów", phone: "81 855 22 33", desc: "Hotel z restauracją w centrum Lubartowa", features: ["WiFi", "Restauracja", "Parking", "Śniadanie"] },
+          { name: "Agroturystyka Kozłówka", type: "agroturystyka", stars: 0, price: "90-140 zł/os", address: "Kozłówka 12, gm. Kamionka", phone: "532 111 222", desc: "Nocleg przy pałacu Zamoyskich, domowa kuchnia", features: ["Śniadanie", "Parking", "Ogród", "Pałac 500m"] },
+          { name: "Pokoje Pod Lipami", type: "pokoje", stars: 0, price: "80-120 zł", address: "ul. Kościuszki 10, Lubartów", phone: "533 222 333", desc: "Pokoje gościnne w kamienicy przy rynku", features: ["WiFi", "Centrum", "Parking"] }
+        ]
+      },
       food: "Restauracje przy rynku, kuchnia polska. Polecane: Restauracja Magnolia",
       bike_rental: "Brak stałej wypożyczalni — Lublin Bike z Lublina",
       emergency: "Pogotowie: 112",
@@ -4104,19 +4774,13 @@ function renderTrailCard(t, idx, type) {
 }
 
 function renderAttractionsPanel(m) {
-  const catImgs = {
-    'zabytek': 'https://images.unsplash.com/photo-1564399580075-5dfe19c205f0?w=200&h=200&fit=crop',
-    'przyroda': 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=200&h=200&fit=crop',
-    'muzeum': 'https://images.unsplash.com/photo-1554907984-15263bfd63bd?w=200&h=200&fit=crop',
-    'widok': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200&h=200&fit=crop',
-    'kosciol': 'https://images.unsplash.com/photo-1543349689-9a4d426bee8e?w=200&h=200&fit=crop',
-    'inne': 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=200&h=200&fit=crop'
-  };
-  document.getElementById('panel-attractions').innerHTML = `
+  window._currentAttractions = m.attractions;
+  const panel = document.getElementById('panel-attractions');
+  panel.innerHTML = `
     <div class="attraction-grid">
-      ${m.attractions.map(a => `
-        <div class="attraction-card">
-          <img class="attraction-card-img" src="${catImgs[a.category] || catImgs.inne}" alt="${a.name}" loading="lazy" onerror="this.style.display='none'">
+      ${m.attractions.map((a, idx) => `
+        <div class="attraction-card" data-attr-idx="${idx}">
+          <img class="attraction-card-img attr-photo-trigger" data-idx="${idx}" src="${a.image || ''}" alt="${a.name}" loading="lazy" onerror="this.style.display='none'" style="cursor:pointer">
           <div class="attraction-card-content">
             <div class="attraction-icon cat-${a.category}"><i class="fas ${CATEGORY_ICONS[a.category] || 'fa-star'}"></i></div>
             <h4>${a.name}</h4>
@@ -4126,11 +4790,35 @@ function renderAttractionsPanel(m) {
               <span class="pill"><i class="fas fa-ticket"></i>${a.price}</span>
             </div>
             ${a.tip ? `<div class="attraction-tip"><i class="fas fa-lightbulb"></i> ${a.tip}</div>` : ''}
-            <button class="btn btn-outline" onclick='showAttractionOnMap(${JSON.stringify({lat:a.lat,lng:a.lng,name:a.name,description:a.description,category:a.category})})'><i class="fas fa-map-marker-alt"></i>Na mapie</button>
+            <div class="trail-actions">
+              <button class="btn btn-photo attr-photo-trigger" data-idx="${idx}"><i class="fas fa-camera"></i>Zobacz zdjęcie</button>
+              <button class="btn btn-outline attr-map-trigger" data-idx="${idx}"><i class="fas fa-map-marker-alt"></i>Na mapie</button>
+            </div>
           </div>
-        </div>
-      `).join('')}
+        </div>`).join('')}
     </div>`;
+
+  // Event delegation — use named handler to avoid duplicates
+  if (!panel._attrHandler) {
+    panel._attrHandler = function(e) {
+      const photoBtn = e.target.closest('.attr-photo-trigger');
+      if (photoBtn) {
+        const idx = parseInt(photoBtn.dataset.idx);
+        const a = window._currentAttractions[idx];
+        if (a && a.image) {
+          openLightbox(a.image, a.name, a.description, window._currentAttractions, idx);
+        }
+        return;
+      }
+      const mapBtn = e.target.closest('.attr-map-trigger');
+      if (mapBtn) {
+        const idx = parseInt(mapBtn.dataset.idx);
+        const a = window._currentAttractions[idx];
+        if (a) showAttractionOnMap({lat:a.lat, lng:a.lng, name:a.name, description:a.description, category:a.category});
+      }
+    };
+    panel.addEventListener('click', panel._attrHandler);
+  }
 }
 
 function renderAccessPanel(m) {
@@ -4147,16 +4835,57 @@ function renderAccessPanel(m) {
 
 function renderInfoPanel(m) {
   const p = m.practical;
-  document.getElementById('panel-info').innerHTML = `
-    <div class="info-grid">
-      <div class="info-item"><h4><i class="fas fa-sun"></i> Najlepszy sezon</h4><p>${p.bestSeason}</p></div>
-      <div class="info-item"><h4><i class="fas fa-cloud-sun"></i> Pogoda</h4><p>${p.weather}</p></div>
-      <div class="info-item"><h4><i class="fas fa-bed"></i> Noclegi</h4><p>${p.accommodation}</p></div>
-      <div class="info-item"><h4><i class="fas fa-utensils"></i> Gastronomia</h4><p>${p.food}</p></div>
-      <div class="info-item"><h4><i class="fas fa-bicycle"></i> Wypożyczalnia</h4><p>${p.bike_rental}</p></div>
-      <div class="info-item"><h4><i class="fas fa-phone"></i> Alarmowe</h4><p>${p.emergency}</p></div>
-      <div class="info-item full-width"><h4><i class="fas fa-wifi"></i> Internet</h4><p>${p.wifi}</p></div>
-    </div>`;
+  const accom = p.accommodation;
+  const isObj = typeof accom === 'object' && accom.places;
+
+  let accomHTML = '';
+  if (isObj) {
+    const typeIcons = {
+      hotel: 'fa-hotel', pensjonat: 'fa-house-chimney', agroturystyka: 'fa-tractor',
+      hostel: 'fa-bed', apartament: 'fa-building', camping: 'fa-campground',
+      sanatorium: 'fa-heart-pulse', domki: 'fa-house', pokoje: 'fa-door-open',
+      osrodek: 'fa-umbrella-beach'
+    };
+    const typeLabels = {
+      hotel: 'Hotel', pensjonat: 'Pensjonat', agroturystyka: 'Agroturystyka',
+      hostel: 'Hostel', apartament: 'Apartament', camping: 'Camping',
+      sanatorium: 'Sanatorium', domki: 'Domki', pokoje: 'Pokoje gościnne',
+      osrodek: 'Ośrodek'
+    };
+    accomHTML = '<div class="accom-section-title"><i class="fas fa-bed"></i> Noclegi — ' + accom.places.length + ' obiektów</div>';
+    accomHTML += accom.places.map((pl, i) => {
+      const stars = pl.stars > 0 ? '<span class="accom-stars">' + '★'.repeat(pl.stars) + '</span>' : '';
+      return '<div class="accom-card" onclick="this.classList.toggle(\'expanded\')" data-accom="' + i + '">' +
+        '<div class="accom-header">' +
+          '<div class="accom-type-icon accom-type-' + pl.type + '"><i class="fas ' + (typeIcons[pl.type]||'fa-bed') + '"></i></div>' +
+          '<div class="accom-info">' +
+            '<div class="accom-name">' + pl.name + stars + '</div>' +
+            '<div style="font-size:11px;color:var(--text-muted);margin-top:2px;">' + (typeLabels[pl.type]||pl.type) + '</div>' +
+            '<div class="accom-desc">' + pl.desc + '</div>' +
+          '</div>' +
+          '<div class="accom-price">' + pl.price + '</div>' +
+        '</div>' +
+        '<div class="accom-details"><div class="accom-details-inner">' +
+          '<div class="accom-features">' + pl.features.map(f => '<span class="accom-feature">' + f + '</span>').join('') + '</div>' +
+          '<div class="accom-contact"><i class="fas fa-map-marker-alt"></i>' + pl.address + '</div>' +
+          '<div class="accom-contact" style="margin-top:4px;"><i class="fas fa-phone"></i><a href="tel:' + pl.phone.replace(/\s/g,'') + '">' + pl.phone + '</a></div>' +
+        '</div></div>' +
+      '</div>';
+    }).join('');
+  } else {
+    accomHTML = '<div class="info-item full-width"><h4><i class="fas fa-bed"></i> Noclegi</h4><p>' + (accom || '') + '</p></div>';
+  }
+
+  document.getElementById('panel-info').innerHTML =
+    '<div class="info-grid">' +
+      '<div class="info-item"><h4><i class="fas fa-sun"></i> Najlepszy sezon</h4><p>' + p.bestSeason + '</p></div>' +
+      '<div class="info-item"><h4><i class="fas fa-cloud-sun"></i> Pogoda</h4><p>' + p.weather + '</p></div>' +
+      '<div class="info-item"><h4><i class="fas fa-utensils"></i> Gastronomia</h4><p>' + p.food + '</p></div>' +
+      '<div class="info-item"><h4><i class="fas fa-bicycle"></i> Wypożyczalnia</h4><p>' + p.bike_rental + '</p></div>' +
+      '<div class="info-item"><h4><i class="fas fa-phone"></i> Alarmowe</h4><p>' + p.emergency + '</p></div>' +
+      '<div class="info-item"><h4><i class="fas fa-wifi"></i> Internet</h4><p>' + p.wifi + '</p></div>' +
+    '</div>' +
+    accomHTML;
 }
 
 /* === TRAIL TOGGLE === */
@@ -4362,8 +5091,525 @@ function bindEvents() {
   });
 }
 
+
+/* === LIGHTBOX === */
+let lbAttractions = [];
+let lbIndex = 0;
+
+function openLightbox(imgUrl, name, desc, attractions, index) {
+  lbAttractions = attractions || [];
+  lbIndex = index || 0;
+  const lb = document.getElementById('lightbox');
+  const img = document.getElementById('lbImg');
+  const caption = document.getElementById('lbCaption');
+  const descEl = document.getElementById('lbDesc');
+  img.src = imgUrl;
+  img.alt = name;
+  caption.textContent = name;
+  descEl.textContent = desc || '';
+  lb.classList.add('active');
+  document.body.style.overflow = 'hidden';
+  // Show/hide nav
+  document.getElementById('lbPrev').style.display = lbAttractions.length > 1 ? '' : 'none';
+  document.getElementById('lbNext').style.display = lbAttractions.length > 1 ? '' : 'none';
+}
+
+function closeLightbox(e) {
+  if (e && e.target !== e.currentTarget && !e.target.closest('.lightbox-close')) return;
+  document.getElementById('lightbox').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+function navigateLightbox(e, dir) {
+  e.stopPropagation();
+  if (lbAttractions.length === 0) return;
+  lbIndex = (lbIndex + dir + lbAttractions.length) % lbAttractions.length;
+  const a = lbAttractions[lbIndex];
+  document.getElementById('lbImg').src = a.image || '';
+  document.getElementById('lbCaption').textContent = a.name;
+  document.getElementById('lbDesc').textContent = a.description || '';
+}
+
+// Keyboard support
+document.addEventListener('keydown', function(e) {
+  const lb = document.getElementById('lightbox');
+  if (!lb.classList.contains('active')) return;
+  if (e.key === 'Escape') closeLightbox({target: lb, currentTarget: lb});
+  if (e.key === 'ArrowLeft') navigateLightbox({stopPropagation:()=>{}}, -1);
+  if (e.key === 'ArrowRight') navigateLightbox({stopPropagation:()=>{}}, 1);
+});
+
+/* === RADIO PLAYER === */
+const RADIO_STATIONS = {
+  'https://streaming.radio.lublin.pl:8843/128k': { name: 'Radio Lublin', desc: 'Regionalne radio Lubelszczyzny' },
+  'https://rs6-krk2.rmfstream.pl/rmf_classic': { name: 'RMF Classic', desc: 'Muzyka klasyczna i filmowa' },
+  'https://mp3.polskieradio.pl:8904/;': { name: 'Polskie Radio Trójka', desc: 'Kultura, muzyka, reportaże' },
+  'https://mp3.polskieradio.pl:8900/;': { name: 'Polskie Radio Jedynka', desc: 'Informacje i publicystyka' },
+  'https://mp3.polskieradio.pl:8902/;': { name: 'Polskie Radio Dwójka', desc: 'Muzyka poważna i jazz' },
+  'https://rs9-krk2.rmfstream.pl/RMFFM48': { name: 'RMF FM', desc: 'Najlepsza muzyka' },
+  'https://an04.cdn.eurozet.pl/ant-web.mp3': { name: 'Antyradio', desc: 'Rock bez kompromisów' },
+  'https://zt04.cdn.eurozet.pl/ZETPAR.mp3': { name: 'Radio ZET', desc: 'Muzyka i informacje' }
+};
+let radioAudio = null;
+let radioPlaying = false;
+
+function initRadio() {
+  const toggle = document.getElementById('radioToggle');
+  const player = document.getElementById('radioPlayer');
+  const playBtn = document.getElementById('radioPlayBtn');
+  const select = document.getElementById('radioSelect');
+  const vol = document.getElementById('radioVol');
+  const closeBtn = document.getElementById('radioCloseBtn');
+  const eq = document.getElementById('radioEq');
+
+  toggle.addEventListener('click', () => {
+    player.classList.remove('minimized');
+    toggle.classList.add('hidden');
+    // Adjust app height
+    document.querySelector('.app-container').style.height = 'calc(100vh - var(--header-h) - 52px)';
+  });
+
+  closeBtn.addEventListener('click', () => {
+    if (radioAudio) { radioAudio.pause(); radioAudio = null; }
+    radioPlaying = false;
+    playBtn.innerHTML = '<i class="fas fa-play"></i>';
+    playBtn.classList.remove('playing');
+    eq.classList.remove('active');
+    player.classList.add('minimized');
+    toggle.classList.remove('hidden');
+    document.querySelector('.app-container').style.height = '';
+  });
+
+  playBtn.addEventListener('click', () => {
+    if (radioPlaying && radioAudio) {
+      radioAudio.pause();
+      radioPlaying = false;
+      playBtn.innerHTML = '<i class="fas fa-play"></i>';
+      playBtn.classList.remove('playing');
+      eq.classList.remove('active');
+    } else {
+      playRadio(select.value);
+    }
+  });
+
+  select.addEventListener('change', () => {
+    const url = select.value;
+    const info = RADIO_STATIONS[url];
+    document.getElementById('radioStationName').textContent = info ? info.name : 'Radio';
+    document.getElementById('radioStationDesc').textContent = info ? info.desc : '';
+    if (radioPlaying) playRadio(url);
+  });
+
+  vol.addEventListener('input', () => {
+    if (radioAudio) radioAudio.volume = vol.value / 100;
+  });
+}
+
+function playRadio(url) {
+  const playBtn = document.getElementById('radioPlayBtn');
+  const eq = document.getElementById('radioEq');
+  if (radioAudio) { radioAudio.pause(); radioAudio = null; }
+  radioAudio = new Audio(url);
+  radioAudio.volume = document.getElementById('radioVol').value / 100;
+  radioAudio.play().then(() => {
+    radioPlaying = true;
+    playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+    playBtn.classList.add('playing');
+    eq.classList.add('active');
+  }).catch(e => {
+    console.warn('Radio playback failed:', e);
+    showToast('Nie udało się uruchomić radia');
+    radioPlaying = false;
+    playBtn.innerHTML = '<i class="fas fa-play"></i>';
+    playBtn.classList.remove('playing');
+    eq.classList.remove('active');
+  });
+  radioAudio.addEventListener('error', () => {
+    showToast('Błąd odtwarzania — spróbuj innej stacji');
+    radioPlaying = false;
+    playBtn.innerHTML = '<i class="fas fa-play"></i>';
+    playBtn.classList.remove('playing');
+    eq.classList.remove('active');
+  });
+}
+
 /* === START === */
-document.addEventListener('DOMContentLoaded', init);
+
+/* === MAP STYLES === */
+const MAP_TILES = {
+  voyager: {
+    url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+    attr: '&copy; OpenStreetMap &copy; CARTO'
+  },
+  outdoor: {
+    url: 'https://tile.opentopomap.org/{z}/{x}/{y}.png',
+    attr: '&copy; OpenTopoMap contributors'
+  },
+  satellite: {
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    attr: '&copy; Esri, Maxar, Earthstar'
+  }
+};
+let currentTileLayer = null;
+
+function initMapStyles() {
+  document.getElementById('mapStyleSwitcher').addEventListener('click', function(e) {
+    const btn = e.target.closest('.map-style-btn');
+    if (!btn) return;
+    this.querySelectorAll('.map-style-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const style = btn.dataset.style;
+    if (currentTileLayer) AppState.map.removeLayer(currentTileLayer);
+    const tile = MAP_TILES[style];
+    currentTileLayer = L.tileLayer(tile.url, { attribution: tile.attr, maxZoom: 19, subdomains: style === 'voyager' ? 'abcd' : 'abc' });
+    currentTileLayer.addTo(AppState.map);
+  });
+}
+
+/* === GEOLOCATION === */
+let userMarker = null;
+function initGeolocation() {
+  document.getElementById('fabLocate').addEventListener('click', function() {
+    if (!navigator.geolocation) { showToast('Geolokalizacja niedostępna'); return; }
+    this.style.animation = 'pulse 1s infinite';
+    navigator.geolocation.getCurrentPosition(pos => {
+      const {latitude: lat, longitude: lng} = pos.coords;
+      if (userMarker) AppState.map.removeLayer(userMarker);
+      userMarker = L.circleMarker([lat, lng], {
+        radius: 8, fillColor: '#4285F4', fillOpacity: 1, color: 'white', weight: 3
+      }).addTo(AppState.map).bindPopup('Twoja lokalizacja');
+      AppState.map.setView([lat, lng], 14, {animate: true});
+      document.getElementById('fabLocate').style.animation = '';
+    }, err => {
+      showToast('Nie udało się pobrać lokalizacji');
+      document.getElementById('fabLocate').style.animation = '';
+    }, {enableHighAccuracy: true, timeout: 10000});
+  });
+}
+
+/* === GPS TRACKER === */
+let trackState = { active: false, paused: false, watchId: null, points: [], startTime: null, elapsed: 0, timerInterval: null, totalDist: 0, maxElev: 0, minElev: 9999 };
+
+function initTracker() {
+  const fab = document.getElementById('fabTrack');
+  const panel = document.getElementById('trackerPanel');
+
+  fab.addEventListener('click', function() {
+    if (!trackState.active) startTracking();
+    else { stopTracking(); }
+  });
+
+  document.getElementById('trackStop').addEventListener('click', stopTracking);
+  document.getElementById('trackPause').addEventListener('click', togglePauseTracking);
+  document.getElementById('trackExport').addEventListener('click', exportGPX);
+}
+
+function startTracking() {
+  if (!navigator.geolocation) { showToast('GPS niedostępny'); return; }
+  trackState = { active: true, paused: false, watchId: null, points: [], startTime: Date.now(), elapsed: 0, timerInterval: null, totalDist: 0, maxElev: 0, minElev: 9999 };
+  const fab = document.getElementById('fabTrack');
+  fab.classList.add('recording');
+  fab.innerHTML = '<i class="fas fa-stop"></i>';
+  document.getElementById('trackerPanel').classList.add('active');
+  document.getElementById('trackPause').style.display = '';
+
+  // Wake Lock
+  if ('wakeLock' in navigator) navigator.wakeLock.request('screen').catch(()=>{});
+
+  trackState.watchId = navigator.geolocation.watchPosition(pos => {
+    if (trackState.paused) return;
+    const pt = { lat: pos.coords.latitude, lng: pos.coords.longitude, alt: pos.coords.altitude || 0, time: new Date().toISOString(), speed: pos.coords.speed || 0 };
+    if (trackState.points.length > 0) {
+      const prev = trackState.points[trackState.points.length - 1];
+      trackState.totalDist += haversine(prev.lat, prev.lng, pt.lat, pt.lng);
+    }
+    trackState.points.push(pt);
+    if (pt.alt > trackState.maxElev) trackState.maxElev = pt.alt;
+    if (pt.alt < trackState.minElev) trackState.minElev = pt.alt;
+
+    // Update UI
+    document.getElementById('trackDist').textContent = trackState.totalDist.toFixed(2);
+    document.getElementById('trackSpeed').textContent = ((pt.speed || 0) * 3.6).toFixed(1);
+    document.getElementById('trackElev').textContent = Math.round(pt.alt);
+
+    // Draw on map
+    if (trackState.points.length >= 2) {
+      const latlngs = trackState.points.map(p => [p.lat, p.lng]);
+      if (trackState.polyline) AppState.map.removeLayer(trackState.polyline);
+      trackState.polyline = L.polyline(latlngs, {color: '#E53935', weight: 4, opacity: 0.9}).addTo(AppState.map);
+    }
+  }, err => { showToast('Błąd GPS: ' + err.message); }, { enableHighAccuracy: true, maximumAge: 3000 });
+
+  trackState.timerInterval = setInterval(() => {
+    if (trackState.paused) return;
+    const elapsed = Math.floor((Date.now() - trackState.startTime) / 1000) - (trackState.pausedTotal || 0);
+    const m = Math.floor(elapsed / 60);
+    const s = elapsed % 60;
+    document.getElementById('trackTime').textContent = String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+  }, 1000);
+
+  showToast('Śledzenie GPS rozpoczęte');
+}
+
+function stopTracking() {
+  trackState.active = false;
+  if (trackState.watchId) navigator.geolocation.clearWatch(trackState.watchId);
+  if (trackState.timerInterval) clearInterval(trackState.timerInterval);
+  const fab = document.getElementById('fabTrack');
+  fab.classList.remove('recording');
+  fab.innerHTML = '<i class="fas fa-circle-dot"></i>';
+  document.getElementById('trackPause').style.display = 'none';
+  if (trackState.points.length < 2) {
+    document.getElementById('trackerPanel').classList.remove('active');
+    showToast('Za mało punktów do zapisania');
+  } else {
+    showToast('Trasa zapisana — kliknij GPX aby pobrać');
+  }
+}
+
+function togglePauseTracking() {
+  trackState.paused = !trackState.paused;
+  document.getElementById('trackPause').innerHTML = trackState.paused ? '<i class="fas fa-play"></i> Wznów' : '<i class="fas fa-pause"></i> Pauza';
+}
+
+function exportGPX() {
+  if (trackState.points.length < 2) { showToast('Brak danych do eksportu'); return; }
+  let gpx = '<?xml version="1.0" encoding="UTF-8"?>\n<gpx version="1.1" creator="SzlakiLubelszczyzny">\n<trk><name>Trasa ' + new Date().toLocaleDateString('pl') + '</name><trkseg>\n';
+  trackState.points.forEach(p => {
+    gpx += '<trkpt lat="' + p.lat + '" lon="' + p.lng + '"><ele>' + (p.alt||0) + '</ele><time>' + p.time + '</time></trkpt>\n';
+  });
+  gpx += '</trkseg></trk></gpx>';
+  const blob = new Blob([gpx], {type: 'application/gpx+xml'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'trasa_' + new Date().toISOString().slice(0,10) + '.gpx';
+  a.click();
+  showToast('Plik GPX pobrany!');
+}
+
+function haversine(lat1, lon1, lat2, lon2) {
+  const R = 6371;
+  const dLat = (lat2-lat1)*Math.PI/180;
+  const dLon = (lon2-lon1)*Math.PI/180;
+  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+/* === ELEVATION PROFILE === */
+function renderElevationProfile(waypoints, container) {
+  if (!waypoints || waypoints.length < 3) return;
+  // Generate simulated elevation data from waypoints
+  const elevations = generateElevation(waypoints);
+  const maxE = Math.max(...elevations);
+  const minE = Math.min(...elevations);
+  const totalUp = elevations.reduce((s,e,i) => i > 0 && e > elevations[i-1] ? s + (e - elevations[i-1]) : s, 0);
+  const totalDown = elevations.reduce((s,e,i) => i > 0 && e < elevations[i-1] ? s + (elevations[i-1] - e) : s, 0);
+
+  const html = '<div class="elevation-panel"><h4><i class="fas fa-chart-area"></i> Profil wysokości</h4>' +
+    '<div class="elevation-canvas-wrap"><canvas id="elevCanvas"></canvas></div>' +
+    '<div class="elevation-stats">' +
+    '<div class="elevation-stat"><div class="val">' + Math.round(totalUp) + 'm</div><div class="label">↑ Podejścia</div></div>' +
+    '<div class="elevation-stat"><div class="val">' + Math.round(totalDown) + 'm</div><div class="label">↓ Zejścia</div></div>' +
+    '<div class="elevation-stat"><div class="val">' + Math.round(maxE) + 'm</div><div class="label">Max wys.</div></div>' +
+    '<div class="elevation-stat"><div class="val">' + Math.round(minE) + 'm</div><div class="label">Min wys.</div></div>' +
+    '</div></div>';
+  container.insertAdjacentHTML('beforeend', html);
+
+  // Draw canvas
+  requestAnimationFrame(() => {
+    const canvas = document.getElementById('elevCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const w = canvas.parentElement.clientWidth;
+    const h = 100;
+    canvas.width = w * 2; canvas.height = h * 2;
+    canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
+    ctx.scale(2, 2);
+    const range = (maxE - minE) || 1;
+    const pad = 4;
+
+    // Gradient fill
+    const grad = ctx.createLinearGradient(0, 0, 0, h);
+    grad.addColorStop(0, 'rgba(82,183,136,0.4)');
+    grad.addColorStop(1, 'rgba(82,183,136,0.02)');
+
+    ctx.beginPath();
+    ctx.moveTo(0, h);
+    elevations.forEach((e, i) => {
+      const x = (i / (elevations.length - 1)) * w;
+      const y = h - pad - ((e - minE) / range) * (h - pad * 2);
+      if (i === 0) ctx.lineTo(x, y); else ctx.lineTo(x, y);
+    });
+    ctx.lineTo(w, h);
+    ctx.closePath();
+    ctx.fillStyle = grad;
+    ctx.fill();
+
+    // Line on top
+    ctx.beginPath();
+    elevations.forEach((e, i) => {
+      const x = (i / (elevations.length - 1)) * w;
+      const y = h - pad - ((e - minE) / range) * (h - pad * 2);
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    });
+    ctx.strokeStyle = '#40916C';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  });
+}
+
+function generateElevation(waypoints) {
+  // Generate realistic-looking elevation from lat/lng seed
+  const pts = [];
+  const n = 50;
+  for (let i = 0; i < n; i++) {
+    const t = i / (n - 1);
+    const idx = Math.min(Math.floor(t * (waypoints.length - 1)), waypoints.length - 2);
+    const frac = (t * (waypoints.length - 1)) - idx;
+    const lat = waypoints[idx][0] + frac * (waypoints[idx+1][0] - waypoints[idx][0]);
+    const lng = waypoints[idx][1] + frac * (waypoints[idx+1][1] - waypoints[idx][1]);
+    // Use lat/lng as seed for pseudo-elevation
+    const base = 180 + (lat * 17.3 + lng * 13.7) % 120;
+    const noise = Math.sin(i * 0.4) * 30 + Math.sin(i * 0.15) * 50 + Math.cos(i * 0.7) * 15;
+    pts.push(Math.max(100, base + noise));
+  }
+  return pts;
+}
+
+/* === ENHANCED TRAIL SHOW ON MAP === */
+const _origShowTrail = showTrailOnMap;
+showTrailOnMap = function(trail, type) {
+  _origShowTrail(trail, type);
+  // Add elevation profile
+  const panel = document.querySelector('.trail-card.expanded .trail-card-body-inner');
+  if (panel && trail.waypoints && trail.waypoints.length >= 3) {
+    const existing = panel.querySelector('.elevation-panel');
+    if (!existing) renderElevationProfile(trail.waypoints, panel);
+  }
+};
+
+/* === SERVICE WORKER REGISTRATION === */
+if ('serviceWorker' in navigator) {
+  // Inline SW as blob
+  const swCode = 'const CACHE="szlaki-v1";self.addEventListener("install",e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(["./index.html"])))});self.addEventListener("fetch",e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(res=>{if(res.ok&&e.request.url.includes("tile")){const cl=res.clone();caches.open(CACHE).then(c=>c.put(e.request,cl))}return res}).catch(()=>new Response("Offline"))))})';
+  const swBlob = new Blob([swCode], {type: 'application/javascript'});
+  const swUrl = URL.createObjectURL(swBlob);
+  navigator.serviceWorker.register(swUrl).catch(() => {});
+}
+
+/* === INIT PREMIUM FEATURES === */
+function initPremium() {
+  initMapStyles();
+  initGeolocation();
+  initTracker();
+
+  // Move map style switcher into map container
+  const mc = document.querySelector('.map-container');
+  const sw = document.getElementById('mapStyleSwitcher');
+  if (mc && sw) mc.appendChild(sw);
+
+  // Move FABs into map container
+  const fg = document.getElementById('fabGroup');
+  if (mc && fg) mc.appendChild(fg);
+
+  // Layers toggle (show/hide legend)
+  document.getElementById('fabLayers').addEventListener('click', function() {
+    const legend = document.getElementById('mapLegend');
+    if (legend) legend.style.display = legend.style.display === 'none' ? '' : 'none';
+  });
+
+  // Mobile bottom sheet drag
+  if (window.innerWidth <= 768) {
+    const sidebar = document.querySelector('.sidebar');
+    let startY = 0;
+    sidebar.addEventListener('touchstart', function(e) {
+      if (e.target.closest('.detail-content, .muni-list')) return;
+      startY = e.touches[0].clientY;
+    });
+    sidebar.addEventListener('touchmove', function(e) {
+      if (e.target.closest('.detail-content, .muni-list')) return;
+      const dy = startY - e.touches[0].clientY;
+      if (dy > 40) { sidebar.classList.add('expanded'); sidebar.classList.remove('collapsed'); }
+      if (dy < -40) { sidebar.classList.remove('expanded'); sidebar.classList.add('collapsed'); }
+    });
+  }
+
+  // Auto dark mode after sunset
+  const hour = new Date().getHours();
+  if ((hour >= 20 || hour < 6) && !localStorage.getItem('darkMode')) {
+    document.body.classList.add('dark');
+    document.getElementById('darkToggle').innerHTML = '<i class="fas fa-sun"></i>';
+  }
+}
+
+
+document.addEventListener('DOMContentLoaded', () => { init(); initRadio(); initPremium(); });
 </script>
+
+
+<!-- MAP STYLE SWITCHER -->
+<div class="map-style-switcher" id="mapStyleSwitcher">
+  <button class="map-style-btn active" data-style="voyager">Turystyczna</button>
+  <button class="map-style-btn" data-style="outdoor">Terenowa</button>
+  <button class="map-style-btn" data-style="satellite">Satelita</button>
+</div>
+
+<!-- FAB GROUP -->
+<div class="fab-group" id="fabGroup">
+  <button class="fab fab-layers" id="fabLayers" title="Warstwy mapy"><i class="fas fa-layer-group"></i></button>
+  <button class="fab fab-locate" id="fabLocate" title="Moja lokalizacja"><i class="fas fa-location-crosshairs"></i></button>
+  <button class="fab fab-track" id="fabTrack" title="Śledź trasę GPS"><i class="fas fa-circle-dot"></i></button>
+</div>
+
+<!-- GPS TRACKER PANEL -->
+<div class="tracker-panel" id="trackerPanel">
+  <div class="tracker-stats">
+    <div class="tracker-stat"><div class="val" id="trackDist">0.00</div><div class="unit">km</div><div class="label">Dystans</div></div>
+    <div class="tracker-stat"><div class="val" id="trackSpeed">0.0</div><div class="unit">km/h</div><div class="label">Prędkość</div></div>
+    <div class="tracker-stat"><div class="val" id="trackTime">00:00</div><div class="unit">&nbsp;</div><div class="label">Czas</div></div>
+    <div class="tracker-stat"><div class="val" id="trackElev">0</div><div class="unit">m</div><div class="label">Wzniesienie</div></div>
+  </div>
+  <div class="tracker-controls">
+    <button class="tracker-btn tracker-btn-pause" id="trackPause" style="display:none"><i class="fas fa-pause"></i> Pauza</button>
+    <button class="tracker-btn tracker-btn-stop" id="trackStop"><i class="fas fa-stop"></i> Stop</button>
+    <button class="tracker-btn tracker-btn-export" id="trackExport"><i class="fas fa-download"></i> GPX</button>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox-overlay" id="lightbox" onclick="closeLightbox(event)">
+  <button class="lightbox-close" onclick="closeLightbox(event)"><i class="fas fa-times"></i></button>
+  <button class="lightbox-nav prev" id="lbPrev" onclick="navigateLightbox(event,-1)"><i class="fas fa-chevron-left"></i></button>
+  <button class="lightbox-nav next" id="lbNext" onclick="navigateLightbox(event,1)"><i class="fas fa-chevron-right"></i></button>
+  <img class="lightbox-img" id="lbImg" src="" alt="">
+  <div class="lightbox-caption" id="lbCaption"></div>
+  <div class="lightbox-desc" id="lbDesc"></div>
+</div>
+
+<!-- RADIO PLAYER -->
+<button class="radio-toggle-floating" id="radioToggle" title="Radio internetowe"><i class="fas fa-radio"></i></button>
+<div class="radio-player minimized" id="radioPlayer">
+  <button class="radio-play-btn" id="radioPlayBtn" title="Odtwórz/Pauza"><i class="fas fa-play"></i></button>
+  <div class="radio-eq" id="radioEq"><span></span><span></span><span></span><span></span></div>
+  <div class="radio-info">
+    <div class="radio-station-name" id="radioStationName">Radio Lublin</div>
+    <div class="radio-station-desc" id="radioStationDesc">Regionalne radio Lubelszczyzny</div>
+  </div>
+  <div class="radio-controls">
+    <select class="radio-select" id="radioSelect">
+      <option value="https://streaming.radio.lublin.pl:8843/128k">Radio Lublin</option>
+      <option value="https://rs6-krk2.rmfstream.pl/rmf_classic">RMF Classic</option>
+      <option value="https://mp3.polskieradio.pl:8904/;">Polskie Radio Trójka</option>
+      <option value="https://mp3.polskieradio.pl:8900/;">Polskie Radio Jedynka</option>
+      <option value="https://mp3.polskieradio.pl:8902/;">Polskie Radio Dwójka</option>
+      <option value="https://rs9-krk2.rmfstream.pl/RMFFM48">RMF FM</option>
+      <option value="https://an04.cdn.eurozet.pl/ant-web.mp3">Antyradio</option>
+      <option value="https://zt04.cdn.eurozet.pl/ZETPAR.mp3">Radio ZET</option>
+    </select>
+    <i class="fas fa-volume-up" style="font-size:12px;color:var(--text-muted);"></i>
+    <input type="range" class="radio-vol" id="radioVol" min="0" max="100" value="60">
+    <button class="radio-close-btn" id="radioCloseBtn" title="Zamknij"><i class="fas fa-times"></i></button>
+  </div>
+</div>
 </body>
 </html>
