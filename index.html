@@ -5692,8 +5692,8 @@ function renderMunicipalityDetail(m) {
   document.getElementById('detailHeroBg').textContent = m.name;
   // Info with expandable description
   const sentences = m.description.split('. ');
-  const shortDesc = sentences.slice(0, 2).join('. ') + (sentences.length > 2 ? '.' : '');
-  const restDesc = sentences.length > 2 ? ' ' + sentences.slice(2).join('. ') : '';
+  const shortDesc = sentences[0] + '.';
+  const restDesc = sentences.length > 1 ? ' ' + sentences.slice(1).join('. ') : '';
   document.getElementById('detailInfo').innerHTML = `
     <span class="region-badge" style="background:${REGION_COLORS[m.region]}">${m.region}</span>
     <p class="desc-text">${shortDesc}${restDesc ? `<span class="desc-more" style="display:none">${restDesc}</span>` : ''}${restDesc ? ` <button class="desc-toggle" onclick="toggleDesc(this)">więcej <i class='fas fa-chevron-down' style='font-size:10px'></i></button>` : ''}</p>
