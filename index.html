@@ -1757,6 +1757,69 @@ body.dark .glass {
   to { height: 16px; }
 }
 
+/* === FACEBOOK LOGIN === */
+.fb-login-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: #1877F2;
+  color: white;
+  border: none;
+  border-radius: var(--radius-xs);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  white-space: nowrap;
+  height: 36px;
+}
+.fb-login-btn:hover { background: #166FE5; }
+.fb-login-btn i { font-size: 16px; }
+.fb-user-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.fb-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.5);
+}
+.fb-name {
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+.fb-logout-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.8);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  transition: var(--transition);
+}
+.fb-logout-btn:hover { background: rgba(255,255,255,0.3); color: white; }
+@media (max-width: 768px) {
+  .fb-login-btn span { display: none; }
+  .fb-login-btn { padding: 6px 10px; height: 40px; width: 40px; justify-content: center; border-radius: 50%; }
+  .fb-login-btn i { font-size: 18px; margin: 0; }
+  .fb-name { display: none; }
+  .fb-avatar { width: 28px; height: 28px; }
+}
+
 /* === HAMBURGER MENU === */
 .hamburger {
   display: none;
@@ -1949,8 +2012,14 @@ body.dark .glass {
       <h1>Szlaki Lubelszczyzny</h1>
       <span class="tagline">Odkryj piękno województwa lubelskiego pieszo i rowerem</span>
     </div>
-    <div class="header-actions" style="position:absolute;right:16px;display:flex;gap:4px;">
+    <div class="header-actions" style="position:absolute;right:16px;display:flex;gap:4px;align-items:center;">
       <button class="header-btn" id="shareBtn" title="Udostępnij"><i class="fas fa-share-alt"></i></button>
+      <button class="fb-login-btn" id="fbLoginBtn" onclick="fbLogin()" title="Zaloguj przez Facebook"><i class="fab fa-facebook-f"></i><span>Zaloguj</span></button>
+      <div class="fb-user-info" id="fbUserInfo" style="display:none">
+        <img class="fb-avatar" id="fbAvatar" src="" alt="">
+        <span class="fb-name" id="fbName"></span>
+        <button class="fb-logout-btn" onclick="fbLogout()" title="Wyloguj"><i class="fas fa-sign-out-alt"></i></button>
+      </div>
     </div>
   </div>
   <div style="display:flex;gap:8px;align-items:center;width:100%;max-width:700px;">
@@ -5905,6 +5974,106 @@ function shareApp() {
   navigator.clipboard.writeText(url).then(() => showToast('Link skopiowany do schowka!')).catch(() => showToast('Nie udało się skopiować linku'));
 }
 
+/* === FACEBOOK LOGIN === */
+// INSTRUKCJA KONFIGURACJI:
+// 1. Wejdź na https://developers.facebook.com/ i utwórz nową aplikację
+// 2. Wybierz typ "Consumer" → dodaj produkt "Facebook Login"
+// 3. W Settings → Basic skopiuj App ID i wklej poniżej
+// 4. W Facebook Login → Settings dodaj domenę strony do "Valid OAuth Redirect URIs"
+// 5. Ustaw App Domains na domenę gdzie hostujesz stronę
+const FB_APP_ID = ''; // ← WKLEJ SWÓJ FACEBOOK APP ID
+
+function initFacebookSDK() {
+  if (!FB_APP_ID) {
+    // Bez APP ID przycisk działa jako demo
+    console.log('Facebook Login: brak APP ID — tryb demo');
+    restoreFbUser();
+    return;
+  }
+  window.fbAsyncInit = function() {
+    FB.init({ appId: FB_APP_ID, cookie: true, xfbml: false, version: 'v19.0' });
+    FB.getLoginStatus(function(response) {
+      if (response.status === 'connected') {
+        fetchFbProfile(response.authResponse.accessToken);
+      } else {
+        restoreFbUser();
+      }
+    });
+  };
+  // Load SDK
+  const s = document.createElement('script');
+  s.src = 'https://connect.facebook.net/pl_PL/sdk.js';
+  s.async = true; s.defer = true;
+  document.head.appendChild(s);
+}
+
+function fbLogin() {
+  if (!FB_APP_ID) {
+    // Demo mode — symuluj logowanie
+    const demoUser = { name: 'Turysta', avatar: '' };
+    localStorage.setItem('fbUser', JSON.stringify(demoUser));
+    showFbUser(demoUser);
+    showToast('Tryb demo — ustaw FB_APP_ID w kodzie aby włączyć prawdziwe logowanie');
+    return;
+  }
+  FB.login(function(response) {
+    if (response.authResponse) {
+      fetchFbProfile(response.authResponse.accessToken);
+    } else {
+      showToast('Logowanie anulowane');
+    }
+  }, { scope: 'email,public_profile' });
+}
+
+function fetchFbProfile(token) {
+  FB.api('/me', { fields: 'id,name,email,picture.width(100).height(100)' }, function(response) {
+    if (response && !response.error) {
+      const user = {
+        id: response.id,
+        name: response.name,
+        email: response.email || '',
+        avatar: response.picture && response.picture.data ? response.picture.data.url : ''
+      };
+      localStorage.setItem('fbUser', JSON.stringify(user));
+      showFbUser(user);
+      showToast('Witaj, ' + user.name + '!');
+    } else {
+      showToast('Błąd pobierania profilu');
+    }
+  });
+}
+
+function fbLogout() {
+  localStorage.removeItem('fbUser');
+  document.getElementById('fbLoginBtn').style.display = '';
+  document.getElementById('fbUserInfo').style.display = 'none';
+  if (FB_APP_ID && typeof FB !== 'undefined') {
+    FB.logout(function() {});
+  }
+  showToast('Wylogowano');
+}
+
+function showFbUser(user) {
+  document.getElementById('fbLoginBtn').style.display = 'none';
+  const info = document.getElementById('fbUserInfo');
+  info.style.display = 'flex';
+  document.getElementById('fbName').textContent = user.name;
+  const avatar = document.getElementById('fbAvatar');
+  if (user.avatar) {
+    avatar.src = user.avatar;
+    avatar.style.display = '';
+  } else {
+    avatar.style.display = 'none';
+  }
+}
+
+function restoreFbUser() {
+  const stored = localStorage.getItem('fbUser');
+  if (stored) {
+    try { showFbUser(JSON.parse(stored)); } catch(e) {}
+  }
+}
+
 /* === HAMBURGER MENU === */
 function initHamburger() {
   document.getElementById('hamburgerBtn').addEventListener('click', function() {
@@ -6582,7 +6751,7 @@ function initPremium() {
 }
 
 
-document.addEventListener('DOMContentLoaded', () => { init(); initRadio(); initPremium(); initHamburger(); });
+document.addEventListener('DOMContentLoaded', () => { init(); initRadio(); initPremium(); initHamburger(); initFacebookSDK(); });
 </script>
 
 
