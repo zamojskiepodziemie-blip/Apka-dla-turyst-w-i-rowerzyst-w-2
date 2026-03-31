@@ -1425,8 +1425,10 @@ body.dark .glass {
   left: 50%;
   transform: translate(-50%, -50%) scale(0.95);
   width: 340px;
-  max-height: 80vh;
+  max-width: calc(100vw - 24px);
+  max-height: 90vh;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   background: var(--bg-card);
   border-radius: var(--radius);
   box-shadow: var(--shadow-xl);
@@ -1531,7 +1533,6 @@ body.dark .glass {
   flex-shrink: 0;
 }
 @media (max-width: 768px) {
-  .weather-popup { width: calc(100vw - 24px); right: 4px; top: 48px; }
   .weather-btn { width: 44px; height: 44px; font-size: 20px; }
 }
 
@@ -1755,6 +1756,184 @@ body.dark .glass {
   from { height: 4px; }
   to { height: 16px; }
 }
+
+/* === HAMBURGER MENU === */
+.hamburger {
+  display: none;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.12);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  color: white;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.mobile-menu {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: var(--secondary);
+  z-index: 99999;
+  flex-direction: column;
+  padding: 20px;
+  animation: fadeUp 0.2s ease;
+}
+.mobile-menu.open { display: flex; }
+.mobile-menu-close {
+  align-self: flex-end;
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+.mobile-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 12px;
+  color: rgba(255,255,255,0.85);
+  font-size: 16px;
+  font-weight: 500;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  transition: var(--transition);
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+}
+.mobile-menu-item:hover, .mobile-menu-item.active {
+  background: rgba(255,255,255,0.1);
+  color: white;
+}
+.mobile-menu-item i { width: 24px; text-align: center; font-size: 18px; }
+.mobile-menu-divider {
+  height: 1px;
+  background: rgba(255,255,255,0.1);
+  margin: 8px 0;
+}
+
+/* === MOBILE FINAL FIXES === */
+@media (max-width: 768px) {
+  .hamburger { display: flex; }
+
+  /* Header compact */
+  .header { padding: 10px 12px 8px; }
+  .header-top { justify-content: space-between; }
+  .header-logo h1 { font-size: 17px; }
+  .header-logo i { font-size: 20px; }
+  .header-search input { font-size: 16px; min-height: 44px; }
+
+  /* Region tabs scrollable */
+  .region-tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; flex-wrap: nowrap; padding: 6px 8px; }
+  .region-tab { font-size: 14px; min-height: 40px; padding: 8px 16px; white-space: nowrap; flex-shrink: 0; }
+
+  /* Card text sizes */
+  .muni-card-name { font-size: 16px; }
+  .muni-card-region { font-size: 12px; }
+  .muni-card-stats { font-size: 14px; gap: 10px; }
+  .muni-card-weather { width: 40px; height: 40px; font-size: 18px; }
+  .muni-card-fav { width: 40px; height: 40px; font-size: 18px; padding: 0; display: flex; align-items: center; justify-content: center; }
+
+  /* Detail tabs */
+  .detail-tab { padding: 8px 12px; font-size: 10px; min-height: 44px; }
+  .detail-tab i { font-size: 16px; }
+
+  /* Trail cards */
+  .trail-card-name { font-size: 16px; }
+  .trail-card-body-inner p { font-size: 14px; line-height: 1.6; }
+  .trail-highlights li { font-size: 14px; padding: 5px 0; }
+  .pill { font-size: 12px; padding: 4px 10px; min-height: 28px; display: inline-flex; align-items: center; }
+  .btn { min-height: 44px; font-size: 14px; padding: 10px 18px; }
+  .trail-expand-icon { width: 36px; height: 36px; font-size: 14px; }
+
+  /* Attraction cards */
+  .attraction-card h4 { font-size: 16px; }
+  .attraction-card p { font-size: 14px; }
+  .attraction-tip { font-size: 14px; }
+  .attraction-meta .pill { font-size: 13px; }
+
+  /* Access */
+  .access-card { padding: 14px; }
+  .access-card h4 { font-size: 16px; }
+  .access-card p { font-size: 14px; }
+  .access-icon { width: 44px; height: 44px; font-size: 20px; }
+
+  /* Accommodation */
+  .accom-name { font-size: 16px; }
+  .accom-desc { font-size: 14px; }
+  .accom-price { font-size: 17px; }
+  .accom-contact { font-size: 14px; }
+  .accom-feature { font-size: 12px; padding: 4px 10px; }
+  .accom-type-icon { width: 44px; height: 44px; font-size: 18px; }
+
+  /* Info */
+  .info-item h4 { font-size: 13px; }
+  .info-item p { font-size: 14px; }
+
+  /* Weather popup — full width on mobile, scrollable */
+  .weather-popup {
+    width: calc(100vw - 20px);
+    max-width: none;
+    max-height: 85vh;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+  .weather-popup.visible { transform: translate(-50%, -50%) scale(1); }
+  .weather-day { padding: 10px 12px; gap: 6px; }
+  .weather-day-name { font-size: 14px; width: 32px; }
+  .weather-day-date { font-size: 11px; width: 36px; }
+  .weather-day-icon { font-size: 20px; width: 28px; }
+  .weather-day-max { font-size: 16px; }
+  .weather-day-min { font-size: 13px; }
+  .weather-day-rain { font-size: 11px; width: 35px; }
+  .weather-day-wind { font-size: 11px; width: 44px; }
+
+  /* Lightbox */
+  .lightbox-caption { font-size: 17px; }
+  .lightbox-desc { font-size: 14px; }
+  .lightbox-close { width: 48px; height: 48px; font-size: 24px; }
+  .lightbox-nav { width: 48px; height: 48px; font-size: 20px; }
+
+  /* Quick stats */
+  .quick-stat { font-size: 13px; }
+  .muni-detail-info p { font-size: 15px; }
+
+  /* Radio */
+  .radio-select { font-size: 14px; min-height: 36px; }
+  .radio-station-name { font-size: 14px; }
+
+  /* Ensure nothing overflows */
+  .sidebar, .detail-content, .muni-list { overflow-x: hidden; }
+}
+
+@media (max-width: 480px) {
+  .header-logo h1 { font-size: 15px; }
+  .muni-card-stats { font-size: 13px; flex-wrap: wrap; }
+  .quick-stat { font-size: 12px; }
+  .sidebar { height: 50vh; }
+  .map-container { height: 50vh; }
+  .accom-header { flex-wrap: wrap; gap: 8px; }
+  .tracker-stat .val { font-size: 18px; }
+  .tracker-btn { min-height: 44px; font-size: 14px; }
+  /* Weather compact on small phones */
+  .weather-popup { width: calc(100vw - 16px); max-height: 88vh; }
+  .weather-day { padding: 9px 10px; gap: 5px; }
+  .weather-day-wind { display: none; }
+  .weather-popup-header { padding: 12px 14px 8px; font-size: 14px; }
+}
 </style>
 </head>
 <body>
@@ -1770,8 +1949,9 @@ body.dark .glass {
       <h1>Szlaki Lubelszczyzny</h1>
       <span class="tagline">Odkryj piękno województwa lubelskiego pieszo i rowerem</span>
     </div>
-    <div class="header-actions" style="position:absolute;right:16px;">
+    <div class="header-actions" style="position:absolute;right:16px;display:flex;gap:4px;">
       <button class="header-btn" id="shareBtn" title="Udostępnij"><i class="fas fa-share-alt"></i></button>
+      <button class="hamburger" id="hamburgerBtn" title="Menu"><i class="fas fa-bars"></i></button>
     </div>
   </div>
   <div style="display:flex;gap:8px;align-items:center;width:100%;max-width:700px;">
@@ -5534,6 +5714,26 @@ function shareApp() {
   navigator.clipboard.writeText(url).then(() => showToast('Link skopiowany do schowka!')).catch(() => showToast('Nie udało się skopiować linku'));
 }
 
+/* === HAMBURGER MENU === */
+function initHamburger() {
+  document.getElementById('hamburgerBtn').addEventListener('click', function() {
+    document.getElementById('mobileMenu').classList.add('open');
+  });
+}
+
+function closeMobileMenu() {
+  document.getElementById('mobileMenu').classList.remove('open');
+}
+
+function filterRegion(region) {
+  AppState.activeRegion = region;
+  document.querySelectorAll('.region-tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.region === region);
+  });
+  if (AppState.selectedMunicipality) goBack();
+  renderMuniList();
+}
+
 /* === ONBOARDING === */
 function showOnboarding() {
   if (localStorage.getItem('onboardingSeen')) return;
@@ -6191,7 +6391,7 @@ function initPremium() {
 }
 
 
-document.addEventListener('DOMContentLoaded', () => { init(); initRadio(); initPremium(); });
+document.addEventListener('DOMContentLoaded', () => { init(); initRadio(); initPremium(); initHamburger(); });
 </script>
 
 
@@ -6222,6 +6422,21 @@ document.addEventListener('DOMContentLoaded', () => { init(); initRadio(); initP
     <button class="tracker-btn tracker-btn-stop" id="trackStop"><i class="fas fa-stop"></i> Stop</button>
     <button class="tracker-btn tracker-btn-export" id="trackExport"><i class="fas fa-download"></i> GPX</button>
   </div>
+</div>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <button class="mobile-menu-close" onclick="document.getElementById('mobileMenu').classList.remove('open')"><i class="fas fa-times"></i></button>
+  <button class="mobile-menu-item" onclick="closeMobileMenu();document.getElementById('searchInput').focus()"><i class="fas fa-search"></i>Szukaj miejscowości</button>
+  <div class="mobile-menu-divider"></div>
+  <button class="mobile-menu-item" onclick="closeMobileMenu();filterRegion('all')"><i class="fas fa-globe"></i>Wszystkie regiony</button>
+  <button class="mobile-menu-item" onclick="closeMobileMenu();filterRegion('Roztocze')"><i class="fas fa-tree"></i>Roztocze</button>
+  <button class="mobile-menu-item" onclick="closeMobileMenu();filterRegion('Polesie')"><i class="fas fa-water"></i>Polesie</button>
+  <button class="mobile-menu-item" onclick="closeMobileMenu();filterRegion('Kazimierski')"><i class="fas fa-mountain"></i>Kazimierski</button>
+  <button class="mobile-menu-item" onclick="closeMobileMenu();filterRegion('Centralny')"><i class="fas fa-city"></i>Centralny</button>
+  <div class="mobile-menu-divider"></div>
+  <button class="mobile-menu-item" onclick="closeMobileMenu();toggleDarkMode()"><i class="fas fa-moon"></i>Tryb ciemny</button>
+  <button class="mobile-menu-item" onclick="closeMobileMenu();shareApp()"><i class="fas fa-share-alt"></i>Udostępnij</button>
 </div>
 
 <!-- WEATHER POPUP (global, fixed) -->
