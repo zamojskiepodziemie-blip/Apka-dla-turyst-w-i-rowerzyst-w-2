@@ -307,6 +307,23 @@ body.dark .header-logo h1 { color: white; }
   gap: 4px;
 }
 .muni-card-stats i { font-size: 11px; color: var(--primary-light); }
+.muni-card-weather {
+  color: #FFB703;
+  font-size: 16px;
+  transition: var(--transition);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+.muni-card-weather:hover { background: rgba(255,183,3,0.12); transform: scale(1.15); }
 .muni-card-fav {
   color: var(--border);
   font-size: 16px;
@@ -1403,21 +1420,31 @@ body.dark .glass {
 }
 .weather-btn:hover { background: rgba(255,255,255,0.35); transform: scale(1.08); }
 .weather-popup {
-  position: absolute;
-  top: 56px;
-  right: 12px;
-  width: 300px;
-  max-height: 400px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.95);
+  width: 340px;
+  max-height: 80vh;
   overflow-y: auto;
   background: var(--bg-card);
   border-radius: var(--radius);
   box-shadow: var(--shadow-xl);
-  z-index: 4;
+  z-index: 99998;
   display: none;
   border: 1px solid var(--border);
-  animation: fadeUp 0.2s ease;
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.2s ease;
 }
-.weather-popup.visible { display: block; }
+.weather-popup.visible { display: block; opacity: 1; transform: translate(-50%, -50%) scale(1); }
+.weather-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 99997;
+  display: none;
+}
+.weather-overlay.visible { display: block; }
 .weather-popup-header {
   padding: 14px 16px 10px;
   border-bottom: 1px solid var(--border);
@@ -1791,11 +1818,7 @@ body.dark .glass {
       <div class="detail-main">
         <div class="muni-detail-hero" id="detailHero">
           <button class="back-btn" id="backBtn"><i class="fas fa-arrow-left"></i></button>
-          <button class="weather-btn" id="weatherBtn" title="Pogoda 7 dni"><i class="fas fa-sun"></i></button>
-          <div class="weather-popup" id="weatherPopup">
-            <div class="weather-popup-header"><i class="fas fa-cloud-sun"></i><span id="weatherTitle">Pogoda 7 dni</span><button class="weather-popup-close" id="weatherClose"><i class="fas fa-times"></i></button></div>
-            <div id="weatherBody"><div class="weather-loading"><i class="fas fa-spinner fa-spin"></i> Ładowanie pogody...</div></div>
-          </div>
+          <button class="weather-btn" id="weatherBtn" title="Pogoda 7 dni" onclick="event.stopPropagation();openWeatherFor(AppState.selectedMunicipality, this)"><i class="fas fa-sun"></i></button>
           <div class="muni-detail-hero-bg" id="detailHeroBg"></div>
         </div>
         <div class="muni-detail-info" id="detailInfo"></div>
@@ -5135,6 +5158,7 @@ function renderMuniList() {
           </div>
           <div style="display:flex;align-items:center;gap:6px;">
             ${m.badge ? `<span class="muni-card-badge">${m.badge}</span>` : ''}
+            <button class="muni-card-weather" onclick="event.stopPropagation();openWeatherFor('${m.id}')" title="Pogoda 7 dni"><i class="fas fa-sun"></i></button>
             <button class="muni-card-fav ${isFav ? 'liked' : ''}" onclick="event.stopPropagation();toggleFavorite('${m.id}')"><i class="fa${isFav ? 's' : 'r'} fa-heart"></i></button>
           </div>
         </div>
@@ -6035,50 +6059,29 @@ const DAY_NAMES = ['Nd', 'Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'Sb'];
 
 let weatherCache = {};
 
-function initWeather() {
-  document.getElementById('weatherBtn').addEventListener('click', function(e) {
-    e.stopPropagation();
-    const popup = document.getElementById('weatherPopup');
-    if (popup.classList.contains('visible')) {
-      popup.classList.remove('visible');
-      return;
-    }
-    popup.classList.add('visible');
-    if (AppState.selectedMunicipality) {
-      const muni = DATA.find(m => m.id === AppState.selectedMunicipality);
-      if (muni) fetchWeather(muni.lat, muni.lng, muni.name);
-    }
-  });
-
-  document.getElementById('weatherClose').addEventListener('click', function(e) {
-    e.stopPropagation();
-    document.getElementById('weatherPopup').classList.remove('visible');
-  });
-
-  // Close on click outside
-  document.addEventListener('click', function(e) {
-    if (!e.target.closest('.weather-popup') && !e.target.closest('.weather-btn')) {
-      document.getElementById('weatherPopup').classList.remove('visible');
-    }
-  });
-}
-
-function fetchWeather(lat, lng, name) {
-  const key = lat + ',' + lng;
+function openWeatherFor(muniId) {
+  const muni = DATA.find(m => m.id === muniId);
+  if (!muni) return;
+  const popup = document.getElementById('weatherPopup');
+  const overlay = document.getElementById('weatherOverlay');
   const body = document.getElementById('weatherBody');
   const title = document.getElementById('weatherTitle');
-  title.textContent = 'Pogoda — ' + name;
+
+  title.textContent = 'Pogoda 7 dni — ' + muni.name;
+  popup.classList.add('visible');
+  overlay.classList.add('visible');
 
   // Check cache (15 min)
+  const key = muni.lat + ',' + muni.lng;
   if (weatherCache[key] && Date.now() - weatherCache[key].time < 900000) {
     renderWeather(weatherCache[key].data);
     return;
   }
 
-  body.innerHTML = '<div class="weather-loading"><i class="fas fa-spinner fa-spin"></i> Ładowanie pogody...</div>';
+  body.innerHTML = '<div class="weather-loading"><i class="fas fa-spinner fa-spin"></i> Ładowanie pogody z satelity...</div>';
 
-  const url = 'https://api.open-meteo.com/v1/forecast?latitude=' + lat + '&longitude=' + lng +
-    '&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum,windspeed_10m_max' +
+  const url = 'https://api.open-meteo.com/v1/forecast?latitude=' + muni.lat + '&longitude=' + muni.lng +
+    '&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum,windspeed_10m_max,uv_index_max' +
     '&timezone=Europe/Warsaw&forecast_days=7';
 
   fetch(url)
@@ -6088,8 +6091,13 @@ function fetchWeather(lat, lng, name) {
       renderWeather(data);
     })
     .catch(err => {
-      body.innerHTML = '<div class="weather-loading"><i class="fas fa-exclamation-triangle" style="color:var(--accent-warm)"></i> Nie udało się pobrać pogody</div>';
+      body.innerHTML = '<div class="weather-loading"><i class="fas fa-exclamation-triangle" style="color:var(--accent-warm)"></i> Nie udało się pobrać pogody.<br><small>Sprawdź połączenie z internetem.</small></div>';
     });
+}
+
+function closeWeather() {
+  document.getElementById('weatherPopup').classList.remove('visible');
+  document.getElementById('weatherOverlay').classList.remove('visible');
 }
 
 function renderWeather(data) {
@@ -6183,7 +6191,7 @@ function initPremium() {
 }
 
 
-document.addEventListener('DOMContentLoaded', () => { init(); initRadio(); initPremium(); initWeather(); });
+document.addEventListener('DOMContentLoaded', () => { init(); initRadio(); initPremium(); });
 </script>
 
 
@@ -6214,6 +6222,13 @@ document.addEventListener('DOMContentLoaded', () => { init(); initRadio(); initP
     <button class="tracker-btn tracker-btn-stop" id="trackStop"><i class="fas fa-stop"></i> Stop</button>
     <button class="tracker-btn tracker-btn-export" id="trackExport"><i class="fas fa-download"></i> GPX</button>
   </div>
+</div>
+
+<!-- WEATHER POPUP (global, fixed) -->
+<div class="weather-overlay" id="weatherOverlay" onclick="closeWeather()"></div>
+<div class="weather-popup" id="weatherPopup">
+  <div class="weather-popup-header"><i class="fas fa-cloud-sun"></i><span id="weatherTitle">Pogoda 7 dni</span><button class="weather-popup-close" onclick="closeWeather()"><i class="fas fa-times"></i></button></div>
+  <div id="weatherBody"><div class="weather-loading"><i class="fas fa-spinner fa-spin"></i> Ładowanie pogody...</div></div>
 </div>
 
 <!-- LIGHTBOX -->
