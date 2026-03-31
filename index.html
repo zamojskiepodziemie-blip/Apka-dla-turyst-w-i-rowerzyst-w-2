@@ -1390,6 +1390,7 @@ body.dark .glass {
 }
 .fab:hover { transform: scale(1.1); }
 .fab-track { background: var(--accent-warm); }
+.fab-radio { background: var(--primary); }
 .fab-locate { background: var(--primary); }
 .fab-layers { background: var(--primary); }
 .fab-track.recording { animation: pulse 1.5s infinite; }
@@ -6808,6 +6809,7 @@ document.addEventListener('DOMContentLoaded', () => { init(); initRadio(); initP
   <button class="fab fab-layers" id="fabLayers" title="Warstwy mapy"><i class="fas fa-layer-group"></i></button>
   <button class="fab fab-locate" id="fabLocate" title="Moja lokalizacja"><i class="fas fa-location-crosshairs"></i></button>
   <button class="fab fab-track" id="fabTrack" title="Śledź trasę GPS"><i class="fas fa-circle-dot"></i></button>
+  <button class="fab fab-radio" id="radioToggle" title="Radio internetowe"><i class="fas fa-radio"></i></button>
 </div>
 
 <!-- GPS TRACKER PANEL -->
@@ -6858,7 +6860,6 @@ document.addEventListener('DOMContentLoaded', () => { init(); initRadio(); initP
 </div>
 
 <!-- RADIO PLAYER -->
-<button class="radio-toggle-floating" id="radioToggle" title="Radio internetowe"><i class="fas fa-radio"></i></button>
 <div class="radio-player minimized" id="radioPlayer">
   <button class="radio-play-btn" id="radioPlayBtn" title="Odtwórz/Pauza"><i class="fas fa-play"></i></button>
   <div class="radio-eq" id="radioEq"><span></span><span></span><span></span><span></span></div>
