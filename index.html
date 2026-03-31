@@ -426,6 +426,18 @@ body.detail-open .app-container { margin-left: 68px; }
   letter-spacing: 0.04em;
 }
 .muni-detail-info p { font-size: 13px; color: var(--text-secondary); margin-top: 8px; line-height: 1.6; }
+.desc-toggle {
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0 2px;
+  font-family: inherit;
+  transition: var(--transition);
+}
+.desc-toggle:hover { color: var(--secondary); text-decoration: underline; }
 .muni-detail-quick-stats {
   display: flex;
   gap: 6px;
@@ -5678,10 +5690,13 @@ function renderMunicipalityDetail(m) {
     heroEl.style.background = REGION_GRADIENTS[m.region];
   }
   document.getElementById('detailHeroBg').textContent = m.name;
-  // Info
+  // Info with expandable description
+  const sentences = m.description.split('. ');
+  const shortDesc = sentences.slice(0, 2).join('. ') + (sentences.length > 2 ? '.' : '');
+  const restDesc = sentences.length > 2 ? ' ' + sentences.slice(2).join('. ') : '';
   document.getElementById('detailInfo').innerHTML = `
     <span class="region-badge" style="background:${REGION_COLORS[m.region]}">${m.region}</span>
-    <p>${m.description}</p>
+    <p class="desc-text">${shortDesc}${restDesc ? `<span class="desc-more" style="display:none">${restDesc}</span>` : ''}${restDesc ? ` <button class="desc-toggle" onclick="toggleDesc(this)">więcej <i class='fas fa-chevron-down' style='font-size:10px'></i></button>` : ''}</p>
     <div class="muni-detail-quick-stats">
       <div class="quick-stat"><i class="fas fa-hiking"></i>${m.hiking.length} pieszych</div>
       <div class="quick-stat"><i class="fas fa-bicycle"></i>${m.cycling.length} rowerowych</div>
@@ -5873,6 +5888,17 @@ function renderInfoPanel(m) {
 }
 
 /* === TRAIL TOGGLE === */
+function toggleDesc(btn) {
+  const more = btn.parentElement.querySelector('.desc-more');
+  if (more.style.display === 'none') {
+    more.style.display = 'inline';
+    btn.innerHTML = 'mniej <i class="fas fa-chevron-up" style="font-size:10px"></i>';
+  } else {
+    more.style.display = 'none';
+    btn.innerHTML = 'więcej <i class="fas fa-chevron-down" style="font-size:10px"></i>';
+  }
+}
+
 function toggleTrailCard(id) {
   document.getElementById(id).classList.toggle('expanded');
 }
