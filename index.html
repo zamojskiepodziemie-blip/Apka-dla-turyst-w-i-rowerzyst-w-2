@@ -1380,6 +1380,134 @@ body.dark .glass {
 }
 .weather-badge i { font-size: 16px; }
 
+/* === WEATHER PANEL === */
+.weather-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  backdrop-filter: blur(8px);
+  color: #FFD54F;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  cursor: pointer;
+  border: none;
+  z-index: 3;
+  transition: var(--transition);
+  text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+.weather-btn:hover { background: rgba(255,255,255,0.35); transform: scale(1.08); }
+.weather-popup {
+  position: absolute;
+  top: 56px;
+  right: 12px;
+  width: 300px;
+  max-height: 400px;
+  overflow-y: auto;
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-xl);
+  z-index: 4;
+  display: none;
+  border: 1px solid var(--border);
+  animation: fadeUp 0.2s ease;
+}
+.weather-popup.visible { display: block; }
+.weather-popup-header {
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.weather-popup-header i { color: #FFD54F; font-size: 18px; }
+.weather-popup-close {
+  margin-left: auto;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 16px;
+  background: none;
+  border: none;
+  padding: 4px;
+}
+.weather-popup-close:hover { color: var(--text); }
+.weather-loading {
+  padding: 24px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+.weather-day {
+  display: flex;
+  align-items: center;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border-light);
+  gap: 10px;
+  transition: var(--transition);
+}
+.weather-day:last-child { border-bottom: none; }
+.weather-day:hover { background: var(--bg-hover); }
+.weather-day-name {
+  font-size: 13px;
+  font-weight: 600;
+  width: 36px;
+  flex-shrink: 0;
+  color: var(--text);
+}
+.weather-day-date {
+  font-size: 11px;
+  color: var(--text-muted);
+  width: 44px;
+  flex-shrink: 0;
+}
+.weather-day-icon {
+  font-size: 22px;
+  width: 32px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.weather-day-temps {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-variant-numeric: tabular-nums;
+}
+.weather-day-max {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+}
+.weather-day-min {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.weather-day-rain {
+  font-size: 11px;
+  color: #42A5F5;
+  width: 40px;
+  text-align: right;
+  flex-shrink: 0;
+}
+.weather-day-wind {
+  font-size: 11px;
+  color: var(--text-muted);
+  width: 50px;
+  text-align: right;
+  flex-shrink: 0;
+}
+@media (max-width: 768px) {
+  .weather-popup { width: calc(100vw - 24px); right: 4px; top: 48px; }
+  .weather-btn { width: 44px; height: 44px; font-size: 20px; }
+}
+
 /* === BOTTOM SHEET MOBILE === */
 @media (max-width: 768px) {
   .sidebar {
@@ -1663,6 +1791,11 @@ body.dark .glass {
       <div class="detail-main">
         <div class="muni-detail-hero" id="detailHero">
           <button class="back-btn" id="backBtn"><i class="fas fa-arrow-left"></i></button>
+          <button class="weather-btn" id="weatherBtn" title="Pogoda 7 dni"><i class="fas fa-sun"></i></button>
+          <div class="weather-popup" id="weatherPopup">
+            <div class="weather-popup-header"><i class="fas fa-cloud-sun"></i><span id="weatherTitle">Pogoda 7 dni</span><button class="weather-popup-close" id="weatherClose"><i class="fas fa-times"></i></button></div>
+            <div id="weatherBody"><div class="weather-loading"><i class="fas fa-spinner fa-spin"></i> Ładowanie pogody...</div></div>
+          </div>
           <div class="muni-detail-hero-bg" id="detailHeroBg"></div>
         </div>
         <div class="muni-detail-info" id="detailInfo"></div>
@@ -5875,6 +6008,126 @@ showTrailOnMap = function(trail, type) {
   }
 };
 
+/* === WEATHER 7-DAY FORECAST (Open-Meteo API) === */
+const WEATHER_ICONS = {
+  0: '☀️', 1: '🌤️', 2: '⛅', 3: '☁️',
+  45: '🌫️', 48: '🌫️',
+  51: '🌦️', 53: '🌦️', 55: '🌧️',
+  56: '🌨️', 57: '🌨️',
+  61: '🌧️', 63: '🌧️', 65: '🌧️',
+  66: '🌨️', 67: '🌨️',
+  71: '🌨️', 73: '❄️', 75: '❄️', 77: '❄️',
+  80: '🌦️', 81: '🌧️', 82: '⛈️',
+  85: '🌨️', 86: '❄️',
+  95: '⛈️', 96: '⛈️', 99: '⛈️'
+};
+const WEATHER_DESC = {
+  0: 'Bezchmurnie', 1: 'Prawie bezchmurnie', 2: 'Częściowe zachmurzenie', 3: 'Pochmurno',
+  45: 'Mgła', 48: 'Mgła szronowa',
+  51: 'Mżawka lekka', 53: 'Mżawka', 55: 'Mżawka silna',
+  61: 'Deszcz lekki', 63: 'Deszcz umiarkowany', 65: 'Deszcz silny',
+  71: 'Śnieg lekki', 73: 'Śnieg', 75: 'Śnieg silny',
+  80: 'Przelotny deszcz', 81: 'Deszcz', 82: 'Ulewa',
+  85: 'Przelotny śnieg', 86: 'Silny śnieg',
+  95: 'Burza', 96: 'Burza z gradem', 99: 'Silna burza z gradem'
+};
+const DAY_NAMES = ['Nd', 'Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'Sb'];
+
+let weatherCache = {};
+
+function initWeather() {
+  document.getElementById('weatherBtn').addEventListener('click', function(e) {
+    e.stopPropagation();
+    const popup = document.getElementById('weatherPopup');
+    if (popup.classList.contains('visible')) {
+      popup.classList.remove('visible');
+      return;
+    }
+    popup.classList.add('visible');
+    if (AppState.selectedMunicipality) {
+      const muni = DATA.find(m => m.id === AppState.selectedMunicipality);
+      if (muni) fetchWeather(muni.lat, muni.lng, muni.name);
+    }
+  });
+
+  document.getElementById('weatherClose').addEventListener('click', function(e) {
+    e.stopPropagation();
+    document.getElementById('weatherPopup').classList.remove('visible');
+  });
+
+  // Close on click outside
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.weather-popup') && !e.target.closest('.weather-btn')) {
+      document.getElementById('weatherPopup').classList.remove('visible');
+    }
+  });
+}
+
+function fetchWeather(lat, lng, name) {
+  const key = lat + ',' + lng;
+  const body = document.getElementById('weatherBody');
+  const title = document.getElementById('weatherTitle');
+  title.textContent = 'Pogoda — ' + name;
+
+  // Check cache (15 min)
+  if (weatherCache[key] && Date.now() - weatherCache[key].time < 900000) {
+    renderWeather(weatherCache[key].data);
+    return;
+  }
+
+  body.innerHTML = '<div class="weather-loading"><i class="fas fa-spinner fa-spin"></i> Ładowanie pogody...</div>';
+
+  const url = 'https://api.open-meteo.com/v1/forecast?latitude=' + lat + '&longitude=' + lng +
+    '&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum,windspeed_10m_max' +
+    '&timezone=Europe/Warsaw&forecast_days=7';
+
+  fetch(url)
+    .then(r => r.json())
+    .then(data => {
+      weatherCache[key] = { data: data, time: Date.now() };
+      renderWeather(data);
+    })
+    .catch(err => {
+      body.innerHTML = '<div class="weather-loading"><i class="fas fa-exclamation-triangle" style="color:var(--accent-warm)"></i> Nie udało się pobrać pogody</div>';
+    });
+}
+
+function renderWeather(data) {
+  const body = document.getElementById('weatherBody');
+  if (!data.daily || !data.daily.time) {
+    body.innerHTML = '<div class="weather-loading">Brak danych pogodowych</div>';
+    return;
+  }
+
+  const d = data.daily;
+  let html = '';
+  for (let i = 0; i < d.time.length; i++) {
+    const date = new Date(d.time[i] + 'T12:00:00');
+    const dayName = i === 0 ? 'Dziś' : DAY_NAMES[date.getDay()];
+    const dateStr = date.getDate() + '.' + (date.getMonth() + 1);
+    const code = d.weathercode[i];
+    const icon = WEATHER_ICONS[code] || '🌤️';
+    const maxT = Math.round(d.temperature_2m_max[i]);
+    const minT = Math.round(d.temperature_2m_min[i]);
+    const rain = d.precipitation_sum[i];
+    const wind = Math.round(d.windspeed_10m_max[i]);
+
+    html += '<div class="weather-day" title="' + (WEATHER_DESC[code] || '') + '">' +
+      '<div class="weather-day-name">' + dayName + '</div>' +
+      '<div class="weather-day-date">' + dateStr + '</div>' +
+      '<div class="weather-day-icon">' + icon + '</div>' +
+      '<div class="weather-day-temps">' +
+        '<span class="weather-day-max">' + maxT + '°</span>' +
+        '<span class="weather-day-min">/ ' + minT + '°</span>' +
+      '</div>' +
+      '<div class="weather-day-rain">' + (rain > 0 ? '<i class="fas fa-droplet" style="font-size:9px"></i> ' + rain.toFixed(1) + 'mm' : '') + '</div>' +
+      '<div class="weather-day-wind"><i class="fas fa-wind" style="font-size:9px"></i> ' + wind + ' km/h</div>' +
+    '</div>';
+  }
+
+  body.innerHTML = html;
+}
+
 /* === SERVICE WORKER REGISTRATION === */
 if ('serviceWorker' in navigator) {
   // Inline SW as blob
@@ -5930,7 +6183,7 @@ function initPremium() {
 }
 
 
-document.addEventListener('DOMContentLoaded', () => { init(); initRadio(); initPremium(); });
+document.addEventListener('DOMContentLoaded', () => { init(); initRadio(); initPremium(); initWeather(); });
 </script>
 
 
