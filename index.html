@@ -321,11 +321,18 @@ body.dark .header-logo h1 { color: white; }
 /* === MUNICIPALITY DETAIL PANEL === */
 .muni-detail {
   display: none;
-  flex-direction: column;
+  flex-direction: row;
   overflow: hidden;
   flex: 1;
 }
 .muni-detail.visible { display: flex; }
+.detail-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+}
 .muni-detail-hero {
   position: relative;
   height: 200px;
@@ -416,57 +423,49 @@ body.dark .header-logo h1 { color: white; }
 }
 .quick-stat i { font-size: 14px; }
 
-/* === DETAIL BODY (tabs + content side by side) === */
-.detail-body {
-  display: flex;
-  flex: 1;
-  overflow: hidden;
-  min-height: 0;
-}
-
-/* === DETAIL TABS — VERTICAL SIDEBAR === */
+/* === DETAIL TABS — VERTICAL SIDEBAR (full height) === */
 .detail-tabs {
   display: flex;
   flex-direction: column;
-  background: var(--bg);
-  border-right: 1px solid var(--border);
-  width: 72px;
+  background: var(--secondary);
+  width: 68px;
   flex-shrink: 0;
-  padding: 6px 0;
+  padding: 8px 0;
   gap: 2px;
   overflow-y: auto;
+  align-self: stretch;
 }
 .detail-tab {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 3px;
-  padding: 12px 4px;
+  padding: 10px 4px;
   text-align: center;
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 500;
-  color: var(--text-muted);
+  color: rgba(255,255,255,0.55);
   transition: var(--transition);
   position: relative;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
   border: none;
   background: none;
   cursor: pointer;
   border-radius: 0;
-  margin: 0 6px;
+  margin: 0 5px;
   border-radius: var(--radius-xs);
 }
-.detail-tab i { font-size: 18px; transition: var(--transition); }
+.detail-tab i { font-size: 17px; transition: var(--transition); }
 .detail-tab span { display: block; line-height: 1.2; }
 .detail-tab:hover {
-  color: var(--primary);
-  background: var(--primary-bg);
+  color: rgba(255,255,255,0.9);
+  background: rgba(255,255,255,0.1);
 }
 .detail-tab.active {
   color: white;
-  background: var(--primary);
+  background: var(--primary-light);
   font-weight: 700;
-  box-shadow: var(--shadow-xs);
 }
 .detail-tab.active i { color: white; }
 .detail-tab.active::after { display: none; }
@@ -490,28 +489,30 @@ body.dark .header-logo h1 { color: white; }
 
 /* === MOBILE: horizontal tabs on top === */
 @media (max-width: 768px) {
-  .detail-body { flex-direction: column; }
+  .muni-detail { flex-direction: column; }
   .detail-tabs {
     flex-direction: row;
     width: 100%;
-    border-right: none;
-    border-bottom: 1px solid var(--border);
+    background: var(--secondary);
     padding: 4px 6px;
     gap: 2px;
     overflow-x: auto;
     overflow-y: visible;
     -webkit-overflow-scrolling: touch;
+    align-self: auto;
   }
   .detail-tab {
-    flex-direction: row;
-    gap: 5px;
-    padding: 8px 12px;
+    flex-direction: column;
+    gap: 2px;
+    padding: 6px 10px;
     white-space: nowrap;
     margin: 0;
     min-width: max-content;
+    font-size: 8px;
+    text-transform: uppercase;
   }
   .detail-tab i { font-size: 14px; }
-  .detail-tab span { font-size: 11px; }
+  .detail-main { flex: 1; }
 }
 
 /* === TRAIL CARDS === */
@@ -1541,20 +1542,20 @@ body.dark .glass {
 
     <!-- Municipality detail -->
     <div class="muni-detail" id="muniDetail">
-      <div class="muni-detail-hero" id="detailHero">
-        <button class="back-btn" id="backBtn"><i class="fas fa-arrow-left"></i></button>
-        <div class="muni-detail-hero-bg" id="detailHeroBg"></div>
+      <div class="detail-tabs" id="detailTabs">
+        <button class="detail-tab active" data-tab="hiking"><i class="fas fa-hiking"></i><span>Piesze</span></button>
+        <button class="detail-tab" data-tab="cycling"><i class="fas fa-bicycle"></i><span>Rower</span></button>
+        <button class="detail-tab" data-tab="attractions"><i class="fas fa-landmark"></i><span>Atrakcje</span></button>
+        <button class="detail-tab" data-tab="access"><i class="fas fa-car"></i><span>Dojazd</span></button>
+        <button class="detail-tab" data-tab="accommodation"><i class="fas fa-bed"></i><span>Noclegi</span></button>
+        <button class="detail-tab" data-tab="info"><i class="fas fa-info-circle"></i><span>Info</span></button>
       </div>
-      <div class="muni-detail-info" id="detailInfo"></div>
-      <div class="detail-body">
-        <div class="detail-tabs" id="detailTabs">
-          <button class="detail-tab active" data-tab="hiking"><i class="fas fa-hiking"></i><span>Piesze</span></button>
-          <button class="detail-tab" data-tab="cycling"><i class="fas fa-bicycle"></i><span>Rower</span></button>
-          <button class="detail-tab" data-tab="attractions"><i class="fas fa-landmark"></i><span>Atrakcje</span></button>
-          <button class="detail-tab" data-tab="access"><i class="fas fa-car"></i><span>Dojazd</span></button>
-          <button class="detail-tab" data-tab="accommodation"><i class="fas fa-bed"></i><span>Noclegi</span></button>
-          <button class="detail-tab" data-tab="info"><i class="fas fa-info-circle"></i><span>Info</span></button>
+      <div class="detail-main">
+        <div class="muni-detail-hero" id="detailHero">
+          <button class="back-btn" id="backBtn"><i class="fas fa-arrow-left"></i></button>
+          <div class="muni-detail-hero-bg" id="detailHeroBg"></div>
         </div>
+        <div class="muni-detail-info" id="detailInfo"></div>
         <div class="detail-content" id="detailContent">
           <div class="tab-panel active" id="panel-hiking"></div>
           <div class="tab-panel" id="panel-cycling"></div>
