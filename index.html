@@ -87,7 +87,9 @@ body.dark {
 a { color: var(--primary); text-decoration: none; }
 button { cursor: pointer; border: none; background: none; font-family: inherit; font-size: inherit; }
 ul { list-style: none; }
-img { display: block; }
+img { display: block; max-width: 100%; height: auto; }
+html, body { overflow-x: hidden; }
+input, select, textarea { font-size: 16px; } /* Prevent iOS zoom */
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 5px; }
@@ -893,9 +895,10 @@ body.detail-open .app-container { margin-left: 68px; }
   .muni-card-img { height: 100px; }
 }
 @media (max-width: 768px) {
-  .header { height: 48px; }
-  .header-search { max-width: 180px; }
-  :root { --header-h: 48px; }
+  /* Layout */
+  :root { --header-h: auto; --sidebar-w: 100%; }
+  html { overflow-x: hidden; }
+  body { overflow-x: hidden; }
   .app-container { flex-direction: column; }
   .sidebar {
     width: 100%;
@@ -905,16 +908,108 @@ body.detail-open .app-container { margin-left: 68px; }
     border-top: 1px solid var(--border);
   }
   .map-container { height: 45vh; order: 1; flex: none; }
-  .info-grid { grid-template-columns: 1fr; }
-  .muni-detail-hero { height: 160px; }
+
+  /* Header */
+  .header { padding: 10px 12px 8px; gap: 6px; }
+  .header-logo h1 { font-size: 18px; }
+  .header-logo .tagline { display: none; }
+  .header-search { max-width: 100%; flex: 1; }
+  .header-search input { font-size: 16px; padding: 10px 14px 10px 38px; }
+  .header-filters { display: none; }
+
+  /* Cards */
   .muni-card-img { height: 90px; }
+  .muni-card-body { padding: 10px 12px; }
+  .muni-card-name { font-size: 16px; }
+  .muni-card-region { font-size: 12px; }
+  .muni-card-stats { font-size: 13px; }
+
+  /* Detail */
+  .muni-detail-hero { height: 160px; }
+  .muni-detail-info p { font-size: 14px; }
+  .quick-stat { font-size: 13px; padding: 8px 12px; }
+  .info-grid { grid-template-columns: 1fr; }
   .map-legend { display: none; }
-}
-@media (max-width: 480px) {
-  .header-search { max-width: 140px; }
-  .muni-detail-quick-stats { flex-wrap: wrap; }
+
+  /* Trails */
+  .trail-card-name { font-size: 15px; }
+  .trail-card-body-inner p { font-size: 14px; }
+  .trail-highlights li { font-size: 14px; }
+  .pill { font-size: 12px; padding: 4px 10px; }
+
+  /* Attractions */
   .attraction-card { flex-direction: column; }
-  .attraction-card-img { width: 100%; height: 120px; }
+  .attraction-card-img { width: 100%; height: 140px; }
+  .attraction-card-content { padding: 14px; }
+  .attraction-card h4 { font-size: 15px; }
+  .attraction-card p { font-size: 13px; }
+  .attraction-meta .pill { font-size: 12px; }
+  .attraction-tip { font-size: 13px; }
+
+  /* Access */
+  .access-card h4 { font-size: 15px; }
+  .access-card p { font-size: 14px; }
+
+  /* Info */
+  .info-item h4 { font-size: 12px; }
+  .info-item p { font-size: 14px; }
+
+  /* Accommodation */
+  .accom-name { font-size: 15px; }
+  .accom-desc { font-size: 13px; }
+  .accom-price { font-size: 16px; }
+  .accom-contact { font-size: 14px; }
+  .accom-feature { font-size: 12px; }
+
+  /* Buttons — min 44px tap target */
+  .btn { min-height: 44px; padding: 10px 16px; font-size: 14px; }
+  .header-btn { width: 44px; height: 44px; font-size: 16px; }
+  .filter-pill { min-height: 36px; padding: 8px 14px; font-size: 13px; }
+  .region-tab { padding: 10px 14px; font-size: 14px; min-height: 40px; }
+  .back-btn { width: 44px; height: 44px; font-size: 18px; }
+
+  /* Search results */
+  .search-result-item { padding: 14px 16px; font-size: 15px; }
+  .search-result-item small { font-size: 13px; }
+
+  /* Images */
+  img { max-width: 100%; height: auto; }
+
+  /* FABs */
+  .fab { width: 50px; height: 50px; font-size: 20px; }
+  .fab-group { bottom: calc(55vh + 12px); right: 12px; }
+
+  /* Radio */
+  .radio-player { padding: 0 10px; }
+  .radio-select { font-size: 13px; }
+
+  /* Tracker */
+  .tracker-panel { min-width: auto; width: calc(100% - 24px); left: 12px; transform: none; }
+  .tracker-stat .val { font-size: 22px; }
+
+  /* Lightbox */
+  .lightbox-img { max-width: 95vw; max-height: 70vh; border-radius: 8px; }
+  .lightbox-caption { font-size: 16px; }
+  .lightbox-desc { font-size: 14px; }
+}
+
+@media (max-width: 480px) {
+  /* Extra small */
+  .header-logo h1 { font-size: 16px; }
+  .header-search input { font-size: 16px; }
+  .muni-detail-quick-stats { flex-wrap: wrap; gap: 4px; }
+  .quick-stat { font-size: 12px; }
+  .trail-pills { gap: 3px; }
+  .pill { font-size: 11px; padding: 3px 8px; }
+  .accom-header { flex-wrap: wrap; }
+  .accom-price { font-size: 15px; }
+  .elevation-stats { gap: 8px; }
+  .elevation-stat .val { font-size: 14px; }
+  .tracker-stats { gap: 12px; }
+  .tracker-stat .val { font-size: 18px; }
+  .tracker-btn { padding: 10px 16px; font-size: 13px; }
+  .sidebar { height: 50vh; }
+  .map-container { height: 50vh; }
 }
 
 /* === PRINT === */
