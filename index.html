@@ -416,47 +416,103 @@ body.dark .header-logo h1 { color: white; }
 }
 .quick-stat i { font-size: 14px; }
 
-/* === DETAIL TABS === */
+/* === DETAIL BODY (tabs + content side by side) === */
+.detail-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* === DETAIL TABS — VERTICAL SIDEBAR === */
 .detail-tabs {
   display: flex;
-  background: var(--bg-card);
-  border-bottom: 1px solid var(--border);
-  position: relative;
+  flex-direction: column;
+  background: var(--bg);
+  border-right: 1px solid var(--border);
+  width: 72px;
   flex-shrink: 0;
-  gap: 0;
+  padding: 6px 0;
+  gap: 2px;
+  overflow-y: auto;
 }
 .detail-tab {
-  flex: 1;
-  padding: 10px 2px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 12px 4px;
   text-align: center;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 500;
   color: var(--text-muted);
   transition: var(--transition);
   position: relative;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.02em;
+  border: none;
+  background: none;
+  cursor: pointer;
+  border-radius: 0;
+  margin: 0 6px;
+  border-radius: var(--radius-xs);
 }
-.detail-tab i { display: block; font-size: 15px; margin-bottom: 3px; }
-.detail-tab:hover { color: var(--primary); background: var(--primary-bg); }
-.detail-tab.active { color: var(--primary); font-weight: 700; }
-.detail-tab.active::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 16%;
-  right: 16%;
-  height: 2px;
+.detail-tab i { font-size: 18px; transition: var(--transition); }
+.detail-tab span { display: block; line-height: 1.2; }
+.detail-tab:hover {
+  color: var(--primary);
+  background: var(--primary-bg);
+}
+.detail-tab.active {
+  color: white;
   background: var(--primary);
-  border-radius: 2px 2px 0 0;
+  font-weight: 700;
+  box-shadow: var(--shadow-xs);
 }
+.detail-tab.active i { color: white; }
+.detail-tab.active::after { display: none; }
+
+/* === DETAIL CONTENT === */
 .detail-content {
   flex: 1;
   overflow-y: auto;
   padding: 14px;
+  min-width: 0;
 }
-.tab-panel { display: none; animation: fadeUp 0.25s ease; }
+.tab-panel {
+  display: none;
+  animation: tabSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
 .tab-panel.active { display: block; }
-@keyframes fadeUp { from { opacity:0; transform: translateY(6px); } to { opacity:1; transform: translateY(0); } }
+@keyframes tabSlideIn {
+  from { opacity: 0; transform: translateX(8px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* === MOBILE: horizontal tabs on top === */
+@media (max-width: 768px) {
+  .detail-body { flex-direction: column; }
+  .detail-tabs {
+    flex-direction: row;
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    padding: 4px 6px;
+    gap: 2px;
+    overflow-x: auto;
+    overflow-y: visible;
+    -webkit-overflow-scrolling: touch;
+  }
+  .detail-tab {
+    flex-direction: row;
+    gap: 5px;
+    padding: 8px 12px;
+    white-space: nowrap;
+    margin: 0;
+    min-width: max-content;
+  }
+  .detail-tab i { font-size: 14px; }
+  .detail-tab span { font-size: 11px; }
+}
 
 /* === TRAIL CARDS === */
 .trail-card {
@@ -1490,19 +1546,23 @@ body.dark .glass {
         <div class="muni-detail-hero-bg" id="detailHeroBg"></div>
       </div>
       <div class="muni-detail-info" id="detailInfo"></div>
-      <div class="detail-tabs" id="detailTabs">
-        <button class="detail-tab active" data-tab="hiking"><i class="fas fa-hiking"></i>Piesze</button>
-        <button class="detail-tab" data-tab="cycling"><i class="fas fa-bicycle"></i>Rower</button>
-        <button class="detail-tab" data-tab="attractions"><i class="fas fa-landmark"></i>Atrakcje</button>
-        <button class="detail-tab" data-tab="access"><i class="fas fa-car"></i>Dojazd</button>
-        <button class="detail-tab" data-tab="info"><i class="fas fa-info-circle"></i>Info</button>
-      </div>
-      <div class="detail-content" id="detailContent">
-        <div class="tab-panel active" id="panel-hiking"></div>
-        <div class="tab-panel" id="panel-cycling"></div>
-        <div class="tab-panel" id="panel-attractions"></div>
-        <div class="tab-panel" id="panel-access"></div>
-        <div class="tab-panel" id="panel-info"></div>
+      <div class="detail-body">
+        <div class="detail-tabs" id="detailTabs">
+          <button class="detail-tab active" data-tab="hiking"><i class="fas fa-hiking"></i><span>Piesze</span></button>
+          <button class="detail-tab" data-tab="cycling"><i class="fas fa-bicycle"></i><span>Rower</span></button>
+          <button class="detail-tab" data-tab="attractions"><i class="fas fa-landmark"></i><span>Atrakcje</span></button>
+          <button class="detail-tab" data-tab="access"><i class="fas fa-car"></i><span>Dojazd</span></button>
+          <button class="detail-tab" data-tab="accommodation"><i class="fas fa-bed"></i><span>Noclegi</span></button>
+          <button class="detail-tab" data-tab="info"><i class="fas fa-info-circle"></i><span>Info</span></button>
+        </div>
+        <div class="detail-content" id="detailContent">
+          <div class="tab-panel active" id="panel-hiking"></div>
+          <div class="tab-panel" id="panel-cycling"></div>
+          <div class="tab-panel" id="panel-attractions"></div>
+          <div class="tab-panel" id="panel-access"></div>
+          <div class="tab-panel" id="panel-accommodation"></div>
+          <div class="tab-panel" id="panel-info"></div>
+        </div>
       </div>
     </div>
   </aside>
@@ -4928,6 +4988,7 @@ function renderMunicipalityDetail(m) {
   renderCyclingPanel(m);
   renderAttractionsPanel(m);
   renderAccessPanel(m);
+  renderAccommodationPanel(m);
   renderInfoPanel(m);
 }
 
@@ -5040,49 +5101,56 @@ function renderAccessPanel(m) {
   `;
 }
 
-function renderInfoPanel(m) {
-  const p = m.practical;
-  const accom = p.accommodation;
+function renderAccommodationPanel(m) {
+  const accom = m.practical.accommodation;
   const isObj = typeof accom === 'object' && accom.places;
+  const panel = document.getElementById('panel-accommodation');
 
-  let accomHTML = '';
-  if (isObj) {
-    const typeIcons = {
-      hotel: 'fa-hotel', pensjonat: 'fa-house-chimney', agroturystyka: 'fa-tractor',
-      hostel: 'fa-bed', apartament: 'fa-building', camping: 'fa-campground',
-      sanatorium: 'fa-heart-pulse', domki: 'fa-house', pokoje: 'fa-door-open',
-      osrodek: 'fa-umbrella-beach'
-    };
-    const typeLabels = {
-      hotel: 'Hotel', pensjonat: 'Pensjonat', agroturystyka: 'Agroturystyka',
-      hostel: 'Hostel', apartament: 'Apartament', camping: 'Camping',
-      sanatorium: 'Sanatorium', domki: 'Domki', pokoje: 'Pokoje gościnne',
-      osrodek: 'Ośrodek'
-    };
-    accomHTML = '<div class="accom-section-title"><i class="fas fa-bed"></i> Noclegi — ' + accom.places.length + ' obiektów</div>';
-    accomHTML += accom.places.map((pl, i) => {
-      const stars = pl.stars > 0 ? '<span class="accom-stars">' + '★'.repeat(pl.stars) + '</span>' : '';
-      return '<div class="accom-card" onclick="this.classList.toggle(\'expanded\')" data-accom="' + i + '">' +
-        '<div class="accom-header">' +
-          '<div class="accom-type-icon accom-type-' + pl.type + '"><i class="fas ' + (typeIcons[pl.type]||'fa-bed') + '"></i></div>' +
-          '<div class="accom-info">' +
-            '<div class="accom-name">' + pl.name + stars + '</div>' +
-            '<div style="font-size:11px;color:var(--text-muted);margin-top:2px;">' + (typeLabels[pl.type]||pl.type) + '</div>' +
-            '<div class="accom-desc">' + pl.desc + '</div>' +
-          '</div>' +
-          '<div class="accom-price">' + pl.price + '</div>' +
-        '</div>' +
-        '<div class="accom-details"><div class="accom-details-inner">' +
-          '<div class="accom-features">' + pl.features.map(f => '<span class="accom-feature">' + f + '</span>').join('') + '</div>' +
-          '<div class="accom-contact"><i class="fas fa-map-marker-alt"></i>' + pl.address + '</div>' +
-          '<div class="accom-contact" style="margin-top:4px;"><i class="fas fa-phone"></i><a href="tel:' + pl.phone.replace(/\s/g,'') + '">' + pl.phone + '</a></div>' +
-        '</div></div>' +
-      '</div>';
-    }).join('');
-  } else {
-    accomHTML = '<div class="info-item full-width"><h4><i class="fas fa-bed"></i> Noclegi</h4><p>' + (accom || '') + '</p></div>';
+  if (!isObj) {
+    panel.innerHTML = '<div class="info-item full-width"><h4><i class="fas fa-bed"></i> Noclegi</h4><p>' + (accom || 'Brak danych') + '</p></div>';
+    return;
   }
 
+  const typeIcons = {
+    hotel: 'fa-hotel', pensjonat: 'fa-house-chimney', agroturystyka: 'fa-tractor',
+    hostel: 'fa-bed', apartament: 'fa-building', camping: 'fa-campground',
+    sanatorium: 'fa-heart-pulse', domki: 'fa-house', pokoje: 'fa-door-open',
+    osrodek: 'fa-umbrella-beach'
+  };
+  const typeLabels = {
+    hotel: 'Hotel', pensjonat: 'Pensjonat', agroturystyka: 'Agroturystyka',
+    hostel: 'Hostel', apartament: 'Apartament', camping: 'Camping',
+    sanatorium: 'Sanatorium', domki: 'Domki', pokoje: 'Pokoje gościnne',
+    osrodek: 'Ośrodek'
+  };
+
+  let html = '<div class="accom-section-title"><i class="fas fa-bed"></i> ' + accom.places.length + ' obiektów noclegowych</div>';
+  html += '<p style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;">' + accom.summary + '</p>';
+  html += accom.places.map((pl, i) => {
+    const stars = pl.stars > 0 ? '<span class="accom-stars">' + '★'.repeat(pl.stars) + '</span>' : '';
+    return '<div class="accom-card" onclick="this.classList.toggle(\'expanded\')" data-accom="' + i + '">' +
+      '<div class="accom-header">' +
+        '<div class="accom-type-icon accom-type-' + pl.type + '"><i class="fas ' + (typeIcons[pl.type]||'fa-bed') + '"></i></div>' +
+        '<div class="accom-info">' +
+          '<div class="accom-name">' + pl.name + stars + '</div>' +
+          '<div style="font-size:11px;color:var(--text-muted);margin-top:2px;">' + (typeLabels[pl.type]||pl.type) + '</div>' +
+          '<div class="accom-desc">' + pl.desc + '</div>' +
+        '</div>' +
+        '<div class="accom-price">' + pl.price + '</div>' +
+      '</div>' +
+      '<div class="accom-details"><div class="accom-details-inner">' +
+        '<div class="accom-features">' + pl.features.map(f => '<span class="accom-feature">' + f + '</span>').join('') + '</div>' +
+        '<div class="accom-contact"><i class="fas fa-map-marker-alt"></i>' + pl.address + '</div>' +
+        '<div class="accom-contact" style="margin-top:4px;"><i class="fas fa-phone"></i><a href="tel:' + pl.phone.replace(/\s/g,'') + '">' + pl.phone + '</a></div>' +
+      '</div></div>' +
+    '</div>';
+  }).join('');
+
+  panel.innerHTML = html;
+}
+
+function renderInfoPanel(m) {
+  const p = m.practical;
   document.getElementById('panel-info').innerHTML =
     '<div class="info-grid">' +
       '<div class="info-item"><h4><i class="fas fa-sun"></i> Najlepszy sezon</h4><p>' + p.bestSeason + '</p></div>' +
@@ -5090,9 +5158,8 @@ function renderInfoPanel(m) {
       '<div class="info-item"><h4><i class="fas fa-utensils"></i> Gastronomia</h4><p>' + p.food + '</p></div>' +
       '<div class="info-item"><h4><i class="fas fa-bicycle"></i> Wypożyczalnia</h4><p>' + p.bike_rental + '</p></div>' +
       '<div class="info-item"><h4><i class="fas fa-phone"></i> Alarmowe</h4><p>' + p.emergency + '</p></div>' +
-      '<div class="info-item"><h4><i class="fas fa-wifi"></i> Internet</h4><p>' + p.wifi + '</p></div>' +
-    '</div>' +
-    accomHTML;
+      '<div class="info-item full-width"><h4><i class="fas fa-wifi"></i> Internet</h4><p>' + p.wifi + '</p></div>' +
+    '</div>';
 }
 
 /* === TRAIL TOGGLE === */
