@@ -203,6 +203,9 @@ body.dark .header-logo h1 { color: white; }
   transition: var(--transition);
   font-size: 14px;
   backdrop-filter: blur(4px);
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
 }
 .header-btn:hover { background: rgba(255,255,255,0.25); color: white; }
 
@@ -1954,6 +1957,7 @@ body.dark .glass {
     </div>
     <div class="header-actions" style="position:absolute;right:16px;display:flex;gap:4px;align-items:center;">
       <button class="header-btn" id="shareBtn" title="Udostępnij"><i class="fas fa-share-alt"></i></button>
+      <a class="header-btn" id="authChatBtn" href="/chat.html" title="Czat" style="display:none"><i class="fas fa-comments"></i></a>
       <a class="header-btn" id="authLoginBtn" href="/login.html" title="Zaloguj się"><i class="fas fa-sign-in-alt"></i></a>
       <div class="auth-header-info" id="authUserInfo" style="display:none">
         <span class="auth-header-email" id="authUserEmail"></span>
@@ -6707,14 +6711,17 @@ document.addEventListener('DOMContentLoaded', () => { init(); initRadio(); initP
     const loginBtn = document.getElementById('authLoginBtn');
     const userInfo = document.getElementById('authUserInfo');
     const emailSpan = document.getElementById('authUserEmail');
+    const chatBtn = document.getElementById('authChatBtn');
 
     if (AuthService.isLoggedIn()) {
       loginBtn.style.display = 'none';
       userInfo.style.display = 'flex';
+      if (chatBtn) chatBtn.style.display = '';
       AuthService.getUser().then(u => { if (u) emailSpan.textContent = u.email; });
     } else {
       loginBtn.style.display = '';
       userInfo.style.display = 'none';
+      if (chatBtn) chatBtn.style.display = 'none';
       emailSpan.textContent = '';
     }
   }

@@ -55,6 +55,21 @@ async function migrate() {
   database.run(`CREATE INDEX IF NOT EXISTS idx_users_verification_token ON users(verification_token)`);
   database.run(`CREATE INDEX IF NOT EXISTS idx_users_reset_token ON users(reset_token)`);
 
+  // Tabela wiadomości czatu
+  database.run(`
+    CREATE TABLE IF NOT EXISTS messages (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      recipient_id INTEGER,
+      content TEXT NOT NULL,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      FOREIGN KEY (user_id) REFERENCES users(id),
+      FOREIGN KEY (recipient_id) REFERENCES users(id)
+    )
+  `);
+  database.run(`CREATE INDEX IF NOT EXISTS idx_messages_created ON messages(created_at)`);
+  database.run(`CREATE INDEX IF NOT EXISTS idx_messages_recipient ON messages(recipient_id)`);
+
   saveDb();
   console.log('Migracja zakończona pomyślnie.');
 }
