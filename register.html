@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rejestracja — Szlaki Lubelszczyzny</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lora:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --primary: #1B5E3B;
+  --primary-light: #40916C;
+  --accent: #E8913A;
+  --bg: #F5F5F0;
+  --bg-card: #FFFFFF;
+  --text: #1B4332;
+  --text-secondary: #555;
+  --text-muted: #999;
+  --border: #E0DDD5;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+body {
+  font-family: 'Lora', Georgia, serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+.auth-container { width: 100%; max-width: 420px; }
+.auth-logo { text-align: center; margin-bottom: 32px; }
+.auth-logo h1 { font-family: 'Playfair Display', serif; font-size: 26px; color: var(--primary); }
+.auth-logo p { color: var(--text-muted); font-size: 14px; margin-top: 4px; }
+.auth-card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 32px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+}
+.auth-card h2 { font-family: 'Playfair Display', serif; font-size: 22px; margin-bottom: 24px; text-align: center; }
+.form-group { margin-bottom: 18px; }
+.form-group label { display: block; font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; }
+.form-group input {
+  width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+  font-family: 'Lora', serif; font-size: 15px; color: var(--text); background: var(--bg);
+  transition: border-color 0.2s; outline: none;
+}
+.form-group input:focus { border-color: var(--primary-light); box-shadow: 0 0 0 3px rgba(27,94,59,0.1); }
+.btn-primary {
+  width: 100%; padding: 14px; background: var(--primary); color: white; border: none;
+  border-radius: var(--radius-sm); font-family: 'Lora', serif; font-size: 15px; font-weight: 600;
+  cursor: pointer; transition: background 0.2s;
+}
+.btn-primary:hover { background: var(--primary-light); }
+.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+.auth-links { text-align: center; margin-top: 20px; font-size: 13px; }
+.auth-links a { color: var(--primary); text-decoration: none; font-weight: 600; }
+.auth-links a:hover { text-decoration: underline; }
+.auth-message { padding: 10px 14px; border-radius: var(--radius-sm); font-size: 13px; margin-bottom: 16px; display: none; }
+.auth-message.error { display: block; background: #fdeaea; color: #c0392b; border: 1px solid #f5c6cb; }
+.auth-message.success { display: block; background: #eaf7ee; color: #1B5E3B; border: 1px solid #b7e4c7; }
+.back-link { text-align: center; margin-top: 24px; }
+.back-link a { color: var(--text-muted); text-decoration: none; font-size: 13px; }
+.back-link a:hover { color: var(--primary); }
+.password-wrapper { position: relative; }
+.password-wrapper input { padding-right: 42px; }
+.password-toggle {
+  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 14px;
+}
+.password-strength { height: 4px; border-radius: 2px; margin-top: 6px; background: var(--border); overflow: hidden; }
+.password-strength-bar { height: 100%; width: 0; border-radius: 2px; transition: width 0.3s, background 0.3s; }
+</style>
+</head>
+<body>
+<div class="auth-container">
+  <div class="auth-logo">
+    <h1><i class="fas fa-hiking" style="margin-right:8px;"></i>Szlaki Lubelszczyzny</h1>
+    <p>Odkryj piękno województwa lubelskiego</p>
+  </div>
+
+  <div class="auth-card">
+    <h2>Rejestracja</h2>
+    <div class="auth-message" id="msg"></div>
+
+    <form id="registerForm">
+      <div class="form-group">
+        <label for="email">Adres email</label>
+        <input type="email" id="email" name="email" required autocomplete="email" placeholder="jan@example.com">
+      </div>
+      <div class="form-group">
+        <label for="password">Hasło</label>
+        <div class="password-wrapper">
+          <input type="password" id="password" name="password" required minlength="8" autocomplete="new-password" placeholder="Minimum 8 znaków">
+          <button type="button" class="password-toggle" onclick="togglePassword('password')"><i class="fas fa-eye"></i></button>
+        </div>
+        <div class="password-strength"><div class="password-strength-bar" id="strengthBar"></div></div>
+      </div>
+      <div class="form-group">
+        <label for="password2">Powtórz hasło</label>
+        <div class="password-wrapper">
+          <input type="password" id="password2" name="password2" required minlength="8" autocomplete="new-password" placeholder="Powtórz hasło">
+          <button type="button" class="password-toggle" onclick="togglePassword('password2')"><i class="fas fa-eye"></i></button>
+        </div>
+      </div>
+      <button type="submit" class="btn-primary" id="submitBtn">Utwórz konto</button>
+    </form>
+  </div>
+
+  <div class="auth-links" style="margin-top:16px;">
+    Masz już konto? <a href="/login.html">Zaloguj się</a>
+  </div>
+  <div class="back-link">
+    <a href="/"><i class="fas fa-arrow-left"></i> Powrót do aplikacji</a>
+  </div>
+</div>
+
+<script>
+const form = document.getElementById('registerForm');
+const msg = document.getElementById('msg');
+const submitBtn = document.getElementById('submitBtn');
+const strengthBar = document.getElementById('strengthBar');
+
+document.getElementById('password').addEventListener('input', function() {
+  const len = this.value.length;
+  let width = 0, color = '#E53935';
+  if (len >= 8) { width = 33; color = '#FF9800'; }
+  if (len >= 10 && /[A-Z]/.test(this.value) && /[0-9]/.test(this.value)) { width = 66; color = '#E8913A'; }
+  if (len >= 12 && /[^A-Za-z0-9]/.test(this.value)) { width = 100; color = '#4CAF50'; }
+  strengthBar.style.width = width + '%';
+  strengthBar.style.background = color;
+});
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  msg.className = 'auth-message';
+  msg.style.display = 'none';
+
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+  const password2 = document.getElementById('password2').value;
+
+  if (password !== password2) {
+    msg.className = 'auth-message error';
+    msg.textContent = 'Hasła nie są identyczne.';
+    msg.style.display = 'block';
+    return;
+  }
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Tworzenie konta...';
+
+  try {
+    const res = await fetch('/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.error);
+
+    msg.className = 'auth-message success';
+    msg.textContent = data.message;
+    msg.style.display = 'block';
+    form.reset();
+    strengthBar.style.width = '0';
+  } catch (err) {
+    msg.className = 'auth-message error';
+    msg.textContent = err.message;
+    msg.style.display = 'block';
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Utwórz konto';
+  }
+});
+
+function togglePassword(id) {
+  const input = document.getElementById(id);
+  const icon = input.nextElementSibling.querySelector('i');
+  if (input.type === 'password') {
+    input.type = 'text';
+    icon.className = 'fas fa-eye-slash';
+  } else {
+    input.type = 'password';
+    icon.className = 'fas fa-eye';
+  }
+}
+</script>
+</body>
+</html>

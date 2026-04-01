@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Logowanie — Szlaki Lubelszczyzny</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lora:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --primary: #1B5E3B;
+  --primary-light: #40916C;
+  --accent: #E8913A;
+  --bg: #F5F5F0;
+  --bg-card: #FFFFFF;
+  --text: #1B4332;
+  --text-secondary: #555;
+  --text-muted: #999;
+  --border: #E0DDD5;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+body {
+  font-family: 'Lora', Georgia, serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+.auth-container {
+  width: 100%;
+  max-width: 420px;
+}
+.auth-logo {
+  text-align: center;
+  margin-bottom: 32px;
+}
+.auth-logo h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 26px;
+  color: var(--primary);
+}
+.auth-logo p {
+  color: var(--text-muted);
+  font-size: 14px;
+  margin-top: 4px;
+}
+.auth-card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 32px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+}
+.auth-card h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  margin-bottom: 24px;
+  text-align: center;
+}
+.form-group {
+  margin-bottom: 18px;
+}
+.form-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+.form-group input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: 'Lora', serif;
+  font-size: 15px;
+  color: var(--text);
+  background: var(--bg);
+  transition: border-color 0.2s;
+  outline: none;
+}
+.form-group input:focus {
+  border-color: var(--primary-light);
+  box-shadow: 0 0 0 3px rgba(27,94,59,0.1);
+}
+.btn-primary {
+  width: 100%;
+  padding: 14px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: 'Lora', serif;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-primary:hover { background: var(--primary-light); }
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.auth-links {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 13px;
+}
+.auth-links a {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 600;
+}
+.auth-links a:hover { text-decoration: underline; }
+.auth-message {
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  margin-bottom: 16px;
+  display: none;
+}
+.auth-message.error {
+  display: block;
+  background: #fdeaea;
+  color: #c0392b;
+  border: 1px solid #f5c6cb;
+}
+.auth-message.success {
+  display: block;
+  background: #eaf7ee;
+  color: #1B5E3B;
+  border: 1px solid #b7e4c7;
+}
+.back-link {
+  text-align: center;
+  margin-top: 24px;
+}
+.back-link a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 13px;
+}
+.back-link a:hover { color: var(--primary); }
+.password-wrapper {
+  position: relative;
+}
+.password-wrapper input { padding-right: 42px; }
+.password-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 14px;
+}
+</style>
+</head>
+<body>
+<div class="auth-container">
+  <div class="auth-logo">
+    <h1><i class="fas fa-hiking" style="margin-right:8px;"></i>Szlaki Lubelszczyzny</h1>
+    <p>Odkryj piękno województwa lubelskiego</p>
+  </div>
+
+  <div class="auth-card">
+    <h2>Logowanie</h2>
+    <div class="auth-message" id="msg"></div>
+
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="email">Adres email</label>
+        <input type="email" id="email" name="email" required autocomplete="email" placeholder="jan@example.com">
+      </div>
+      <div class="form-group">
+        <label for="password">Hasło</label>
+        <div class="password-wrapper">
+          <input type="password" id="password" name="password" required autocomplete="current-password" placeholder="Minimum 8 znaków">
+          <button type="button" class="password-toggle" onclick="togglePassword()"><i class="fas fa-eye"></i></button>
+        </div>
+      </div>
+      <button type="submit" class="btn-primary" id="submitBtn">Zaloguj się</button>
+    </form>
+
+    <div class="auth-links">
+      <a href="/forgot-password.html">Nie pamiętasz hasła?</a>
+    </div>
+  </div>
+
+  <div class="auth-links" style="margin-top:16px;">
+    Nie masz konta? <a href="/register.html">Zarejestruj się</a>
+  </div>
+  <div class="back-link">
+    <a href="/"><i class="fas fa-arrow-left"></i> Powrót do aplikacji</a>
+  </div>
+</div>
+
+<script src="/js/auth.js"></script>
+<script>
+const form = document.getElementById('loginForm');
+const msg = document.getElementById('msg');
+const submitBtn = document.getElementById('submitBtn');
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  msg.className = 'auth-message';
+  msg.style.display = 'none';
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Logowanie...';
+
+  try {
+    const result = await AuthService.login(
+      document.getElementById('email').value,
+      document.getElementById('password').value
+    );
+    msg.className = 'auth-message success';
+    msg.textContent = 'Zalogowano! Przekierowuję...';
+    msg.style.display = 'block';
+    setTimeout(() => window.location.href = '/', 800);
+  } catch (err) {
+    msg.className = 'auth-message error';
+    msg.textContent = err.message;
+    msg.style.display = 'block';
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Zaloguj się';
+  }
+});
+
+function togglePassword() {
+  const input = document.getElementById('password');
+  const icon = document.querySelector('.password-toggle i');
+  if (input.type === 'password') {
+    input.type = 'text';
+    icon.className = 'fas fa-eye-slash';
+  } else {
+    input.type = 'password';
+    icon.className = 'fas fa-eye';
+  }
+}
+</script>
+</body>
+</html>

@@ -1725,6 +1725,40 @@ body.dark .glass {
   to { height: 16px; }
 }
 
+/* === AUTH HEADER === */
+.auth-header-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.auth-header-email {
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  max-width: 110px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+.auth-header-logout {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.8);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  transition: all 0.2s;
+}
+.auth-header-logout:hover { background: rgba(255,255,255,0.3); color: white; }
+@media (max-width: 768px) {
+  .auth-header-email { display: none; }
+}
 
 /* === HAMBURGER MENU === */
 .hamburger {
@@ -1920,6 +1954,11 @@ body.dark .glass {
     </div>
     <div class="header-actions" style="position:absolute;right:16px;display:flex;gap:4px;align-items:center;">
       <button class="header-btn" id="shareBtn" title="Udostępnij"><i class="fas fa-share-alt"></i></button>
+      <a class="header-btn" id="authLoginBtn" href="/login.html" title="Zaloguj się"><i class="fas fa-sign-in-alt"></i></a>
+      <div class="auth-header-info" id="authUserInfo" style="display:none">
+        <span class="auth-header-email" id="authUserEmail"></span>
+        <button class="auth-header-logout" id="authLogoutBtn" title="Wyloguj"><i class="fas fa-sign-out-alt"></i></button>
+      </div>
     </div>
   </div>
   <div style="display:flex;gap:8px;align-items:center;width:100%;max-width:700px;">
@@ -6650,5 +6689,36 @@ document.addEventListener('DOMContentLoaded', () => { init(); initRadio(); initP
     <button class="radio-close-btn" id="radioCloseBtn" title="Zamknij"><i class="fas fa-times"></i></button>
   </div>
 </div>
+
+<script src="/js/auth.js"></script>
+<script>
+// Integracja auth z headerem
+(async function() {
+  await AuthService.init();
+  updateAuthUI();
+
+  window.addEventListener('auth', updateAuthUI);
+  document.getElementById('authLogoutBtn').addEventListener('click', async () => {
+    await AuthService.logout();
+    updateAuthUI();
+  });
+
+  function updateAuthUI() {
+    const loginBtn = document.getElementById('authLoginBtn');
+    const userInfo = document.getElementById('authUserInfo');
+    const emailSpan = document.getElementById('authUserEmail');
+
+    if (AuthService.isLoggedIn()) {
+      loginBtn.style.display = 'none';
+      userInfo.style.display = 'flex';
+      AuthService.getUser().then(u => { if (u) emailSpan.textContent = u.email; });
+    } else {
+      loginBtn.style.display = '';
+      userInfo.style.display = 'none';
+      emailSpan.textContent = '';
+    }
+  }
+})();
+</script>
 </body>
 </html>
