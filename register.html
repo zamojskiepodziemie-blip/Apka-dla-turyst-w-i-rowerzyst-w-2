@@ -91,13 +91,13 @@ body {
 
     <form id="registerForm">
       <div class="form-group">
-        <label for="email">Adres email</label>
-        <input type="email" id="email" name="email" required autocomplete="email" placeholder="jan@example.com">
+        <label for="email">Login</label>
+        <input type="text" id="email" name="email" required autocomplete="username" placeholder="Wpisz login">
       </div>
       <div class="form-group">
         <label for="password">Hasło</label>
         <div class="password-wrapper">
-          <input type="password" id="password" name="password" required minlength="8" autocomplete="new-password" placeholder="Minimum 8 znaków">
+          <input type="password" id="password" name="password" required minlength="3" autocomplete="new-password" placeholder="Minimum 3 znaki">
           <button type="button" class="password-toggle" onclick="togglePassword('password')"><i class="fas fa-eye"></i></button>
         </div>
         <div class="password-strength"><div class="password-strength-bar" id="strengthBar"></div></div>
@@ -105,7 +105,7 @@ body {
       <div class="form-group">
         <label for="password2">Powtórz hasło</label>
         <div class="password-wrapper">
-          <input type="password" id="password2" name="password2" required minlength="8" autocomplete="new-password" placeholder="Powtórz hasło">
+          <input type="password" id="password2" name="password2" required minlength="3" autocomplete="new-password" placeholder="Powtórz hasło">
           <button type="button" class="password-toggle" onclick="togglePassword('password2')"><i class="fas fa-eye"></i></button>
         </div>
       </div>

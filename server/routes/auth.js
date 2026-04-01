@@ -48,47 +48,28 @@ router.post('/register', authLimiter, async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({ error: 'Email i hasło są wymagane' });
+      return res.status(400).json({ error: 'Login i hasło są wymagane' });
     }
-    if (!EMAIL_REGEX.test(email)) {
-      return res.status(400).json({ error: 'Nieprawidłowy format email' });
+    if (email.trim().length < 1) {
+      return res.status(400).json({ error: 'Login nie może być pusty' });
     }
-    if (password.length < 8) {
-      return res.status(400).json({ error: 'Hasło musi mieć minimum 8 znaków' });
+    if (password.length < 3) {
+      return res.status(400).json({ error: 'Hasło musi mieć minimum 3 znaki' });
     }
 
-    const existing = queryOne('SELECT id FROM users WHERE email = ?', [email]);
+    const existing = queryOne('SELECT id FROM users WHERE email = ?', [email.trim()]);
     if (existing) {
-      return res.status(409).json({ error: 'Konto z tym adresem email już istnieje' });
+      return res.status(409).json({ error: 'Konto z tym loginem już istnieje' });
     }
 
     const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
-    const verificationToken = crypto.randomBytes(32).toString('hex');
 
-    const isDevMode = !process.env.SMTP_HOST || !process.env.SMTP_USER;
+    runSql(
+      `INSERT INTO users (email, password_hash, is_verified) VALUES (?, ?, 1)`,
+      [email.trim(), passwordHash]
+    );
 
-    if (isDevMode) {
-      // Tryb dev: auto-weryfikacja (brak SMTP)
-      runSql(
-        `INSERT INTO users (email, password_hash, is_verified) VALUES (?, ?, 1)`,
-        [email, passwordHash]
-      );
-      res.status(201).json({ message: 'Konto utworzone i aktywowane. Możesz się zalogować.' });
-    } else {
-      runSql(
-        `INSERT INTO users (email, password_hash, verification_token) VALUES (?, ?, ?)`,
-        [email, passwordHash, verificationToken]
-      );
-
-      const verifyUrl = `${process.env.APP_URL}/api/auth/verify-email?token=${verificationToken}`;
-      await sendEmail({
-        to: email,
-        subject: 'Potwierdź swój email — Szlaki Lubelszczyzny',
-        html: verificationEmail(verifyUrl)
-      });
-
-      res.status(201).json({ message: 'Konto utworzone. Sprawdź email, aby je aktywować.' });
-    }
+    res.status(201).json({ message: 'Konto utworzone. Możesz się zalogować.' });
   } catch (err) {
     console.error('Register error:', err);
     res.status(500).json({ error: 'Błąd serwera' });
@@ -101,22 +82,18 @@ router.post('/login', authLimiter, async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({ error: 'Email i hasło są wymagane' });
+      return res.status(400).json({ error: 'Login i hasło są wymagane' });
     }
 
-    const user = queryOne('SELECT * FROM users WHERE email = ?', [email]);
+    const user = queryOne('SELECT * FROM users WHERE email = ?', [email.trim()]);
 
     if (!user) {
-      return res.status(401).json({ error: 'Nieprawidłowy email lub hasło' });
+      return res.status(401).json({ error: 'Nieprawidłowy login lub hasło' });
     }
 
     const valid = await bcrypt.compare(password, user.password_hash);
     if (!valid) {
-      return res.status(401).json({ error: 'Nieprawidłowy email lub hasło' });
-    }
-
-    if (!user.is_verified) {
-      return res.status(403).json({ error: 'Konto nie zostało aktywowane. Sprawdź swoją skrzynkę email.' });
+      return res.status(401).json({ error: 'Nieprawidłowy login lub hasło' });
     }
 
     const accessToken = generateAccessToken(user);
