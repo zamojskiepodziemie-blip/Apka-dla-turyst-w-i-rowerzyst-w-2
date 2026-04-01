@@ -205,6 +205,13 @@ body {
 
 <script src="/js/auth.js"></script>
 <script>
+// Sprawdź czy strona otwarta przez serwer
+if (window.location.protocol === 'file:') {
+  document.getElementById('msg').className = 'auth-message error';
+  document.getElementById('msg').textContent = 'Otwórz stronę przez serwer: http://localhost:3000/login.html (uruchom: npm start)';
+  document.getElementById('msg').style.display = 'block';
+}
+
 const form = document.getElementById('loginForm');
 const msg = document.getElementById('msg');
 const submitBtn = document.getElementById('submitBtn');

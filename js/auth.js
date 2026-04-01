@@ -14,17 +14,28 @@ const AuthService = (() => {
   // ── Helpers ──────────────────────────────────────────────
 
   async function request(url, options = {}) {
-    const res = await fetch(url, {
-      ...options,
-      credentials: 'same-origin',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
-        ...(options.headers || {})
-      }
-    });
+    let res;
+    try {
+      res = await fetch(url, {
+        ...options,
+        credentials: 'same-origin',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+          ...(options.headers || {})
+        }
+      });
+    } catch (e) {
+      throw new Error('Nie można połączyć z serwerem. Upewnij się, że serwer jest uruchomiony (npm start).');
+    }
 
-    const data = await res.json();
+    const text = await res.text();
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch (e) {
+      throw new Error('Serwer zwrócił nieprawidłową odpowiedź. Otwórz stronę przez http://localhost:3000');
+    }
     if (!res.ok) throw new Error(data.error || 'Błąd serwera');
     return data;
   }

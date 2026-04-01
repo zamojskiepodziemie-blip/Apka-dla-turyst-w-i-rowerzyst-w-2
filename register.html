@@ -122,6 +122,12 @@ body {
 </div>
 
 <script>
+if (window.location.protocol === 'file:') {
+  document.getElementById('msg').className = 'auth-message error';
+  document.getElementById('msg').textContent = 'Otwórz stronę przez serwer: http://localhost:3000/register.html (uruchom: npm start)';
+  document.getElementById('msg').style.display = 'block';
+}
+
 const form = document.getElementById('registerForm');
 const msg = document.getElementById('msg');
 const submitBtn = document.getElementById('submitBtn');
