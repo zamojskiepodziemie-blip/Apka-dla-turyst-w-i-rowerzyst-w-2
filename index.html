@@ -787,49 +787,6 @@ body.detail-open .app-container { margin-left: 68px; }
 .info-item p { font-size: 12px; line-height: 1.5; color: var(--text-secondary); }
 .info-item.full-width { grid-column: 1 / -1; }
 
-/* === MAP LEGEND === */
-.map-legend {
-  position: absolute;
-  bottom: 20px;
-  right: 12px;
-  background: var(--bg-card);
-  border-radius: var(--radius-sm);
-  padding: 10px 12px;
-  box-shadow: var(--shadow-lg);
-  z-index: 800;
-  font-size: 11px;
-  max-width: 180px;
-  border: 1px solid var(--border);
-}
-.map-legend h4 {
-  font-size: 9px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--text-muted);
-  margin-bottom: 6px;
-  font-weight: 600;
-}
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 2px 0;
-  font-size: 11px;
-  color: var(--text-secondary);
-}
-.legend-color {
-  width: 14px;
-  height: 3px;
-  border-radius: 2px;
-}
-.legend-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  border: 2px solid;
-}
-.legend-section { margin-bottom: 6px; }
-.legend-section:last-child { margin-bottom: 0; }
 
 /* === EMPTY STATE === */
 .empty-state {
@@ -958,7 +915,6 @@ body.detail-open .app-container { margin-left: 68px; }
   .muni-detail-info p { font-size: 14px; }
   .quick-stat { font-size: 13px; padding: 8px 12px; }
   .info-grid { grid-template-columns: 1fr; }
-  .map-legend { display: none; }
 
   /* Trails */
   .trail-card-name { font-size: 15px; }
@@ -2097,20 +2053,6 @@ body.dark .glass {
   <!-- MAP -->
   <div class="map-container">
     <div id="map"></div>
-    <div class="map-legend" id="mapLegend">
-      <div class="legend-section">
-        <h4>Regiony</h4>
-        <div class="legend-item"><div class="legend-dot" style="border-color:#6D4C41;background:rgba(109,76,65,0.2)"></div> Roztocze</div>
-        <div class="legend-item"><div class="legend-dot" style="border-color:#1565C0;background:rgba(21,101,192,0.2)"></div> Polesie</div>
-        <div class="legend-item"><div class="legend-dot" style="border-color:#2E7D32;background:rgba(46,125,50,0.2)"></div> Kazimierski</div>
-        <div class="legend-item"><div class="legend-dot" style="border-color:#AD1457;background:rgba(173,20,87,0.2)"></div> Centralny</div>
-      </div>
-      <div class="legend-section">
-        <h4>Szlaki</h4>
-        <div class="legend-item"><div class="legend-color" style="background:#E63946"></div> Pieszy</div>
-        <div class="legend-item"><div class="legend-color" style="background:#52B788;height:5px"></div> Rowerowy</div>
-      </div>
-    </div>
   </div>
 </div>
 
