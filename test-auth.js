@@ -108,30 +108,17 @@ async function run() {
     assert('duplicate → 409', r.status === 409);
   }
 
-  // ── 4. Login unverified ──
-  console.log('4. Login unverified');
+  // ── 4. Dev mode: auto-verified ──
+  console.log('4. Dev mode: auto-verified on register');
   {
-    const r = await req('POST', '/api/auth/login', { email: 'user@test.com', password: 'password123' });
-    assert('unverified → 403', r.status === 403);
+    const user = queryOne('SELECT is_verified, verification_token FROM users WHERE email = ?', ['user@test.com']);
+    assert('is_verified = 1 (dev auto-verify)', user.is_verified === 1);
+    assert('no verification_token (dev mode)', !user.verification_token);
   }
 
-  // ── 5. Verify email ──
-  console.log('5. Verify email');
-  {
-    const user = queryOne('SELECT verification_token FROM users WHERE email = ?', ['user@test.com']);
-    assert('has verification_token in DB', !!user && !!user.verification_token);
-
-    const r = await req('GET', `/api/auth/verify-email?token=${user.verification_token}`);
-    assert('verify returns 200', r.status === 200);
-    assert('verify page has success', r.raw.includes('potwierdzony'));
-
-    const userAfter = queryOne('SELECT is_verified, verification_token FROM users WHERE email = ?', ['user@test.com']);
-    assert('is_verified = 1', userAfter.is_verified === 1);
-    assert('verification_token cleared', !userAfter.verification_token);
-  }
-
-  // ── 6. Verify invalid token ──
-  console.log('6. Verify invalid token');
+  // ── 5. Verify invalid token ──
+  // ── 5. Verify invalid token ──
+  console.log('5. Verify invalid token');
   {
     const r = await req('GET', '/api/auth/verify-email?token=invalidtoken');
     assert('invalid token shows error', r.raw.includes('nieprawidłowy'));

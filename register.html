@@ -171,6 +171,10 @@ form.addEventListener('submit', async (e) => {
     msg.style.display = 'block';
     form.reset();
     strengthBar.style.width = '0';
+    // Jeśli konto od razu aktywne (tryb dev), przekieruj do logowania
+    if (data.message && data.message.includes('zalogować')) {
+      setTimeout(() => window.location.href = '/login.html', 1500);
+    }
   } catch (err) {
     msg.className = 'auth-message error';
     msg.textContent = err.message;

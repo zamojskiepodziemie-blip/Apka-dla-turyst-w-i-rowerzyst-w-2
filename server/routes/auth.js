@@ -65,19 +65,30 @@ router.post('/register', authLimiter, async (req, res) => {
     const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
     const verificationToken = crypto.randomBytes(32).toString('hex');
 
-    runSql(
-      `INSERT INTO users (email, password_hash, verification_token) VALUES (?, ?, ?)`,
-      [email, passwordHash, verificationToken]
-    );
+    const isDevMode = !process.env.SMTP_HOST || !process.env.SMTP_USER;
 
-    const verifyUrl = `${process.env.APP_URL}/api/auth/verify-email?token=${verificationToken}`;
-    await sendEmail({
-      to: email,
-      subject: 'Potwierdź swój email — Szlaki Lubelszczyzny',
-      html: verificationEmail(verifyUrl)
-    });
+    if (isDevMode) {
+      // Tryb dev: auto-weryfikacja (brak SMTP)
+      runSql(
+        `INSERT INTO users (email, password_hash, is_verified) VALUES (?, ?, 1)`,
+        [email, passwordHash]
+      );
+      res.status(201).json({ message: 'Konto utworzone i aktywowane. Możesz się zalogować.' });
+    } else {
+      runSql(
+        `INSERT INTO users (email, password_hash, verification_token) VALUES (?, ?, ?)`,
+        [email, passwordHash, verificationToken]
+      );
 
-    res.status(201).json({ message: 'Konto utworzone. Sprawdź email, aby je aktywować.' });
+      const verifyUrl = `${process.env.APP_URL}/api/auth/verify-email?token=${verificationToken}`;
+      await sendEmail({
+        to: email,
+        subject: 'Potwierdź swój email — Szlaki Lubelszczyzny',
+        html: verificationEmail(verifyUrl)
+      });
+
+      res.status(201).json({ message: 'Konto utworzone. Sprawdź email, aby je aktywować.' });
+    }
   } catch (err) {
     console.error('Register error:', err);
     res.status(500).json({ error: 'Błąd serwera' });
